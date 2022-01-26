@@ -9,3 +9,5 @@ resources/windGraph.png
 resources/tideGraphic.png
 tideTable.html
 forecastGrid.html
+env
+.env
