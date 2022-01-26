@@ -1,0 +1,82 @@
+.forecastFrame {
+    grid-column-start: 3;
+    grid-column-end: 5;
+    grid-row-start: 4;
+    /* background-color: slateblue; */
+    width: 665px;
+    height: 360px;
+  }
+
+  div.forecastFrame > .forecasttitle {
+    position: relative;
+    top: 5px;
+    left: 15px;
+    width: 95%;
+    height: 40px;
+    /* text-align: left;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px; */
+    background-color: lightgray;
+  }
+
+  div.forecastFrame > .forecasts { /* wrapper for forecast miniboxes */
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    position: relative;
+    top: 10px;
+    width: 95%;
+    height: 300px;
+  }
+
+  div.forecastFrame > .forecasts > div { /* mini boxes for forecasts */
+    position: relative;
+    width: 200px;
+    height: 130px;
+    left: 20px;
+    margin: 5px;
+    overflow: hidden;
+    background-color: rgba(135, 206, 250, 0.6);
+  }
+
+  div.special {
+    position: fixed;
+    top: 195px;
+    color: red;
+  }
+
+  p.where {
+    position: relative;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    top: 4px;
+    left: 4px;
+    font-size: 12pt;
+    line-height: 80%;
+    text-align: start;
+    margin: 0px;
+  }
+
+  p.when {
+    position: relative;
+    font-family: 'Courier New', Courier, monospace;
+    font-style: italic;
+    font-size: 10pt;
+    line-height: 90%;
+    bottom: 4px;
+    text-align: end;
+  }
+
+  p.what {
+    font-family: 'Courier New', Courier, monospace;
+    margin: 0px;
+    font-weight: bold;
+    font-size: 12pt;
+  }
+
+  p.how {
+    font-family: 'Courier New', Courier, monospace;
+    margin: 3px;
+    font-size: 10pt;
+    line-height: 90%;
+  }

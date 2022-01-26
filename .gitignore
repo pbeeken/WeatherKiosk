@@ -1,0 +1,12 @@
+# .gitignore 
+
+# Temporary files as part of testing and debugging
+*.zip
+__pycache__
+# Files that are generated.
+resources/TideGraph.png
+resources/TideNext.png
+resources/WindGraph.png
+resources/tideGraphic.png
+WeatherKiosk.html
+tideTable.html
