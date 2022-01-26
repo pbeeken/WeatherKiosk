@@ -87,7 +87,7 @@ def makeTideGraphic(extremaDF):
 
     # imageURL = "https://docs.google.com/drawings/d/e/2PACX-1vRPpyCKk834LQUUwoEWDiopLKIcRscn3AoUPynXzNe6jPRLXWt9TBS90Wwm_MjxVoqezD09hbx_0Sw8/pub?w=225&h=159"
     # imageRef = PIL.Image.open(urllib.request.urlopen(imageURL))
-    imageRef = "resources/tideBackground.png" # fetch locally (way faster on a pi)
+    imageRef = "resources/TideBackground.png" # fetch locally (way faster on a pi)
     imageOverLay = plt.imread(imageRef)
     # px = 1/plt.rcParams['figure.dpi']  # pixel in inches doesn't quite work when bbox='tight'
     plt.figure(figsize=(3, 3))
@@ -126,7 +126,7 @@ def makeTideGraphic(extremaDF):
     plt.fill_between(t,y, color="SkyBlue", alpha=0.50)
 
     #plt.show()
-    plt.savefig("resources/tideGraphic.png", bbox_inches='tight', transparent=True)
+    plt.savefig("resources/TideGraphic.png", bbox_inches='tight', transparent=True)
     plt.close()
 
 # Should run this every 5 minutes to keep the screen up to date.

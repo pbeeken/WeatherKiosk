@@ -2,7 +2,7 @@
 # This should get run once every 10 minutes
 
 # lets make this our home
-cd /home/pi/TideClock/
+cd /home/pi/WeatherKiosk/
 
 # fetch unit cycle (1 or 2) This allows us to switch displayed units from m to ft (international audience)
 TIDECNT=`cat resources/env` || 1
