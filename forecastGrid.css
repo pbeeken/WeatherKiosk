@@ -41,6 +41,9 @@
 
   div.special {
     position: fixed;
+    font-size: 10pt;
+    font-weight: bold;
+    align-items: center;
     top: 195px;
     color: red;
   }

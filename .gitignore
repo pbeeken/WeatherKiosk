@@ -4,8 +4,7 @@
 *.zip
 __pycache__
 # Files that are generated.
-resources/TideGraph.png
-resources/TideNext.png
-resources/WindGraph.png
+resources/tideGraph.png
+resources/windGraph.png
 resources/tideGraphic.png
 tideTable.html

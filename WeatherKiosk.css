@@ -94,7 +94,7 @@ div.header > .logo {
 
 .footer {
     position: absolute; /* Means all measurements are absolute screen */
-    bottom: 5px;
+    bottom: 15px;
     left: 20px;
     /* width: 1360px; */
     right: 20px;

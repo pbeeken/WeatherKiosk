@@ -126,7 +126,7 @@ def makeTideGraphic(extremaDF):
     plt.fill_between(t,y, color="SkyBlue", alpha=0.50)
 
     #plt.show()
-    plt.savefig("resources/TideGraphic.png", bbox_inches='tight', transparent=True)
+    plt.savefig("resources/tideGraphic.png", bbox_inches='tight', transparent=True)
     plt.close()
 
 # Should run this every 5 minutes to keep the screen up to date.
