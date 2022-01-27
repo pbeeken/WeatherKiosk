@@ -90,14 +90,16 @@ def makeTideTable(extremaDF):
     futureTides = extremaDF[sel]
 
     htmlText = futureTides[:4].to_html( 
-                            columns=['Date', 'Time', 'Type', gTideUnit], 
+#                            columns=['DateTime', 'Time', 'Type', gTideUnit], 
+                            columns=['DateTime', 'Type', gTideUnit], 
                             index=False, 
                             border=0,
                             formatters={
                                 gTideUnit: lambda x:f"{x:6.1f}",
-                                'Type': lambda l: lbl[l]
+                                'Type': lambda l: lbl[l],
+                                'DateTime': lambda dt: dt.strftime("%a %I:%M %p")
                                 },
-                            table_id = "tideTable"
+#                            table_id = "tideTable"
                             )
 
     #open the template file
