@@ -58,7 +58,7 @@ def makeWindGraph(windDF, whereFrom=""):
   ax.xaxis.set_major_locator(mdates.DayLocator(tz=EST))
   ax.xaxis.set_minor_locator(mdates.HourLocator(interval=4, tz=EST))
 
-  ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d', tz=EST))
+  ax.xaxis.set_major_formatter(mdates.DateFormatter('%a, %b %d', tz=EST))
   ax.xaxis.set_minor_formatter(mdates.DateFormatter('%H:%M', tz=EST))
 
   dx = 0.; dy = -10/72.
