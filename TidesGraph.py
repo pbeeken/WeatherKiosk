@@ -93,7 +93,7 @@ def makeTideGraph(detailDF, extremaDF):
 
     # Set up the plot and plot the data
     # px = 1/plt.rcParams['figure.dpi']  # pixel in inches (doesn't work if bbox is 'tight')
-    fig, ax = plt.subplots(figsize=(11.7, 4))
+    fig, ax = plt.subplots(figsize=(11.5, 4))
 
     ax.plot(detailDF['DateTime'], detailDF[gTideUnit], color="blue", alpha=0.8)
 
