@@ -85,7 +85,7 @@ xset s noblank
 
 unclutter &
 cd /home/pi/TideClock
-chromium-browser file:///home/pi/TideClock/TideClock.html \
+chromium-browser file:///home/pi/WeatherKiosk/WeatherKiosk.html \
 	--window-size=1440,900 \
 	--window-position=0,0 \
 	--start-fullscreen \
