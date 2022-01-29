@@ -122,17 +122,17 @@ if __name__ == '__main__':
 
     #open and read the template file
     with open(templateFile, "r") as templateFile:
-        templateData = templateFile.readlines()
+        templateHtml = templateFile.readlines()
 
     # Title Information
-    templateData = ("".join(templateData)).replace('<!--Forecast Title-->', titleArea)
+    templateHtml = ("".join(templateHtml)).replace('<!--Forecast Title-->', titleArea)
     # Forecast Boxes
     for i in range(len(forecastBox)):
-        templateData = templateData.replace(f'<!--Forecast Box_{i}-->', forecastBox[i])
+        templateHtml = templateHtml.replace(f'<!--Forecast Box_{i}-->', forecastBox[i])
 
-    templateData = templateData.replace('<!--Special Warning-->', specialWarning)
+    templateHtml = templateHtml.replace('<!--Special Warning-->', specialWarning)
 
 
     # copy the html table into the text and write out a new file 
-    with open(forecastFile, "w") as htmlContent:
-        htmlContent.write( templateData )
+    with open(forecastFile, "w") as htmlFile:
+        htmlFile.write( templateHtml )
