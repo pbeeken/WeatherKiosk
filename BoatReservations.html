@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="refresh" content="1800" />
+        <link rel="preconnect" href="https://fonts.googleapis.com"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+        <link href="https://fonts.googleapis.com/css2?family=Trade+Winds&display=swap" rel="stylesheet"/>    
+        <link rel="stylesheet" type="text/css" href="BoatReservations.css"/>
+        <meta http-equiv="content-type" content="text/html; charset=iso-8859-1"/>
+    </head>
+
+    <body onload="startTime()">
+        <div class="shell">
+            <div class="header">
+                <img class="logo" src="resources/HHYC_Flag.png"alt="HHYC Logo">
+                <span class="title">Horseshoe Harbor Yacht Club Tides, Wind &amp; Weather</span> 
+            </div>
+            <div class="wrapper">
+                <div class="box1"><iframe class="import" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTr0fSnaqbWMg523sKPqu_PIU03OBtS0blKDbqyG9RO-94ljGeGFgnkdWvz8f_iU9PY24TPHCTu4MrY/pubhtml?gid=0&amp;single=true&amp;widget=true&amp;headers=false"></iframe></iframe></div>
+                <div class="box2"><iframe class="import" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQO20U0tdRwjY8CrkbiBzMw87ylcoFSRqEYml8Fg9BKL9phB06-Kxi1PzLOcvwLQgtaO9PXZQ5rgWZC/pubhtml?gid=0&amp;single=true&amp;widget=true&amp;headers=false"></iframe></div>
+             </div>
+            <div class="footer">
+                <p id="clock">Waiting...</p>
+            </div>
+        </div>
+    </body>
+    <script>
+        function startTime() {
+        const today = new Date();
+        document.getElementById('clock').innerHTML =  today.toLocaleTimeString('en-US');
+        setTimeout(startTime, 1000);
+        }
+    </script>
+</html>
+
+
+<!--<iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQO20U0tdRwjY8CrkbiBzMw87ylcoFSRqEYml8Fg9BKL9phB06-Kxi1PzLOcvwLQgtaO9PXZQ5rgWZC/pubhtml?gid=0&amp;single=true&amp;widget=true&amp;headers=false"></iframe>-->
+
