@@ -111,7 +111,7 @@ div.header > .logo {
     margin: 0;
     position: absolute;
     top: 50%;
-    left: 92%;
+    left: 93%;
     /* -ms-transform: translate(-50%, -50%); */
     transform: translate(-50%, -50%);
 }
@@ -124,6 +124,6 @@ div.header > .logo {
     margin: 0;
     position: absolute;
     top: 50%;
-    left: 10%;
+    left: 18%;
     transform: translate(-50%, -50%);
 }
