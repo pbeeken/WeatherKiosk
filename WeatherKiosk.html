@@ -24,15 +24,17 @@
             </div>
             <div class="footer">
                 <p id="clock">Waiting...</p>
+                <p id="suncondition"><!--Sunrise and sunset--></p>
             </div>
         </div>
     </body>
     <script>
         function startTime() {
-        const today = new Date();
-        document.getElementById('clock').innerHTML =  today.toLocaleTimeString('en-US');
-        setTimeout(startTime, 1000);
-        }
+            const today = new Date()
+            document.getElementById('clock').innerHTML =  today.toLocaleTimeString('en-US')
+            setTimeout(startTime, 1000)
+            }
+
     </script>
 </html>
 

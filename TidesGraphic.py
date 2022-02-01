@@ -71,7 +71,7 @@ tideStation = stationsNearUs['RyePlaylandNY']  # Closest one to us with reliable
 from tidedata import fetchDailyTides
 
 #@markdown Make the fancy image with next tide
-def makeTideGraphic(extremaDF):
+def makeTideGraphic(extremaDF, detailDF=None):
     # make up for image import deprecation
     # import PIL
     # import urllib.request
@@ -113,11 +113,18 @@ def makeTideGraphic(extremaDF):
     plt.arrow(wdt/6, 90-len/2, 0, len, width=6., color="cyan", 
                 length_includes_head=True, alpha=0.6, fill=False, linewidth=2.0)
 
-    # Somehwat kludgy since we know the range is between -1 and 10
+    # Somehwat kludgy since we know the range is between -1 and 10ft
+    try:
+        current = detailDF[detailDF['DateTime']>datetime.now(tz=EST)]
+        nxtTide = current.iloc[0]
+        level = nxtTide[gTideUnit]
+    except:
+        level = nxtTide[gTideUnit]
+
     if gTideUnit == 'Tide [ft]':
-        scaledTideHeight = hgt - lvl*(nxtTide[gTideUnit] + 2)/10.
+        scaledTideHeight = hgt - lvl*(level + 2)/10.
     else:
-        scaledTideHeight = hgt - lvl*(nxtTide[gTideUnit] + 0.5)/3.0
+        scaledTideHeight = hgt - lvl*(level + 0.5)/3.0
 
     plt.title("Next Tide At...")
     plt.axis('off')
@@ -135,7 +142,7 @@ def refresh():
     (ryePlayDetailDF, ryePlayExtremDF) = fetchDailyTides(tideStation)
 
     # make the pseudo 'next tide' graphic
-    makeTideGraphic(ryePlayExtremDF)
+    makeTideGraphic(ryePlayExtremDF, ryePlayDetailDF)
 
 """
 We want to run this command peridoically to update the clock 

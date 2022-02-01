@@ -103,6 +103,7 @@ div.header > .logo {
 }
 
 #clock {
+    z-index: 10;
     text-align: right;
     font-family: "Trade Winds", cursive;
     font-size: medium;
@@ -112,5 +113,17 @@ div.header > .logo {
     top: 50%;
     left: 92%;
     /* -ms-transform: translate(-50%, -50%); */
+    transform: translate(-50%, -50%);
+}
+
+#suncondition {
+    text-align: left;
+    font-family: "Trade Winds", cursive;
+    font-size: medium;
+    text-shadow: 1px 1px 3px rgb(116, 115, 115);
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 10%;
     transform: translate(-50%, -50%);
 }
