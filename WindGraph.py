@@ -23,7 +23,9 @@ def fetchWindData(source):
   windDF['DateTime'] = windDF[['#YY','MM','DD','hh','mm']].apply(lambda dt: datetime(dt[0], dt[1], dt[2], dt[3], dt[4], tzinfo=UTC).astimezone(EST), axis=1)
   windDF['Time'] = windDF['DateTime'].apply(lambda t: t.time())
   windDF['Date'] = windDF['DateTime'].apply(lambda d: d.date())
-  windDF['Wdir'] = windDF['WDIR'] + 360.0  # done so averaging over modulo 360.0 works properly
+  # We need to average the components rather than the angles when resamping.
+  windDF['WdirSin'] = np.sin(np.radians(windDF['WDIR'])) 
+  windDF['WdirCos'] = np.cos(np.radians(windDF['WDIR'])) 
 
   return windDF #.set_index(windDF['DateTime'] - windDF['DateTime'].min()) # returns a new copy
 #  return windDF.set_index('DateTime')
@@ -40,16 +42,15 @@ def makeWindGraph(windDF, whereFrom=""):
   ax.plot(tme, wspd/0.5144, 'bo-', alpha=0.8)
   ax.plot(tme, mxsp/0.5144, 'ro-', alpha=0.8)
 
+  
   # Plot direction arrows
-  # convert from compass to theta (use coordinate swap to do the rotation) 
-  angl = np.radians(windDF['Wdir'])
-  yloc = 3.0 * np.ones_like(angl)
-  # why would we add 360??? because the average between 10 and 350 is 180 
-  #       when the correct answer w.r.t. wind direction is 0.0 mod(360.0) 
+  yloc = 3.0 * np.ones(windDF.shape[0])
+  # we stored the direction components so the averages would be modulo 360 (or 2pi)
+  #    The average between 10 and 350 should be 0 (or 360) NOT 180.
   # An arrow every other step
-  ax.quiver(tme[::2], yloc[::2], np.sin(angl[::2]), np.cos(angl[::2]), 
+  (cosines, sines) = (windDF['WdirCos'], windDF['WdirSin'])
+  ax.quiver(tme[::2], yloc[::2], sines[::2], cosines[::2], 
             angles='uv', color='DodgerBlue', alpha=0.6, pivot='middle')
-
   # Set the axis labels
   # ax.set_xlabel("Date and Time", fontsize=10, fontstyle='italic', color='SlateGray')  #obvious don't need it.
   ax.set_ylabel("Wind Speed [knots]", fontsize=12, fontstyle='italic', color='SlateGray')
