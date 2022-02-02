@@ -13,7 +13,7 @@
  * UpdateTideGraph
  */
 function UpdateTideGraph() {
-    console.log( 'updating tidegraph...' )
+    console.log( `updating tidegraph...${document.getElementById('tidegraph').style.backgroundImage}` )
     document.getElementById('tidegraph').style.backgroundImage = "resources/tideGraph.png"
     setTimeout(UpdateTideGraph, 300 * 1000) // five minutes
 }
