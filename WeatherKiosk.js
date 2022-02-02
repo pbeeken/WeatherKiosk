@@ -6,8 +6,17 @@
  function RunClock() {
     const today = new Date()
     document.getElementById('clock').innerHTML =  today.toLocaleTimeString('en-US')
-    setTimeout(startTime, 1000)
+    setTimeout(RunClock, 1000)
     }
+
+/**
+ * UpdateTideGraph
+ */
+function UpdateTideGraph() {
+    console.log( 'updating tidegraph...' )
+    document.getElementById('tidegraph').style.backgroundImage = "resources/tideGraph.png"
+    setTimeout(UpdateTideGraph, 300 * 1000) // five minutes
+}
 
 /**
  * FetchCSV
@@ -53,4 +62,5 @@ function SunriseSunset(csvData) {
 function PostData() {
     /** Get and post the sunrise and sunset data */
     FetchCSV(SunriseSunset)
+    UpdateTideGraph()
     }

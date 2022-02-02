@@ -60,6 +60,9 @@ div.header > .logo {
     grid-column-end: 4;
     grid-row-start: 1;
     grid-row-end: 3;
+    background-image: url("resources/tideGraph.png");
+    background-repeat: no-repeat;
+    background-position: center;
     /* background-color: aqua; */
     height: 390px;
 }
