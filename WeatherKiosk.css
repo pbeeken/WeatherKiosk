@@ -68,11 +68,22 @@ div.header > .logo {
     height: 390px;
 }
 
+/* .box2 img {
+    /* align-self: flex-start;  to preserve image aspect ratio */
+    /* display: block;
+    margin-left: auto;
+    margin-right: auto; */
+    /* position: relative;          /* where the next element will be automatically positioned */
+    /* display: inline-block;       causes element width to shrink to fit content */
+    /* left: 50%;                   moves left side of image/element to center of parent element */
+    /* transform: translate(-50%);  centers image/element on "left: 50%" position */ */
+/* } */
+
 .box2 {
     grid-column-start: 4;
     grid-row-start: 1;
     /* vertical-align: middle; */
-    /* background-color: bisque; */
+    /* background-color: lightsalmon; */
 }
 
 .box3 {
@@ -115,9 +126,9 @@ div.header > .logo {
     margin: 0;
     position: absolute;
     top: 50%;
-    left: 93%;
+    left: 90%;
     /* -ms-transform: translate(-50%, -50%); */
-    transform: translate(-50%, -50%);
+    transform: translate(-60%, -50%);
 }
 
 #suncondition {

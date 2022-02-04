@@ -1,3 +1,6 @@
+const sec = 1000
+const min = 60 * sec
+
 /**
  * RunClock
  * This is a self re-asserting timer that displays a running clock in the 'clock'
@@ -6,16 +9,19 @@
  function RunClock() {
     const today = new Date()
     document.getElementById('clock').innerHTML =  today.toLocaleTimeString('en-US')
-    setTimeout(RunClock, 1000)
+    setTimeout(RunClock, sec)
     }
 
 /**
  * UpdateTideGraph
+ * Using javascript to update graphs is less disruptive than refreshing the whole screen
  */
-function UpdateTideGraph() {
-    console.log( `updating tidegraph...${document.getElementById('tidegraph').style.backgroundImage}` )
-    document.getElementById('tidegraph').style.backgroundImage = "resources/tideGraph.png"
-    setTimeout(UpdateTideGraph, 300 * 1000) // five minutes
+function UpdateGraphs() {
+    const now = new Date()
+    document.getElementById('tidegraph').src = "resources/tideGraph.png?" + now.getMilliseconds()
+    document.getElementById('tidegraphic').src = "resources/tideGraphic.png?" + now.getMilliseconds()
+    document.getElementById('windgraph').src = "resources/windGraph.png?" + now.getMilliseconds()
+    setTimeout(UpdateGraphs, 5 * min) // five minutes
 }
 
 /**
@@ -62,5 +68,5 @@ function SunriseSunset(csvData) {
 function PostData() {
     /** Get and post the sunrise and sunset data */
     FetchCSV(SunriseSunset)
-    UpdateTideGraph()
+    UpdateGraphs()
     }
