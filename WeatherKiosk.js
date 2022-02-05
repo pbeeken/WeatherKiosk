@@ -31,10 +31,10 @@ function UpdateGraphs() {
  * @param {function} callback is the function that accepts an array of an array of strings of the content of the csv sources  
 */
 function FetchCSV(callback) {   
-    var xobj = new XMLHttpRequest();
-    xobj.overrideMimeType("application/json");
+    var xobj = new XMLHttpRequest()
+    xobj.overrideMimeType("application/json")
     let url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTNicoE1m6n7XfxcWa-inkdc0RmE_QcWepnUa4PxKFA3UB-uzMvCsUhAjsl9cc8IPQT6Fct4wKMvm4N/pub?gid=281261321&single=true&output=csv"
-    xobj.open('GET', url, true);
+    xobj.open('GET', url, true)
     xobj.onreadystatechange = function () {
         if (xobj.readyState == 4 && xobj.status == "200") {
             //callback(JSON.parse(xobj.responseText))
@@ -46,7 +46,56 @@ function FetchCSV(callback) {
             }
         }
     xobj.send(null);  
-    }
+}
+
+/**
+ * FetchUSNavalObsData
+ * @param {Date} date
+ * @param {function} callback  function to handle the json data
+ * THIS MAY NOT WORK BECAUSE OF A CORS ISSUE. We will pull from Google Sheet
+ */
+function fetchUSNavalObsData(theDate, callback) {
+    const datestr = theDate.toLocaleDateString()
+    const latlong = "40.93,-73.76"  // Larchmont, NY
+    const tz = "-5"                 // Timezone rel to UTC
+    let url = `https://aa.usno.navy.mil/api/rstt/oneday?date=${datestr}&coords=${latlong}&tz=${tz}`
+    var xobj = new XMLHttpRequest()
+
+    xobj.open('GET', url, true)
+    xobj.onreadystatechange = function () {
+        if (xobj.readyState == 4 && xobj.status == "200") {
+            callback(JSON.parse(xobj.responseText))
+            }
+        }
+    xobj.send(null);  
+}
+
+/**
+ * handleUSNavalObsDaily
+ * typical jsonData slug:
+ * { apiversion: '3.0.0', 
+ *   geometry: { coordinates: [ -73.76, 40.93 ], type: 'Point' },
+ *   properties: { data:  ...  },
+ *   type: 'Feature',
+ * }
+ * https://aa.usno.navy.mil/data/api has reference
+ * @param {obj} jsonData 
+ */
+function handleUSNavalObsDaily(jsonFromUSNO) {
+    let useful = jasonFromUSNO.properties.data
+    /**
+     * { closestphase: { day: 1, month: 2, phase: 'New Moon', time: '00:46', year: 2022 },
+     *   curphase: 'Waxing Crescent',  day: 4, day_of_week: 'Friday',  fracillum: '15%', isdst: false, label: null, month: 2,
+     *   moondata: [ { phen: 'Rise', time: '09:17' }, { phen: 'Upper Transit', time: '15:12' }, { phen: 'Set', time: '21:19' } ],
+     *   sundata:  [ { phen: 'Begin Civil Twilight', time: '06:34' }, { phen: 'Rise', time: '07:02' }, { phen: 'Upper Transit', time: '12:09' }, 
+     *               { phen: 'Set', time: '17:16' }, { phen: 'End Civil Twilight', time: '17:45' } ],
+     *   tz: -5, 
+     *   year: 2022 }
+     */
+    
+
+}
+
 
 /**
  * SunriseSunset
