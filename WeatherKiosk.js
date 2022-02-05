@@ -108,9 +108,9 @@ function SunriseSunset(csvData) {
     let todaySunset = 60. * parseInt(csvData[2][4].slice(0,2)) + parseInt(csvData[2][4].slice(3,5)) // minutes past midnight
     //console.log(`-${time}-${todaySunset}- ${time > (20 + todaySunset)}`)
     if (time < (20 + todaySunset)) // 20 min after sunset switch to tomorrow's datum
-        document.getElementById("suncondition").innerHTML = `${csvData[1][0]}, ${csvData[1][1]} Sunrise is at ${csvData[1][3].slice(0,-3)}, Sunset at ${csvData[1][4].slice(0,-3)}`  // today
+        document.getElementById("suncondition").innerHTML = `${csvData[1][0]}, ${csvData[1][1]} Sunrise is at ${csvData[1][3]}, Sunset at ${csvData[1][4]}`  // today
     else
-        document.getElementById("suncondition").innerHTML = `${csvData[2][0]}, ${csvData[2][1]} Sunrise is at ${csvData[2][3].slice(0,-3)}, Sunset at ${csvData[2][4].slice(0,-3)}`  // tomorrow
+        document.getElementById("suncondition").innerHTML = `${csvData[2][0]}, ${csvData[2][1]} Sunrise is at ${csvData[2][3]}, Sunset at ${csvData[2][4]}`  // tomorrow
 
     }
 
