@@ -192,7 +192,6 @@ function updateSunRiseSunset() {
     if (typeof astroData.tomorrow === 'undefined') return // do nothing because astroData hasn't been fully populated
 
     let now = new Date()
-<<<<<<< HEAD
     now.setMinutes(now.getMinutes()+20) // push it up by 20 minutes
     let theSunToday = astroData.today.sundata
     let theSunTomor = astroData.tomorrow.sundata
@@ -206,16 +205,6 @@ function updateSunRiseSunset() {
         document.getElementById("suncondition").innerHTML = `Tomorrow's Sunrise will be at ${theSunTomor[1].time}, Sunset at ${theSunTomor[3].time}`
     else
         document.getElementById("suncondition").innerHTML = `Today's Sunrise is ${theSunToday[1].time}, Sunset at ${theSunToday[3].time}`  
-=======
-    let time = now.getHours()*60. + now.getMinutes()  // minutes past midnight
-    let todaySunset = 60. * parseInt(csvData[2][4].slice(0,2)) + parseInt(csvData[2][4].slice(3,5)) // minutes past midnight
-    //console.log(`-${time}-${todaySunset}- ${time > (20 + todaySunset)}`)
-    if (time < (20 + todaySunset)) // 20 min after sunset switch to tomorrow's datum
-        document.getElementById("suncondition").innerHTML = `${csvData[1][0]}, ${csvData[1][1]} Sunrise is at ${csvData[1][3]}, Sunset at ${csvData[1][4]}`  // today
-    else
-        document.getElementById("suncondition").innerHTML = `${csvData[2][0]}, ${csvData[2][1]} Sunrise is at ${csvData[2][3]}, Sunset at ${csvData[2][4]}`  // tomorrow
->>>>>>> 6f42a8f2a8c6b0703740e86d5383f5393fdf6c5d
-
 
 }
 
