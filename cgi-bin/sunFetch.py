@@ -6,7 +6,7 @@
 import json
 import cgi
 # A logging tool for debugging.
-dbgReport = None
+# dbgReport = None
 
 # import urllib library
 from urllib.request import urlopen
@@ -40,7 +40,7 @@ def fetchOneDayData(theDate, latlong="40.93,-73.76", timezone="-5"):
     id = "HHYC_019E3"
 
     url = f"https://aa.usno.navy.mil/api/rstt/oneday?id={id}&date={date}&coords={latlong}&tz={timezone}&dst={dst}"
-    dbgReport.write(f"--- {url}\r")
+    # dbgReport.write(f"--- {url}\r")
 
     # store the response of URL
     response = urlopen(url)
@@ -61,8 +61,8 @@ if __name__ == '__main__':
 
     # simulated input comment the next 4 lines when running standalone... fix the '.value' entries below.
     #    fs = { "date":   "2/5/2022", "coords": "40.93,-73.76", }
-    dbgReport = open("sunFetch.log", "w+")
-    dbgReport.write("--- START ---\r")
+    # dbgReport = open("sunFetch.log", "w+")
+    # dbgReport.write("--- START ---\r")
 
 
     theDate = datetime.now(tz=EST)
@@ -81,14 +81,14 @@ if __name__ == '__main__':
     if "tz" in fs:
         tz = fs['tz'].value
 
-    dbgReport.write(f"---{theDate}\r")
-    dbgReport.write(f"---{coord}\r")
-    dbgReport.write(f"---{tz}\r")
+    # dbgReport.write(f"---{theDate}\r")
+    # dbgReport.write(f"---{coord}\r")
+    # dbgReport.write(f"---{tz}\r")
 
     result = fetchOneDayData(theDate, latlong=coord, timezone=tz)
 
-    dbgReport.write(json.dumps(result))
-    dbgReport.close()
+    # dbgReport.write(json.dumps(result))
+    # dbgReport.close()
 
     print("Content-Type: application/json\n")
     print(json.dumps(result))
