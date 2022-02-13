@@ -37,6 +37,9 @@ While I had some familiarity with html from back in the days where all pages wer
 
 Because this is a kiosk I don't want to have to manage potential issues with handling and massaging data sets so I launch the above routines using a crontab as independent services. This way I don't have to deal with any potential leaks or other long term oddities that might crop up. Just restart the process.  The only available 'fix' if something should go wrong (power glitch or whatever) is to unplug the box and re-plug it in.
 
+## Newer Addition
+I have added a routine to fetch timing data from the US Naval Observatory.  Because of a CORS hiccup I have made pything cgi routines to perform the data fetch. What I will do is what I have done for the tide data and cache the result every day reduce any demands on the USNO server. I only need fetch this informaion once per day.  PS ProTip: when setting up your cgi-bin don't forget to set the executable bit.  DUUHHH.
+
 ## TODO:
  - I would like to have the screen shut down in the evening and start up at around dawn. I might even want it to turn off and turn on based on an external clock?  This may require some electronic tinkering.
  - Explore some hidden ways to put error messages into the screen, display some icons in discrete locations that indicate the health of the system.  **Done** to some extent. There are subtle messages and formatting changes that get made when something is amiss. As mentioned above, the fix is to simply unplug and replug it in.  So far the multiday burn-in tests have shown no unexpected behavior.

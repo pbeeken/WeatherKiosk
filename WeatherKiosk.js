@@ -6,7 +6,7 @@ const min = 60 * sec
  * This is a self re-asserting timer that displays a running clock in the 'clock'
  * box as the web page is active.
  */
- function RunClock() {
+function RunClock() {
     const today = new Date()
     document.getElementById('clock').innerHTML =  today.toLocaleTimeString('en-US')
     setTimeout(RunClock, sec)
@@ -35,7 +35,7 @@ function UpdateGraphs() {
  *   tz: -5, 
  *   year: 2022 }
  */
- let astroData = {
+let astroData = {
     yesterday: undefined,
     today: undefined,
     tomorrow: undefined,
@@ -47,7 +47,7 @@ function UpdateGraphs() {
  * @param {Date} date
  * @param {function} callback  function to handle the json data
  */
- function fetchUSNavalDailyData(theDate, when) {
+function fetchUSNavalDailyData(theDate, when) {
     const datestr = theDate.toLocaleDateString()
     let url = `http://localhost:8000/cgi-bin/sunFetch.py?date=${datestr}`
 
@@ -75,7 +75,7 @@ function UpdateGraphs() {
  * NASA's Lookup Table 
  * root: https://moon.nasa.gov/internal_resources/### where ### is based on lookup
  **/
- imageTableNASA = {
+imageTableNASA = {
     rootURL: "https://moon.nasa.gov/internal_resources/",
     // basic table
     newmoon: 366,
@@ -152,7 +152,7 @@ imageTableMoon = {
  * for displaying the moon based on the fracillum.
  * IMPORTANT: This presumes the global `astroData` has been populated
  */
- function updateLunarData() {
+function updateLunarData() {
     let currentdata = astroData.today
     let closestdata = astroData.today.closestphase  // BTW this could be in the past!
     let imageTable = imageTableMoon
@@ -206,6 +206,7 @@ function updateSunRiseSunset() {
     else
         document.getElementById("suncondition").innerHTML = `Today's Sunrise is ${theSunToday[1].time}, Sunset at ${theSunToday[3].time}`  
 
+    setTimeout(updateSunRiseSunset, 10 * min) // first run in 10 minutes
 }
 
 /**
@@ -228,5 +229,5 @@ function PostData() {
     /** Get and post the sunrise and sunset data */
     loadAstroData()
     UpdateGraphs()
-    setTimeout(updateSunRiseSunset, 5 * min) // five minutes
+    setTimeout(updateSunRiseSunset, 30 * sec) // first run in 1 minutes
 }

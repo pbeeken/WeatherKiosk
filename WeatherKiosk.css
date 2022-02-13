@@ -142,3 +142,12 @@ div.header > .logo {
     left: 18%;
     transform: translate(-50%, -50%);
 }
+
+#moon {
+    position: fixed;
+    height: 60px;
+    width: 60px;
+    opacity: 70%;
+    top: 700px;
+    left: 700px;
+}
