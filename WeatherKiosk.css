@@ -143,11 +143,16 @@ div.header > .logo {
     transform: translate(-50%, -50%);
 }
 
-#moon {
+div#mooncontainer {
     position: fixed;
+    z-index: -20;
+    top: 344px;
+    left: 432px;
+}
+
+
+img#moon {
+    position: static;
     height: 60px;
-    width: 60px;
-    opacity: 70%;
-    top: 700px;
-    left: 700px;
+    opacity: 75%;
 }
