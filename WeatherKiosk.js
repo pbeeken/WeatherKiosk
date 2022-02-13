@@ -153,16 +153,21 @@ imageTableMoon = {
  * IMPORTANT: This presumes the global `astroData` has been populated
  */
 function updateLunarData() {
+
+    if (typeof astroData.today === 'undefined') {
+        settimeout(updateLunarData, 1*sec)
+        return // do nothing because astroData hasn't been fully populated
+	}
     let currentdata = astroData.today
     let closestdata = astroData.today.closestphase  // BTW this could be in the past!
     let imageTable = imageTableMoon
 
     let rootURL = imageTable.rootURL
 
-    // console.log(`${currentdata.requestedDate}`)
+    console.log(`Lunar update ${currentdata.curphase}`)
 
     // console.log(currentdata.fracillum.slice(0,-1)) // cut off %
-    // the basic shape is from the 
+    // the basic shape is from the library
     let namedPhase = currentdata.curphase.toLocaleLowerCase().replace(' ','')
 
     let fracillum = 1.0 * currentdata.fracillum.slice(0,-1)
@@ -188,13 +193,19 @@ function updateLunarData() {
  */
 function updateSunRiseSunset() {
 
-    if (typeof astroData.today === 'undefined') return // do nothing because astroData hasn't been fully populated
+    if (typeof astroData.today === 'undefined') {
+        settimeout(updateSunRiseSunset, 1*sec)
+        return // do nothing because astroData hasn't been fully populated
+	}
+    //if (typeof astroData.today === 'undefined') return // do nothing because astroData hasn't been fully populated
     if (typeof astroData.tomorrow === 'undefined') return // do nothing because astroData hasn't been fully populated
 
     let now = new Date()
     now.setMinutes(now.getMinutes()+20) // push it up by 20 minutes
     let theSunToday = astroData.today.sundata
     let theSunTomor = astroData.tomorrow.sundata
+
+    console.log(`Solar update ${astroData.today}`)
 
     // TODO: When the DST parameter is used USNO server tacks on ' DT' or ' ST' to the time. Do I keep it?
     //       I am stripping it. This tool is only used during DST so having the designator clutters the display
@@ -229,5 +240,6 @@ function PostData() {
     /** Get and post the sunrise and sunset data */
     loadAstroData()
     UpdateGraphs()
-    setTimeout(updateSunRiseSunset, 30 * sec) // first run in 1 minutes
+    setTimeout(updateSunRiseSunset, 5*sec) // first run in 2 seconds
+    setTimeout(updateLunarData, 5*sec) // first run in 3 seconds
 }
