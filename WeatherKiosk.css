@@ -142,16 +142,21 @@ div.header > .logo {
     transform: translate(-50%, -50%);
 }
 
-div#mooncontainer {
+.circlemask {
+    -webkit-mask-image: radial-gradient(circle at center, black 60%, rgb(0 0 0 / 0%) 77%);
+    mask-image: radial-gradient(circle at center, black 60%, rgb(0 0 0 / 0%) 77%);
+}
+
+#mooncontainer {
     position: fixed;
     z-index: -20;
-    top: 344px;
-    left: 432px;
+    top: 160px;
+    left: 390px;
 }
 
 
-img#moon {
+#moon {
     position: static;
-    height: 60px;
-    opacity: 75%;
+    height: 80px;
+    opacity: 90%;
 }

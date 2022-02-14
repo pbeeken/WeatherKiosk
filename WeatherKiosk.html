@@ -11,8 +11,10 @@
     
     <script src="WeatherKiosk.js" type="application/javascript"></script>
 
-    <body onload="{RunClock(); PostData();}">
-        <div id="mooncontainer"><img id="moon" src=""/></div>
+    <body onload="{RunClock(); PostDataWeather();}">
+        <div class="circlemask" id="mooncontainer">
+            <img id="moon" src=""/>
+        </div>
         <div class="shell">
             <div class="header">
                 <img class="logo" src="resources/HHYC_Flag.png"alt="HHYC Logo">
