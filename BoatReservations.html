@@ -9,7 +9,9 @@
         <meta http-equiv="content-type" content="text/html; charset=iso-8859-1"/>
     </head>
 
-    <body onload="startTime()">
+    <script src="WeatherKiosk.js" type="application/javascript"></script>
+
+    <body onload="{RunClock(); PostData();}">
         <div class="shell">
             <div class="header">
                 <img class="logo" src="resources/HHYC_Flag.png"alt="HHYC Logo">
@@ -21,18 +23,10 @@
              </div>
             <div class="footer">
                 <p id="clock">Waiting...</p>
+                <p id="suncondition"><!--Sunrise and sunset--></p>
             </div>
         </div>
     </body>
-    <script>
-        function startTime() {
-        const today = new Date();
-        document.getElementById('clock').innerHTML =  today.toLocaleTimeString('en-US');
-        setTimeout(startTime, 1000);
-        }
-    </script>
 </html>
 
-
 <!--<iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQO20U0tdRwjY8CrkbiBzMw87ylcoFSRqEYml8Fg9BKL9phB06-Kxi1PzLOcvwLQgtaO9PXZQ5rgWZC/pubhtml?gid=0&amp;single=true&amp;widget=true&amp;headers=false"></iframe>-->
-
