@@ -111,7 +111,6 @@ div.header > .logo {
     position: absolute; /* Means all measurements are absolute screen */
     bottom: 15px;
     left: 20px;
-    /* width: 1360px; */
     right: 20px;
     height: 30px;
     background-color: Silver;
