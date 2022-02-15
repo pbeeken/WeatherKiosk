@@ -53,7 +53,7 @@ function fetchUSNavalDailyData(theDate, when) {
 
     var xhr = new XMLHttpRequest()
     xhr.overrideMimeType("application/json")
-       
+
     xhr.onerror = function() {
          console.log('There was an error!')
        };
@@ -68,11 +68,11 @@ function fetchUSNavalDailyData(theDate, when) {
         }
 
     xhr.open('GET', url, true)
-    xhr.send();  
+    xhr.send();
 }
 
 /**
- * NASA's Lookup Table 
+ * NASA's Lookup Table
  * root: https://moon.nasa.gov/internal_resources/### where ### is based on lookup
  **/
 imageTableNASA = {
@@ -178,7 +178,7 @@ function updateLunarData() {
     // console.log(rootURL + imageTable[namedPhase + '_' + fracillum])
         document.getElementById("moon").src =  rootURL + imageTable[namedPhase + '_' + fracillum]
     // console.log(namedPhase)
-    } 
+    }
     else {
     // console.log(rootURL + imageTable[namedPhase])
         document.getElementById("moon").src =  rootURL + imageTable[namedPhase]
@@ -187,37 +187,40 @@ function updateLunarData() {
 }
 
 /**
- * update the sunrise sunset slug in the footer. It displays the current day's data 
+ * update the sunrise sunset slug in the footer. It displays the current day's data
  * until after sunset when is switches to the next day.
  * IMPORTANT: This presumes the global `astroData` has been populated
  */
 function updateSunRiseSunset() {
 
-    if (typeof astroData.today === 'undefined') {
-        settimeout(updateSunRiseSunset, 1*sec)
+    // We need these items to be populated so we exit quietly in case they are not.
+    if (typeof astroData.today === 'undefined' || typeof astroData.tomorrow === 'undefined') {
+        settimeout(updateSunRiseSunset, 1*sec) // rerun in a second or so
         return // do nothing because astroData hasn't been fully populated
 	}
-    //if (typeof astroData.today === 'undefined') return // do nothing because astroData hasn't been fully populated
-    if (typeof astroData.tomorrow === 'undefined') return // do nothing because astroData hasn't been fully populated
 
     let now = new Date()
     now.setMinutes(now.getMinutes()+20) // push it up by 20 minutes
     let theSunToday = astroData.today.sundata
     let theSunTomor = astroData.tomorrow.sundata
 
+    document.getElementById("suncondition").innerHTML = `${theSunToday.time} ${theSunTomor.time}`
+
     // TODO: When the DST parameter is used USNO server tacks on ' DT' or ' ST' to the time. Do I keep it?  Not always there.
     //       I am stripping it. This tool is only used during DST so having the designator clutters the display
-    let setTime = theSunToday[3].time.slice(0,5).split(':') // sometimes it is there and sometimes not, this takes care of both
+//    let setTime = theSunToday[3].time.slice(0,5).split(':') // sometimes it is there and sometimes not, this takes care of both
+    let setTime = theSunToday[3].time.replace(/  [DS]T/,'').split(':') // sometimes it is there and sometimes not, this takes care of both
+
     let todaySunset = new Date(now.getFullYear(), now.getMonth(), now.getDate(), setTime[0], setTime[1])
     // console.log(`${setTime}`)
     // console.log(`${todaySunset} ${now} rel ${now>todaySunset}`)
 
     if (now > todaySunset) // 20 min after sunset (see above) switch to tomorrow's datum
-        document.getElementById("suncondition").innerHTML = `Tomorrow's Sunrise will be at ${theSunTomor[1].time.slice(0,5)}, Sunset at ${theSunTomor[3].time.slice(0,5)}`
+        document.getElementById("suncondition").innerHTML = `Tomorrow's Sunrise will be at ${theSunTomor[1].time.replace(/  [DS]T/,'')}, Sunset at ${theSunTomor[3].time.replace(/  [DS]T/,'')}`
     else
-        document.getElementById("suncondition").innerHTML = `Today's Sunrise is ${theSunToday[1].time.slice(0,5)}, Sunset at ${theSunToday[3].time.slic(0,5)}`  
+        document.getElementById("suncondition").innerHTML = `Today's Sunrise is ${theSunToday[1].time.replace(/  [DS]T/,'')}, Sunset at ${theSunToday[3].time.replace(/  [DS]T/,'')}`  
 
-    setTimeout(updateSunRiseSunset, 10 * min) // first run in 10 minutes
+    setTimeout(updateSunRiseSunset, 10 * min) // rerun in 10 minutes
 }
 
 /**
@@ -240,14 +243,14 @@ function PostDataWeather() {
     /** Get and post the sunrise and sunset data */
     loadAstroData()
     UpdateGraphs()
-    setTimeout(updateSunRiseSunset, 5*sec) // first run in 2 seconds
-    setTimeout(updateLunarData, 5*sec) // first run in 3 seconds
+    setTimeout(updateSunRiseSunset, 5*sec) // first run
+    setTimeout(updateLunarData, 5*sec) // first run
 }
 
 function PostDataSchedule() {
     /** Get and post the sunrise and sunset data */
     loadAstroData()
 
-    setTimeout(updateSunRiseSunset, 5*sec) // first run in 2 seconds
-//    setTimeout(updateLunarData, 5*sec) // first run in 3 seconds
+    setTimeout(updateSunRiseSunset, 5*sec) // first run
+//    setTimeout(updateLunarData, 5*sec) // first run
 }
