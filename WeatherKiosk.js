@@ -207,19 +207,15 @@ function updateSunRiseSunset() {
 
     // TODO: When the DST parameter is used USNO server tacks on ' DT' or ' ST' to the time. Do I keep it?  Not always there.
     //       I am stripping it. This tool is only used during DST so having the designator clutters the display
-<<<<<<< HEAD
     let setTime = theSunToday[3].time.slice(0,5).split(':') // sometimes it is there and sometimes not, this takes care of both
-=======
-    let setTime = theSunToday[3].time.split(':')
->>>>>>> a29d556ea8376b4f8e273a9bd85d6cde51009656
     let todaySunset = new Date(now.getFullYear(), now.getMonth(), now.getDate(), setTime[0], setTime[1])
     // console.log(`${setTime}`)
     // console.log(`${todaySunset} ${now} rel ${now>todaySunset}`)
 
     if (now > todaySunset) // 20 min after sunset (see above) switch to tomorrow's datum
-        document.getElementById("suncondition").innerHTML = `Tomorrow's Sunrise will be at ${theSunTomor[1].time}, Sunset at ${theSunTomor[3].time}`
+        document.getElementById("suncondition").innerHTML = `Tomorrow's Sunrise will be at ${theSunTomor[1].time.slice(0,5)}, Sunset at ${theSunTomor[3].time.slice(0,5)}`
     else
-        document.getElementById("suncondition").innerHTML = `Today's Sunrise is ${theSunToday[1].time}, Sunset at ${theSunToday[3].time}`  
+        document.getElementById("suncondition").innerHTML = `Today's Sunrise is ${theSunToday[1].time.slice(0,5)}, Sunset at ${theSunToday[3].time.slic(0,5)}`  
 
     setTimeout(updateSunRiseSunset, 10 * min) // first run in 10 minutes
 }
