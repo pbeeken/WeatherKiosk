@@ -205,12 +205,16 @@ function updateSunRiseSunset() {
     let theSunToday = astroData.today.sundata
     let theSunTomor = astroData.tomorrow.sundata
 
-    console.log(`Solar update ${astroData.today}`)
-
-    // TODO: When the DST parameter is used USNO server tacks on ' DT' or ' ST' to the time. Do I keep it?
+    // TODO: When the DST parameter is used USNO server tacks on ' DT' or ' ST' to the time. Do I keep it?  Not always there.
     //       I am stripping it. This tool is only used during DST so having the designator clutters the display
+<<<<<<< HEAD
     let setTime = theSunToday[3].time.slice(0,5).split(':') // sometimes it is there and sometimes not, this takes care of both
+=======
+    let setTime = theSunToday[3].time.split(':')
+>>>>>>> a29d556ea8376b4f8e273a9bd85d6cde51009656
     let todaySunset = new Date(now.getFullYear(), now.getMonth(), now.getDate(), setTime[0], setTime[1])
+    // console.log(`${setTime}`)
+    // console.log(`${todaySunset} ${now} rel ${now>todaySunset}`)
 
     if (now > todaySunset) // 20 min after sunset (see above) switch to tomorrow's datum
         document.getElementById("suncondition").innerHTML = `Tomorrow's Sunrise will be at ${theSunTomor[1].time}, Sunset at ${theSunTomor[3].time}`
@@ -236,10 +240,18 @@ function loadAstroData(testDate) {
     fetchUSNavalDailyData(day, 'tomorrow' )
 }
 
-function PostData() {
+function PostDataWeather() {
     /** Get and post the sunrise and sunset data */
     loadAstroData()
     UpdateGraphs()
     setTimeout(updateSunRiseSunset, 5*sec) // first run in 2 seconds
     setTimeout(updateLunarData, 5*sec) // first run in 3 seconds
+}
+
+function PostDataSchedule() {
+    /** Get and post the sunrise and sunset data */
+    loadAstroData()
+
+    setTimeout(updateSunRiseSunset, 5*sec) // first run in 2 seconds
+//    setTimeout(updateLunarData, 5*sec) // first run in 3 seconds
 }

@@ -11,7 +11,7 @@
 
     <script src="WeatherKiosk.js" type="application/javascript"></script>
 
-    <body onload="{RunClock(); PostData();}">
+    <body onload="{RunClock(); PostDataSchedule();}">
         <div class="shell">
             <div class="header">
                 <img class="logo" src="resources/HHYC_Flag.png"alt="HHYC Logo">
@@ -26,8 +26,8 @@
                 </div>
              </div>
             <div class="footer">
+                <p id="suncondition">Sunrise and sunset</p>
                 <p id="clock">Waiting...</p>
-                <p id="suncondition"><!--Sunrise and sunset--></p>
             </div>
         </div>
     </body>
