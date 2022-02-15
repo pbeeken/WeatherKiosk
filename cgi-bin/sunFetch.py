@@ -69,7 +69,6 @@ if __name__ == '__main__':
 
     coord = "40.93,-73.76"  # default location
     tz = "-5" # default timezone
-    theDate = datetime.now()
 
     if "date" in fs:
         passedDate = fs['date'].value

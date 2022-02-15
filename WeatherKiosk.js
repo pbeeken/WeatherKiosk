@@ -209,7 +209,7 @@ function updateSunRiseSunset() {
 
     // TODO: When the DST parameter is used USNO server tacks on ' DT' or ' ST' to the time. Do I keep it?
     //       I am stripping it. This tool is only used during DST so having the designator clutters the display
-    let setTime = theSunToday[3].time.slice(0,-3).split(':')
+    let setTime = theSunToday[3].time.slice(0,5).split(':') // sometimes it is there and sometimes not, this takes care of both
     let todaySunset = new Date(now.getFullYear(), now.getMonth(), now.getDate(), setTime[0], setTime[1])
 
     if (now > todaySunset) // 20 min after sunset (see above) switch to tomorrow's datum
