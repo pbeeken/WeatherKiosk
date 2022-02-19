@@ -26,16 +26,29 @@ function RunClock() {
 }
 
 /**
- * UpdateTideGraph
+ * UpdateForecast
+ * Use javascript to update forecast table
+ */
+function updateForecast() {
+    document.getElementById('forecast').src = document.getElementById('forecast').src
+
+    setTimeout(updateForecast, 15 * min) // reasonable update for updates
+}
+
+
+/**
+ * UpdateGraphs
  * Using javascript to update graphs is less disruptive than refreshing the whole screen
  */
-function UpdateGraphs() {
+function updateGraphs() {
     const now = new Date()
     // Note the trick to get the browser to refresh the images
     document.getElementById('tidegraph').src = "resources/tideGraph.png?" + now.getMilliseconds()
     document.getElementById('tidegraphic').src = "resources/tideGraphic.png?" + now.getMilliseconds()
     document.getElementById('windgraph').src = "resources/windGraph.png?" + now.getMilliseconds()
-    setTimeout(UpdateGraphs, 5 * min) // five minutes
+    document.getElementById('tidetable').src = document.getElementById('tidetable').src
+
+    setTimeout(updateGraphs, 5 * min) // five minutes
 }
 
 /**
@@ -56,7 +69,7 @@ let astroData = {
 
 
 /**
- * FetchUSNavalObsData
+ * fetchUSNavalObsData
  * @param {Date} date
  * @param {function} callback  function to handle the json data
  */
@@ -168,7 +181,7 @@ imageTableMoon = {
 function updateLunarData() {
 
     if (typeof astroData === 'undefined' || typeof astroData.today === 'undefined') {
-        settimeout(updateLunarData, 2*sec)
+        setTimeout(updateLunarData, 1*sec)
         return // do nothing because astroData hasn't been fully populated
 	}
     let currentdata = astroData.today
@@ -207,8 +220,8 @@ function updateLunarData() {
 function updateSunRiseSunset() {
 
     // We need these items to be populated so we exit quietly in case they are not.
-    if (typeof astro === 'undefined' || typeof astroData.today === 'undefined' || typeof astroData.tomorrow === 'undefined') {
-        settimeout(updateSunRiseSunset, 2*sec) // rerun in a second or so
+    if (typeof astroData === 'undefined' || typeof astroData.today === 'undefined' || typeof astroData.tomorrow === 'undefined') {
+        setTimeout(updateSunRiseSunset, 1*sec) // rerun in a second or so
         return // do nothing because astroData hasn't been fully populated
 	}
 
@@ -255,7 +268,7 @@ function loadAstroData(testDate) {
 function PostDataWeather() {
     /** Get and post the sunrise and sunset data */
     loadAstroData()
-    UpdateGraphs()
+    updateGraphs()
     setTimeout(updateSunRiseSunset, 5*sec) // first run
     setTimeout(updateLunarData, 5*sec) // first run
 }
