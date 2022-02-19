@@ -2,12 +2,15 @@ const sec = 1000
 const min = 60 * sec
 
 function refreshFrames() {
+    console.log(`refreshFrames diabled.`)
     return // may not be needed
     try {
       let id = "ideal18"
       document.getElementById(id).src = document.getElementById(id).src
+      console.log(`${id} updated`)
       id = "dayboat"
       document.getElementById(id).src = document.getElementById(id).src
+      console.log(`${id} updated`)
     } catch (error) {
       console.log(`Update frame failed \n ${error}`)
     }
@@ -210,6 +213,9 @@ function updateLunarData() {
         document.getElementById("moon").src =  rootURL + imageTable[namedPhase]
     // console.log(namedPhase)
     }
+
+    setTimeout(updateLunarData, 10*min)
+
 }
 
 /**
@@ -269,8 +275,8 @@ function PostDataWeather() {
     /** Get and post the sunrise and sunset data */
     loadAstroData()
     updateGraphs()
-    setTimeout(updateSunRiseSunset, 5*sec) // first run
-    setTimeout(updateLunarData, 5*sec) // first run
+    setTimeout(updateSunRiseSunset, 10*sec) // first run
+    setTimeout(updateLunarData, 10*sec) // first run
 }
 
 function PostDataSchedule() {
