@@ -1,6 +1,19 @@
 const sec = 1000
 const min = 60 * sec
 
+function refreshFrames() {
+    return // may not be needed
+    try {
+      let id = "ideal18"
+      document.getElementById(id).src = document.getElementById(id).src
+      id = "dayboat"
+      document.getElementById(id).src = document.getElementById(id).src
+    } catch (error) {
+      console.log(`Update frame failed \n ${error}`)
+    }
+    setTimeout(refreshFrames, 30 * sec)
+}
+
 /**
  * RunClock
  * This is a self re-asserting timer that displays a running clock in the 'clock'
@@ -9,7 +22,7 @@ const min = 60 * sec
 function RunClock() {
     const today = new Date()
     document.getElementById('clock').innerHTML =  today.toLocaleTimeString('en-US')
-    setTimeout(RunClock, sec)
+    setTimeout(RunClock, 1 * sec)
 }
 
 /**
@@ -154,8 +167,8 @@ imageTableMoon = {
  */
 function updateLunarData() {
 
-    if (typeof astroData.today === 'undefined') {
-        settimeout(updateLunarData, 1*sec)
+    if (typeof astroData === 'undefined' || typeof astroData.today === 'undefined') {
+        settimeout(updateLunarData, 2*sec)
         return // do nothing because astroData hasn't been fully populated
 	}
     let currentdata = astroData.today
@@ -194,8 +207,8 @@ function updateLunarData() {
 function updateSunRiseSunset() {
 
     // We need these items to be populated so we exit quietly in case they are not.
-    if (typeof astroData.today === 'undefined' || typeof astroData.tomorrow === 'undefined') {
-        settimeout(updateSunRiseSunset, 1*sec) // rerun in a second or so
+    if (typeof astro === 'undefined' || typeof astroData.today === 'undefined' || typeof astroData.tomorrow === 'undefined') {
+        settimeout(updateSunRiseSunset, 2*sec) // rerun in a second or so
         return // do nothing because astroData hasn't been fully populated
 	}
 

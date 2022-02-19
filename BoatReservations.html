@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="refresh" content="1800" />
+        <meta http-equiv="refresh" content="300" />
         <link rel="preconnect" href="https://fonts.googleapis.com"/>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
         <link href="https://fonts.googleapis.com/css2?family=Trade+Winds&display=swap" rel="stylesheet"/>    
@@ -11,7 +11,7 @@
 
     <script src="WeatherKiosk.js" type="application/javascript"></script>
 
-    <body onload="{RunClock(); PostDataSchedule();}">
+    <body onload="{RunClock(); PostDataSchedule(); setTimeout(refreshFrames, 60);}">
         <div class="shell">
             <div class="header">
                 <img class="logo" src="resources/HHYC_Flag.png"alt="HHYC Logo">
@@ -19,10 +19,10 @@
             </div>
             <div class="wrapper">
                 <div class="box1">
-                    <iframe class="import" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTr0fSnaqbWMg523sKPqu_PIU03OBtS0blKDbqyG9RO-94ljGeGFgnkdWvz8f_iU9PY24TPHCTu4MrY/pubhtml?gid=0&amp;single=true&amp;widget=true&amp;headers=false"></iframe>
+                    <iframe id="dayboat" class="import" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQfkbGPQgtOsolvk6_VMVDx77C31iISIxv74YjIMiCUbOXJa2gbTu1WHXd4B2p2XnrDVZ5VTD1zC9uq/pubhtml?gid=696214441&single=true"></iframe>
                 </div>
                 <div class="box2">
-                    <iframe class="import" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQO20U0tdRwjY8CrkbiBzMw87ylcoFSRqEYml8Fg9BKL9phB06-Kxi1PzLOcvwLQgtaO9PXZQ5rgWZC/pubhtml?gid=0&amp;single=true&amp;widget=true&amp;headers=false"></iframe>
+                    <iframe id="ideal18" class="import" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRdr-1WqdwRBrSuXwyaLDJg8hURpnU9WDQSA1JWgk-vnsKexrb0INK6dZyl1ToHvQFMwZdxsTvnX8HS/pubhtml?gid=696214441&single=true"></iframe>
                 </div>
              </div>
             <div class="footer">
