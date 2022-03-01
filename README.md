@@ -49,3 +49,5 @@ I have added a routine to fetch timing data from the US Naval Observatory.  Beca
  - `README.md` : This overview
  - `RaspberryPiKiosk.md` : Work toward the kiosk setup
  - `WeatherTests.ipynb` : Jupyter Notebook with the experimentation on the data harvesting and presentation.
+
+ Because there is an interaction between the cgi-bin, timed updates using cron and shell scripts there are a few moving parts that have to inderoperate. The bin/ folder contains the materials that need to run asynchronously with the web page kiosk to update the background information.  In addition there are crontab scripts that have to run as well. 

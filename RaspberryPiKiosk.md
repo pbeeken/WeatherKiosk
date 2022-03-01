@@ -129,22 +129,19 @@ network={
 ```
 
 personal cron tab. use `cron -e` from the command line to edit
-```
-# For example, you can run a backup of all your user accounts
-# at 5 a.m every week with:
-# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
-#
+``
+# m h  dom mon dow   command
 # Time syntax (for any field: minute, hour, etc.):
 #    5        on the indicated value
 #    5,10,15  on the specifically indicated values
 #    */10     every 10 units
 #    *        ignore
 # For more information see the manual pages of crontab(5) and cron(8)
-# 
+#
 # m h  dom mon dow command
-*/5  * * * * /bin/bash /home/pi/TideClock/updateTides.sh
-2,12,27,32,47 * * * * /bin/bash /home/pi/TideClock/updateWinds.sh
-* */1 * * * * /bin/bash /home/pi/TideClock/upateForecast.sh
+*/5  * * * *          /bin/bash /home/pi/WeatherKiosk/updateTides.sh
+2,12,27,32,47 * * * * /bin/bash /home/pi/WeatherKiosk/updateWinds.sh
+*/14 * * * *          /bin/bash /home/pi/WeatherKiosk/bin/testRotate.sh
 ```
 
 Turn on cron logging `sudo nano /etc/rsyslog.conf` and uncommenting the generation of the log file (really useful for debugging)
