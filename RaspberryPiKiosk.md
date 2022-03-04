@@ -142,6 +142,7 @@ personal cron tab. use `cron -e` from the command line to edit
 */5  * * * *          /bin/bash /home/pi/WeatherKiosk/updateTides.sh
 2,12,27,32,47 * * * * /bin/bash /home/pi/WeatherKiosk/updateWinds.sh
 */14 * * * *          /bin/bash /home/pi/WeatherKiosk/bin/testRotate.sh
+45 21 * * *           /bin/bash /home/pi/WeatherKiosk/bin/shutDown.sh
 ```
 
 Turn on cron logging `sudo nano /etc/rsyslog.conf` and uncommenting the generation of the log file (really useful for debugging)
