@@ -69,8 +69,16 @@ sudo apt-get install libopenjp2-7
 **.bashrc**  at the end of the file...
 ```
 # launch xstart
+PATH=/home/pi/.local/bin:$PATH
+# launch xstart
 if [ -z $DISPLAY ] && [ $(tty) = /dev/tty1 ]
 then
+   # This prevents the 'crash report' in case there was a power outage.
+   sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' /home/pi/.config/chromium/Default/Preferences
+   sed -i 's/"exit_type":"Crashed"/"exit_type":"Normal"/' /home/pi/.config/chromium/Default/Preferences
+   ./rotatetabs.sh &  # This usually fails but we trigger it within a crontab as well.
+   cd WeatherKiosk/
+   python -m http.server --cgi -d WeatherKiosk/ &
    startx
 fi
 ```
