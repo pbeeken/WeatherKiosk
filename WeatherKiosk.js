@@ -231,26 +231,31 @@ function updateSunRiseSunset() {
         return // do nothing because astroData hasn't been fully populated
 	}
 
-    let now = new Date()
-    now.setMinutes(now.getMinutes()+20) // push it up by 20 minutes
-    let theSunToday = astroData.today.sundata
-    let theSunTomor = astroData.tomorrow.sundata
+    try {
+      let now = new Date()
+      now.setMinutes(now.getMinutes()+20) // push it up by 20 minutes
+      let theSunToday = astroData.today.sundata
+      let theSunTomor = astroData.tomorrow.sundata
 
-    document.getElementById("suncondition").innerHTML = `${theSunToday.time} ${theSunTomor.time}`
+      document.getElementById("suncondition").innerHTML = `${theSunToday.time} ${theSunTomor.time}`
 
-    // TODO: When the DST parameter is used USNO server tacks on ' DT' or ' ST' to the time. Do I keep it?  Not always there.
-    //       I am stripping it. This tool is only used during DST so having the designator clutters the display
-//    let setTime = theSunToday[3].time.slice(0,5).split(':') // sometimes it is there and sometimes not, this takes care of both
-    let setTime = theSunToday[3].time.replace(/  [DS]T/,'').split(':') // sometimes it is there and sometimes not, this takes care of both
+      // TODO: When the DST parameter is used USNO server tacks on ' DT' or ' ST' to the time. Do I keep it?  Not always there.
+      //       I am stripping it. This tool is only used during DST so having the designator clutters the display
+      let setTime = theSunToday[3].time.replace(/  [DS]T/,'').split(':') // sometimes it is there and sometimes not, this takes care of both
 
-    let todaySunset = new Date(now.getFullYear(), now.getMonth(), now.getDate(), setTime[0], setTime[1])
-    // console.log(`${setTime}`)
-    // console.log(`${todaySunset} ${now} rel ${now>todaySunset}`)
+      let todaySunset = new Date(now.getFullYear(), now.getMonth(), now.getDate(), setTime[0], setTime[1])
+      // console.log(`${setTime}`)
+      // console.log(`${todaySunset} ${now} rel ${now>todaySunset}`)
 
-    if (now > todaySunset) // 20 min after sunset (see above) switch to tomorrow's datum
-        document.getElementById("suncondition").innerHTML = `Tomorrow's Sunrise will be at ${theSunTomor[1].time.replace(/  [DS]T/,'')}, Sunset at ${theSunTomor[3].time.replace(/  [DS]T/,'')}`
-    else
-        document.getElementById("suncondition").innerHTML = `Today's Sunrise is ${theSunToday[1].time.replace(/  [DS]T/,'')}, Sunset at ${theSunToday[3].time.replace(/  [DS]T/,'')}`  
+      if (now > todaySunset) // 20 min after sunset (see above) switch to tomorrow's datum
+          document.getElementById("suncondition").innerHTML = `Tomorrow's Sunrise will be at ${theSunTomor[1].time.replace(/  [DS]T/,'')}, Sunset at ${theSunTomor[3].time.replace(/  [DS]T/,'')}`
+      else
+          document.getElementById("suncondition").innerHTML = `Today's Sunrise is ${theSunToday[1].time.replace(/  [DS]T/,'')}, Sunset at ${theSunToday[3].time.replace(/  [DS]T/,'')}`  
+    } catch (err) {
+        // whatever has gone wrong just try again in a couple of seconds
+        setTimeout(updateSunRiseSunset, 1*sec) // rerun in a second or so
+        return
+    }
 
     setTimeout(updateSunRiseSunset, 10 * min) // rerun in 10 minutes
 }
