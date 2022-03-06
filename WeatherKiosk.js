@@ -80,7 +80,7 @@ function fetchUSNavalDailyData(theDate, when) {
     const datestr = theDate.toLocaleDateString()
     let url = `http://localhost:8000/cgi-bin/sunFetch.py?date=${datestr}`
 
-    var xhr = new XMLHttpRequest()
+    let xhr = new XMLHttpRequest()
     xhr.overrideMimeType("application/json")
 
     xhr.onerror = function() {
@@ -290,4 +290,29 @@ function PostDataSchedule() {
 
     setTimeout(updateSunRiseSunset, 5*sec) // first run
 //    setTimeout(updateLunarData, 5*sec) // first run
+}
+
+/**
+ *
+ **/
+function networkUpDown() {
+    let url = `http://localhost:8000/cgi-bin/networkStatus.sh`
+
+    let xhr = new XMLHttpRequest()
+    // xhr.overrideMimeType("application/json")
+
+    xhr.onerror = function() {
+         console.log('There was an error!')
+       };
+
+    xhr.onreadystatechange = function () {
+        let netStatus = {error: xhr.status, response: xhr.responseText, state: xhr.readyState}
+        if (xhr.readyState == 4 && xhr.status == "200") {  // if the final state is good store data.
+            datum =  xhr.responseText.split(' ')[0]
+            console.log( xhr.responseText.split(' ') )
+            }
+        }
+
+    xhr.open('GET', url, true)
+    xhr.send();
 }
