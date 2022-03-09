@@ -9,6 +9,3 @@ echo "$addr"
 # test reachability
 status="`ping $addr -w 1 -c 1 | grep 'packet loss'`"
 ([[ "$status" =~ \ 100\% ]]) && echo "&#11015; DN" || echo "&#11014; UP"
-
-
-
