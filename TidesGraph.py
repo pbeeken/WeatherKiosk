@@ -112,8 +112,8 @@ def makeTideGraph(detailDF, extremaDF):
     # Put a vetical bar that marks right now.
     now = datetime.now(tz=EST)
     (ymin, ymax) = ax.get_ylim()
-    ax.annotate(f"Current Time   {now.time().strftime('%I:%M %p')}", xy=(now, (ymin+ymax)/2), xytext=(-15,-30), textcoords='offset points', color='green', rotation=90.0, alpha=0.6 )
-    ax.vlines(now, ymin=ymin, ymax=ymax, transform=ax.get_xaxis_transform(), colors="green", linewidth=4, alpha=0.7)
+    ax.annotate(f"Current Time   {now.time().strftime('%I:%M %p')}", xy=(now, (ymin+ymax)/2), xytext=(-15,-60), textcoords='offset points', color='green', rotation=90.0, alpha=0.6 )
+    ax.vlines(now, ymin=0.1, ymax=0.9, transform=ax.get_xaxis_transform(), colors="green", linestyles='dashed', linewidth=4, alpha=0.7)
 
     #Fix the time axis
     ax.xaxis.set_major_locator(mdates.DayLocator(tz=EST))
