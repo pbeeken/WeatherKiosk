@@ -12,6 +12,8 @@ UTC = timezone('UTC')
 import matplotlib.transforms
 import matplotlib.dates as mdates
 
+pathToResources = "/home/pi/WeatherKiosk/resources/"
+
 # Getting Weather Data from execution rocks (station 44022)  Only needs to run every 15 minutes.
 
 def fetchWindData(source):
@@ -31,7 +33,7 @@ def fetchWindData(source):
 #  return windDF.set_index('DateTime')
 
 def makeWindGraph(windDF, whereFrom=""):
-  imageRef = "resources/windGraph.png" # fetch locally (way faster on a pi)
+  imageRef = pathToResources + "windGraph.png" # fetch locally (way faster on a pi)
   fig, ax = plt.subplots(figsize=(8, 4))
 
   tme = windDF.index

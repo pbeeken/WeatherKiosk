@@ -65,79 +65,52 @@ stationsNearUs = {  'NewRochelleNY':  "8518490",
                     }
 
 tideStation = stationsNearUs['RyePlaylandNY']  # Closest one to us with reliable data
+pathToResources = "/home/pi/WeatherKiosk/resources/"
 
 ###
 # import common library
 from tidedata import fetchDailyTides
 
-###
-# makeTideGraph
-# The business end that makes the fancy graphic that includes a moing line that shows out current time
-# against a graph of the tide height.
-#
-def makeTideGraph(detailDF, extremaDF):
+#@markdown Make the summary table for the next four tide extrema 
+def makeTideTable(extremaDF):
     """
-    makeTideGraph
-    Make tide ala NOAA from two sets of pandas DataFrames:
-    detailDF -- Detailed predicted water levels for complete graph
+    Make the html table of the next 4 tide extrema
     extremeDF -- The extrema (highs and lows)
     """
-    global gTideUnit # unit switch flag
+    global gTideUnit
+    lbl = {'H': 'HIGH', 'L': 'LOW'}
 
-    graphFile = "resources/tideGraph.png"
-
-    import matplotlib.transforms
-    import matplotlib.dates as mdates
-
-    today = datetime.now(tz=EST).date()
-
-    # Set up the plot and plot the data
-    # px = 1/plt.rcParams['figure.dpi']  # pixel in inches (doesn't work if bbox is 'tight')
-    fig, ax = plt.subplots(figsize=(11.5, 4))
-
-    ax.plot(detailDF['DateTime'], detailDF[gTideUnit], color="blue", alpha=0.8)
-
-    # Markers at extrema with square marks
-    ax.scatter(extremaDF['DateTime'], extremaDF[gTideUnit], color="blue", marker="s")
-    for index, row in extremaDF.iterrows():
-        xy = (row['DateTime'], row[gTideUnit])
-        u = gTideUnit.split("[")[1].split("]")[0]   # row['Units']
-        ax.annotate(f'{xy[1]:5.1f} {u[:2]}', xy=xy, xytext=(8,0), textcoords='offset points', color='blue')
-
-    # Set the axis labels
-    # ax.set_xlabel("Date and Time", fontsize=14, fontstyle='italic', color='SlateGray')
-    ax.set_ylabel(f"Tide Level [{u}]", fontsize=14, fontstyle='italic', color='SlateGray')
-    # ~put an alternate axis in meters~ Alternate between meters and feet in 5min intervals
-
-    # Put a vetical bar that marks right now.
     now = datetime.now(tz=EST)
-    (ymin, ymax) = ax.get_ylim()
-    ax.annotate(f"Current Time   {now.time().strftime('%I:%M %p')}", xy=(now, (ymin+ymax)/2), xytext=(-15,-60), textcoords='offset points', color='green', rotation=90.0, alpha=0.6 )
-    ax.vlines(now, ymin=0.1, ymax=0.9, transform=ax.get_xaxis_transform(), colors="green", linestyles='dashed', linewidth=4, alpha=0.7)
 
-    #Fix the time axis
-    ax.xaxis.set_major_locator(mdates.DayLocator(tz=EST))
-    ax.xaxis.set_minor_locator(mdates.HourLocator(interval=4, tz=EST))
+    tideFile = "tideTable.html"
+    templateFile = "_" + tideFile
 
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%a, %b %d', tz=EST))
-    ax.xaxis.set_minor_formatter(mdates.DateFormatter('%H:%M', tz=EST))
+    # pick the units based on gTideUnit
 
-    dx = 0.; dy = -10/72.
-    offset = matplotlib.transforms.ScaledTranslation(dx, dy, fig.dpi_scale_trans)
-    # Create offset transform by 5 points in x direction
-    for label in ax.xaxis.get_majorticklabels():
-        label.set(horizontalalignment='center', color="darkred", fontweight='bold')
-        label.set_transform(label.get_transform() + offset)
+    sel = extremaDF['DateTime'] > now
+    futureTides = extremaDF[sel]
 
-    for label in ax.xaxis.get_minorticklabels():
-        label.set(horizontalalignment='center', color="darkred")
+    htmlText = futureTides[:4].to_html( 
+#                            columns=['DateTime', 'Time', 'Type', gTideUnit], 
+                            columns=['DateTime', 'Type', gTideUnit], 
+                            index=False, 
+                            border=0,
+                            formatters={
+                                gTideUnit: lambda x:f"{x:6.1f}",
+                                'Type': lambda l: lbl[l],
+                                'DateTime': lambda dt: dt.strftime("%a %I:%M %p")
+                                },
+#                            table_id = "tideTable"
+                            )
 
-    ax.grid(True, which='major', linewidth=2, axis='both', alpha=0.7)
-    ax.grid(True, which='minor', linestyle="--", axis='both', alpha = 0.5)
+    #open the template file
+    with open(pathToResources + templateFile, "r") as template:
+        templateHTML = template.readlines()
+ #   templateFile.close()
 
-    # fig.show()
-    fig.savefig(graphFile, bbox_inches='tight', transparent=True)
-    plt.close(fig)
+    # copy the html table into the text and write out a new file 
+    with open(pathToResources + "../" + tideFile, "w") as html:
+        html.write( ("".join(templateHTML)).replace('<!--Table Place-->', htmlText) )
 
 # Should run this every 5 minutes to keep the screen up to date.
 def refresh():
@@ -145,7 +118,7 @@ def refresh():
     (ryePlayDetailDF, ryePlayExtremDF) = fetchDailyTides(tideStation)
 
     # make the pseudo NOAA tide graph
-    makeTideGraph(ryePlayDetailDF, ryePlayExtremDF)
+    makeTideTable(ryePlayExtremDF)
 
 
 """
@@ -156,7 +129,7 @@ I will run it as a periodic bash shell (we only have to run once every 5min or s
 if __name__ == '__main__':
     import os
     
-    print("Building tide graph...")
+    print("Building tide table...")
 
     idx = 0
     try:
@@ -165,7 +138,7 @@ if __name__ == '__main__':
         pass
     
     gTideUnit = ('Tide [ft]', 'Tide [m]')[idx]
-    print(f"\t...using {gTideUnit}")
+    print(f"\t...using {gTideUnit} [{idx}]")
     
     refresh()
 

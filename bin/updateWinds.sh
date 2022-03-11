@@ -5,7 +5,7 @@
 cd /home/pi/WeatherKiosk/
 
 #update the winds graph
-python ./WindGraph.py
+python bin/WindGraph.py
 
 #update the forecast
-python ./Forecast.py
+python bin/Forecast.py

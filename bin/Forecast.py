@@ -1,6 +1,8 @@
 import numpy as np
 from html.parser import HTMLParser
 
+pathToResources = "/home/pi/WeatherKiosk/resources/"
+
 """
 MarineHTMLParser
     custom extension of HTMLParser to extract informaion from 
@@ -121,8 +123,8 @@ if __name__ == '__main__':
             ''')
 
     #open and read the template file
-    with open(templateFile, "r") as templateFile:
-        templateHtml = templateFile.readlines()
+    with open(pathToResources + templateFile, "r") as template:
+        templateHtml = template.readlines()
 
     # Title Information
     templateHtml = ("".join(templateHtml)).replace('<!--Forecast Title-->', titleArea)
@@ -134,5 +136,5 @@ if __name__ == '__main__':
 
 
     # copy the html table into the text and write out a new file 
-    with open(forecastFile, "w") as htmlFile:
+    with open(pathToResources + "../" + forecastFile, "w") as htmlFile:
         htmlFile.write( templateHtml )

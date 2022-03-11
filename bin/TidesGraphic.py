@@ -45,7 +45,7 @@ import time
 # With each call we flip the units so we toggle back and 
 # general unit choice
 #   alternate calls switch back and forth between metric and imperial (we have an international audience)
-gTideUnit = 'Tide [ft]' # 'Tide [m]'  default replaced in main
+gTideUnit = 'Tide [ft]' # 'Tide [m]'
 
 # Global constants we use throughout.
 EST = timezone('America/New_York')
@@ -65,15 +65,20 @@ stationsNearUs = {  'NewRochelleNY':  "8518490",
                     }
 
 tideStation = stationsNearUs['RyePlaylandNY']  # Closest one to us with reliable data
+pathToResources = "/home/pi/WeatherKiosk/resources/"
 
 ###
 # import common library
 from tidedata import fetchDailyTides
 
-#@markdown Make the summary table for the next four tide extrema 
-def makeTideTable(extremaDF):
+#@markdown Make the fancy image with next tide
+def makeTideGraphic(extremaDF, detailDF=None):
+    # make up for image import deprecation
+    # import PIL
+    # import urllib.request
     """
-    Make the html table of the next 4 tide extrema
+    Make tide ala NOAA from two sets of pandas DataFrames:
+    detailDF -- Detailed predicted water levels for complete graph
     extremeDF -- The extrema (highs and lows)
     """
     global gTideUnit
@@ -81,44 +86,64 @@ def makeTideTable(extremaDF):
 
     now = datetime.now(tz=EST)
 
-    tideFile = "tideTable.html"
-    templateFile = "_" + tideFile
+    # imageURL = "https://docs.google.com/drawings/d/e/2PACX-1vRPpyCKk834LQUUwoEWDiopLKIcRscn3AoUPynXzNe6jPRLXWt9TBS90Wwm_MjxVoqezD09hbx_0Sw8/pub?w=225&h=159"
+    # imageRef = PIL.Image.open(urllib.request.urlopen(imageURL))
+    imageRef = pathToResources + "TideBackground.png" # fetch locally (way faster on a pi)
+    imageOverLay = plt.imread(imageRef)
+    # px = 1/plt.rcParams['figure.dpi']  # pixel in inches doesn't quite work when bbox='tight'
+    plt.figure(figsize=(3, 3))
 
-    # pick the units based on gTideUnit
+    implot = plt.imshow(imageOverLay)
+    implot.axes.get_xaxis().set_visible(False)
+    implot.axes.get_yaxis().set_visible(False)
 
-    sel = extremaDF['DateTime'] > now
-    futureTides = extremaDF[sel]
+    hgt = 125 #158
+    wdt = 222 #225
+    lvl = 110
 
-    htmlText = futureTides[:4].to_html( 
-#                            columns=['DateTime', 'Time', 'Type', gTideUnit], 
-                            columns=['DateTime', 'Type', gTideUnit], 
-                            index=False, 
-                            border=0,
-                            formatters={
-                                gTideUnit: lambda x:f"{x:6.1f}",
-                                'Type': lambda l: lbl[l],
-                                'DateTime': lambda dt: dt.strftime("%a %I:%M %p")
-                                },
-#                            table_id = "tideTable"
-                            )
+    upcoming = extremaDF[extremaDF['DateTime']>datetime.now(tz=EST)]
+    nxtTide = upcoming.iloc[0]
+    plt.text(wdt/2, 50, nxtTide['DateTime'].strftime("%I:%M %p"), fontsize=30.0, ha='center' )
+    plt.text(wdt/2, 90, lbl[nxtTide['Type']], fontweight='heavy', color='blue', fontsize=24.0, ha='center')
 
-    #open the template file
-    with open(templateFile, "r") as templateFile:
-        templateHTML = templateFile.readlines()
- #   templateFile.close()
+    
+    if nxtTide['Type'] == 'H':
+        len = -50
+    else:
+        len = 50
+    plt.arrow(wdt/6, 90-len/2, 0, len, width=6., color="cyan", 
+                length_includes_head=True, alpha=0.6, fill=False, linewidth=2.0)
 
-    # copy the html table into the text and write out a new file 
-    with open(tideFile, "w") as htmlFile:
-        htmlFile.write( ("".join(templateHTML)).replace('<!--Table Place-->', htmlText) )
+    # Somehwat kludgy since we know the range is between -1 and 10ft
+    try:
+        current = detailDF[detailDF['DateTime']>datetime.now(tz=EST)]
+        nxtTide = current.iloc[0]
+        level = nxtTide[gTideUnit]
+    except:
+        level = nxtTide[gTideUnit]
+
+    if gTideUnit == 'Tide [ft]':
+        scaledTideHeight = hgt - lvl*(level + 2)/10.
+    else:
+        scaledTideHeight = hgt - lvl*(level + 0.5)/3.0
+
+    plt.title("Next Tide At...")
+    plt.axis('off')
+    t=np.linspace(0,wdt,50)
+    y=scaledTideHeight + np.cos(t/5) * 3
+    plt.fill_between(t,y, color="SkyBlue", alpha=0.50)
+
+    #plt.show()
+    plt.savefig(pathToResources + "tideGraphic.png", bbox_inches='tight', transparent=True)
+    plt.close()
 
 # Should run this every 5 minutes to keep the screen up to date.
 def refresh():
     # Get the data this method tries to fetch from local store first
     (ryePlayDetailDF, ryePlayExtremDF) = fetchDailyTides(tideStation)
 
-    # make the pseudo NOAA tide graph
-    makeTideTable(ryePlayExtremDF)
-
+    # make the pseudo 'next tide' graphic
+    makeTideGraphic(ryePlayExtremDF, ryePlayDetailDF)
 
 """
 We want to run this command peridoically to update the clock 
@@ -128,7 +153,7 @@ I will run it as a periodic bash shell (we only have to run once every 5min or s
 if __name__ == '__main__':
     import os
     
-    print("Building tide table...")
+    print("Building tide graphic...")
 
     idx = 0
     try:
@@ -137,7 +162,7 @@ if __name__ == '__main__':
         pass
     
     gTideUnit = ('Tide [ft]', 'Tide [m]')[idx]
-    print(f"\t...using {gTideUnit} [{idx}]")
+    print(f"\t...using {gTideUnit}")
     
     refresh()
 
