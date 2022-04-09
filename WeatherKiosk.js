@@ -90,9 +90,14 @@ function fetchUSNavalDailyData(theDate, when) {
     xhr.onreadystatechange = function () {
         astroData[when] = {error: xhr.status, response: xhr.responseText, state: xhr.readyState}
         if (xhr.readyState == 4 && xhr.status == "200") {  // if the final state is good store data.
-            datum =  (JSON.parse(xhr.responseText)).properties.data
-            datum.requestedDate = theDate
-            astroData[when] = datum
+            try {
+                datum =  (JSON.parse(xhr.responseText)).properties.data
+                datum.requestedDate = theDate
+                astroData[when] = datum
+            } catch (error) {
+                console.log(error)
+                astroData[when] = undefined        
+                }
             }
         }
 
@@ -184,7 +189,8 @@ imageTableMoon = {
 function updateLunarData() {
 
     if (typeof astroData === 'undefined' || typeof astroData.today === 'undefined') {
-        setTimeout(updateLunarData, 1*sec)
+        loadAstroData()
+        setTimeout(updateLunarData, 2*sec)
         return // do nothing because astroData hasn't been fully populated
 	}
     let currentdata = astroData.today
@@ -227,7 +233,8 @@ function updateSunRiseSunset() {
 
     // We need these items to be populated so we exit quietly in case they are not.
     if (typeof astroData === 'undefined' || typeof astroData.today === 'undefined' || typeof astroData.tomorrow === 'undefined') {
-        setTimeout(updateSunRiseSunset, 1*sec) // rerun in a second or so
+        loadAstroData()
+        setTimeout(updateSunRiseSunset, 3*sec) // rerun in a second or so
         return // do nothing because astroData hasn't been fully populated
 	}
 
