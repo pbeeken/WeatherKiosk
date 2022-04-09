@@ -48,7 +48,6 @@ def fetchOneDayData(theDate, latlong="40.93,-73.76", timezone="-5"):
     # storing the JSON response from url in data
     return json.loads(response.read())
 
-
 ###
 # Entrypoint for the call. expected optional parameters for cgi-call are:
 # date=mm/dd/yyyy
@@ -60,7 +59,23 @@ if __name__ == '__main__':
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
 
     # simulated input comment the next 4 lines when running standalone... fix the '.value' entries below.
-    #    fs = { "date":   "2/5/2022", "coords": "40.93,-73.76", }
+    # fs = { "date":   "2/5/2022", "coords": "40.93,-73.76", }
+    # simulated output
+    #    result = { "apiversion": "3.0.0", 
+    #           "geometry": {"coordinates": [-73.76, 40.93], "type": "Point"}, 
+    #           "properties": {"data": {
+    #                                 "closestphase": {"day": 8, "month": 2, "phase": "First Quarter", "time": "08:50", "year": 2022}, 
+    #                                 "curphase": "Waxing Crescent", "day": 5, "day_of_week": "Saturday", "fracillum": "23%", "isdst": false, "label": null, "month": 2, 
+    #                                 "moondata": [{"phen": "Rise", "time": "09:40"}, 
+    #                                              {"phen": "Upper Transit", "time": "15:57"}, 
+    #                                              {"phen": "Set", "time": "22:24"}], 
+    #                                 "sundata": [{"phen": "Begin Civil Twilight", "time": "06:33"}, 
+    #                                             {"phen": "Rise", "time": "07:01"}, 
+    #                                             {"phen": "Upper Transit", "time": "12:09"}, 
+    #                                             {"phen": "Set", "time": "17:17"}, 
+    #                                             {"phen": "End Civil Twilight", "time": "17:46"}], 
+    #                                 "tz": -5.0, "year": 2022}}, 
+    #                                 "type": "Feature"}
     # dbgReport = open("sunFetch.log", "w+")
     # dbgReport.write("--- START ---\r")
 
