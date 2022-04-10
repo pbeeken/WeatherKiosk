@@ -5,7 +5,7 @@
 
 import json
 import cgi
-# A logging tool for debugging.
+import ssl
 # dbgReport = None
 
 # import urllib library
@@ -43,6 +43,7 @@ def fetchOneDayData(theDate, latlong="40.93,-73.76", timezone="-5"):
     # dbgReport.write(f"--- {url}\r")
 
     # store the response of URL
+    ssl._create_default_https_context = ssl._create_unverified_context# A logging tool for debugging.
     response = urlopen(url)
 
     # storing the JSON response from url in data
