@@ -43,7 +43,7 @@ def fetchOneDayData(theDate, latlong="40.93,-73.76", timezone="-5"):
     # dbgReport.write(f"--- {url}\r")
 
     # store the response of URL
-    ssl._create_default_https_context = ssl._create_unverified_context# A logging tool for debugging.
+    ssl._create_default_https_context = ssl._create_unverified_context  # A logging tool for debugging.
     response = urlopen(url)
 
     # storing the JSON response from url in data
@@ -89,10 +89,10 @@ if __name__ == '__main__':
     if "date" in fs:
         passedDate = fs['date'].value
         theDate = datetime.strptime(passedDate, "%m/%d/%Y").replace(tzinfo=EST)
-    
+
     if "coords" in fs:
         coord = fs['coords'].value
-    
+
     if "tz" in fs:
         tz = fs['tz'].value
 
