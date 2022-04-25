@@ -27,7 +27,7 @@ EST = timezone('America/New_York')
 ###
 def fetchMoonPhasesData(theDate, numPhases):
 
-    date = theDate.strftime("%m/%d/%Y")
+    date = theDate.strftime("$Y-%m-%d")
     id = "HHYCtc"
 
     url = f"https://aa.usno.navy.mil/api/moon/phases/date?id={id}&date={date}&nump={numPhases}"

@@ -37,7 +37,7 @@ def isDST(theDate):
 ###
 def fetchOneDayData(theDate,latlong):
 
-    datestr = theDate.strftime("%m/%d/%Y")
+    datestr = theDate.strftime("%Y-%m-%d")
     tz = isDST(theDate)
 
     url = f"https://aa.usno.navy.mil/api/rstt/oneday?date={datestr}&coords={latlong}&tz={tz}"

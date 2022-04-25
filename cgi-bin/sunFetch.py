@@ -35,9 +35,9 @@ def isDST(theDate):
 #  Fetch the data from the data from the USNO server
 ###
 def fetchOneDayData(theDate, latlong="40.93,-73.76", timezone="-5"):
-    date = theDate.strftime("%m/%d/%Y")
+    date = theDate.strftime("%Y-%m-%d")
     dst = isDST(theDate)
-    id = "HHYC_019E3"
+    id = "HHYC_WK"
 
     url = f"https://aa.usno.navy.mil/api/rstt/oneday?id={id}&date={date}&coords={latlong}&tz={timezone}&dst={dst}"
     # dbgReport.write(f"--- {url}\r")
