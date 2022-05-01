@@ -1,22 +1,6 @@
 const sec = 1000;
 const min = 60 * sec;
 
-function refreshFrames() {
-    console.log(`refreshFrames diabled.`);
-    return; // may not be needed
-    try {
-        let id = 'ideal18';
-        document.getElementById(id).src = document.getElementById(id).src;
-        console.log(`${id} updated`);
-        id = 'dayboat';
-        document.getElementById(id).src = document.getElementById(id).src;
-        console.log(`${id} updated`);
-    } catch (error) {
-        console.log(`Update frame failed \n ${error}`);
-    }
-    setTimeout(refreshFrames, 30 * sec);
-}
-
 /**
  * RunClock
  * This is a self re-asserting timer that displays a running clock in the 'clock'
@@ -176,7 +160,7 @@ const imageTableMoon = {
  * IMPORTANT: This presumes the global `astroData` has been populated
  */
 function updateLunarData() {
-    if (typeof astroData === 'undefined' || typeof astroData.today === 'undefined') {
+    if (astroData == null || astroData.today == null) {
         loadAstroData();
         setTimeout(updateLunarData, 2 * sec);
         return; // do nothing because astroData hasn't been fully populated
@@ -197,7 +181,7 @@ function updateLunarData() {
     fracillum = Math.round(fracillum / 5) * 5; // round to the nearest 5%
     // console.log(` ${currentdata.fracillum} -> ${fracillum}`)
 
-    if (typeof imageTable[namedPhase + '_' + fracillum] !== 'undefined') {
+    if (imageTable[namedPhase + '_' + fracillum] != null) {
         // console.log(rootURL + imageTable[namedPhase + '_' + fracillum])
         document.getElementById('moon').src = rootURL + imageTable[namedPhase + '_' + fracillum];
         // console.log(namedPhase)
@@ -217,11 +201,7 @@ function updateLunarData() {
  */
 function updateSunRiseSunset() {
     // We need these items to be populated so we exit quietly in case they are not.
-    if (
-        typeof astroData === 'undefined' ||
-        typeof astroData.today === 'undefined' ||
-        typeof astroData.tomorrow === 'undefined'
-    ) {
+    if (astroData?.today == null || astroData?.tomorrow == null) {
         loadAstroData();
         setTimeout(updateSunRiseSunset, 3 * sec); // rerun in a second or so
         return; // do nothing because astroData hasn't been fully populated
@@ -272,7 +252,7 @@ function updateSunRiseSunset() {
  */
 function loadAstroData(testDate) {
     let day;
-    if (testDate === undefined) day = new Date();
+    if (testDate == null) day = new Date();
     else day = testDate;
     day.setDate(day.getDate() - 1);
     fetchUSNavalDailyData(day, 'yesterday');
