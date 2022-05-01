@@ -11,3 +11,4 @@ tideTable.html
 forecastGrid.html
 env
 .env
+node_modules
