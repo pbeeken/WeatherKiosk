@@ -22,10 +22,18 @@ function refreshFrames() {
  * This is a self re-asserting timer that displays a running clock in the 'clock'
  * box as the web page is active.
  */
-function RunClock() {
-    const today = new Date()
-    document.getElementById('clock').innerHTML =  today.toLocaleTimeString('en-US')
-    setTimeout(RunClock, 1 * sec)
+function RunClock(start) {
+    function clockRunner (time) {
+        const elapsed = time - start
+        const seconds = Math.round(elapsed / sec)
+        document.getElementById('clock').innerHTML =  new Date().toLocaleTimeString('en-US')
+        const targetNext = (seconds + 1) * sec + start 
+        setTimeout(
+            () => requestAnimationFrame(clockRunner),
+            targetNext - performance.now()
+        )
+    }
+    clockRunner();
 }
 
 /**
@@ -323,3 +331,9 @@ function networkUpDown() {
     xhr.open('GET', url, true)
     xhr.send();
 }
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    RunClock(document.timeline.currentTime); 
+    PostDataWeather();
+})
