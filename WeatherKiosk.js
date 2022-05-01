@@ -79,34 +79,19 @@ let astroData = {
  * @param {Date} date
  * @param {function} callback  function to handle the json data
  */
-function fetchUSNavalDailyData(theDate, when) {
+async function fetchUSNavalDailyData(theDate, when) {
     const datestr = theDate.toLocaleDateString();
     let url = `http://localhost:8000/cgi-bin/sunFetch.py?date=${datestr}`;
 
-    let xhr = new XMLHttpRequest();
-    xhr.overrideMimeType('application/json');
-
-    xhr.onerror = function () {
-        console.log('There was an error!');
-    };
-
-    xhr.onreadystatechange = function () {
-        astroData[when] = { error: xhr.status, response: xhr.responseText, state: xhr.readyState };
-        if (xhr.readyState == 4 && xhr.status == '200') {
-            // if the final state is good store data.
-            try {
-                const datum = JSON.parse(xhr.responseText).properties.data;
-                datum.requestedDate = theDate;
-                astroData[when] = datum;
-            } catch (error) {
-                console.log(error);
-                astroData[when] = undefined;
-            }
-        }
-    };
-
-    xhr.open('GET', url, true);
-    xhr.send();
+    try {
+        const response = await fetch(url);
+        const sunFetch = await response.json();
+        sunFetch.properties.data.requestedDate = theDate;
+        astroData[when] = { error: null, response: sunFetch.properties.data };
+    } catch (error) {
+        console.error(`Failed to fetch ${url}`, error);
+        astroData[when] = { error, response: null };
+    }
 }
 
 /**
@@ -316,27 +301,16 @@ function PostDataSchedule() {
 /**
  *
  **/
-function networkUpDown() {
+async function networkUpDown() {
     let url = `http://localhost:8000/cgi-bin/networkStatus.sh`;
 
-    let xhr = new XMLHttpRequest();
-    // xhr.overrideMimeType("application/json")
-
-    xhr.onerror = function () {
-        console.log('There was an error!');
-    };
-
-    xhr.onreadystatechange = function () {
-        let netStatus = { error: xhr.status, response: xhr.responseText, state: xhr.readyState };
-        if (xhr.readyState == 4 && xhr.status == '200') {
-            // if the final state is good store data.
-            let datum = xhr.responseText.split(' ')[0];
-            console.log(xhr.responseText.split(' '));
-        }
-    };
-
-    xhr.open('GET', url, true);
-    xhr.send();
+    try {
+        const response = await fetch(url);
+        const data = await response.text();
+        console.log(data.split(' '));
+    } catch (error) {
+        console.error('Cannot check the network status', error);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
