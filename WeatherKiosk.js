@@ -76,8 +76,8 @@ let astroData = {
 
 /**
  * fetchUSNavalObsData
- * @param {Date} date
- * @param {function} callback  function to handle the json data
+ * @param {Date} theDate
+ * @param {'yesterday' | 'today' | 'tomorrow'} when
  */
 async function fetchUSNavalDailyData(theDate, when) {
     const datestr = theDate.toLocaleDateString();
@@ -87,7 +87,7 @@ async function fetchUSNavalDailyData(theDate, when) {
         const response = await fetch(url);
         const sunFetch = await response.json();
         sunFetch.properties.data.requestedDate = theDate;
-        astroData[when] = { error: null, response: sunFetch.properties.data };
+        astroData[when] = sunFetch.properties.data;
     } catch (error) {
         console.error(`Failed to fetch ${url}`, error);
         astroData[when] = { error, response: null };
