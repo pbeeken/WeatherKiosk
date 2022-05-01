@@ -6,7 +6,7 @@ const min = 60 * sec;
  * This is a self re-asserting timer that displays a running clock in the 'clock'
  * box as the web page is active.
  */
-function RunClock(start) {
+function runClock(start) {
     function clockRunner(time) {
         const elapsed = time - start;
         const seconds = Math.round(elapsed / sec);
@@ -262,7 +262,7 @@ function loadAstroData(testDate) {
     fetchUSNavalDailyData(day, 'tomorrow');
 }
 
-function PostDataWeather() {
+function postDataWeather() {
     /** Get and post the sunrise and sunset data */
     loadAstroData();
     updateGraphs();
@@ -270,7 +270,7 @@ function PostDataWeather() {
     setTimeout(updateLunarData, 10 * sec); // first run
 }
 
-function PostDataSchedule() {
+function postDataSchedule() {
     /** Get and post the sunrise and sunset data */
     loadAstroData();
 
@@ -294,6 +294,6 @@ async function networkUpDown() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    RunClock(document.timeline.currentTime);
-    PostDataWeather();
+    runClock(document.timeline.currentTime);
+    postDataWeather();
 });
