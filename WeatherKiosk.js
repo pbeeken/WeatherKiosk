@@ -292,8 +292,3 @@ async function networkUpDown() {
         console.error('Cannot check the network status', error);
     }
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    runClock(document.timeline.currentTime);
-    postDataWeather();
-});

@@ -4,18 +4,15 @@
         <meta http-equiv="refresh" content="240" />
         <link rel="preconnect" href="https://fonts.googleapis.com"/>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-        <link href="https://fonts.googleapis.com/css2?family=Trade+Winds&display=swap" rel="stylesheet"/>    
+        <link href="https://fonts.googleapis.com/css2?family=Trade+Winds&display=swap" rel="stylesheet"/>
         <link rel="stylesheet" type="text/css" href="BoatReservations.css"/>
         <meta http-equiv="content-type" content="text/html; charset=iso-8859-1"/>
     </head>
-
-    <script src="WeatherKiosk.js" type="application/javascript"></script>
-
     <body onload="{RunClock(); PostDataSchedule(); setTimeout(refreshFrames, 20);}">
         <div class="shell">
             <div class="header">
                 <img class="logo" src="resources/HHYC_Flag.png"alt="HHYC Logo">
-                <span class="title">Horseshoe Harbor Yacht Club Boat Reservations</span> 
+                <span class="title">Horseshoe Harbor Yacht Club Boat Reservations</span>
             </div>
             <div class="wrapper">
                 <div class="box1">
@@ -31,6 +28,14 @@
             </div>
         </div>
     </body>
+    <script src="WeatherKiosk.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            runClock(document.timeline.currentTime);
+            PostDataSchedule();
+            setTimeout(refreshFrames, 20);
+        });
+    </script>
 </html>
 
 <!--<iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQO20U0tdRwjY8CrkbiBzMw87ylcoFSRqEYml8Fg9BKL9phB06-Kxi1PzLOcvwLQgtaO9PXZQ5rgWZC/pubhtml?gid=0&amp;single=true&amp;widget=true&amp;headers=false"></iframe>-->

@@ -33,4 +33,10 @@
         </div>
     </body>
     <script src="WeatherKiosk.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            runClock(document.timeline.currentTime);
+            postDataWeather();
+        })
+    </script>
 </html>
