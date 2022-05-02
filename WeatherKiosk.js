@@ -273,9 +273,7 @@ function postDataWeather() {
 function postDataSchedule() {
     /** Get and post the sunrise and sunset data */
     loadAstroData();
-
-    setTimeout(updateSunRiseSunset, 5 * sec); // first run
-    //    setTimeout(updateLunarData, 5*sec) // first run
+    setTimeout(updateSunRiseSunset, 10 * sec); // first run
 }
 
 /**
