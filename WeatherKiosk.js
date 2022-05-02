@@ -1,3 +1,9 @@
+/**
+ * Common code between kiosk pages that controls the presentation.
+ * TODO: Loose the .jpg moon phase and implement .svg dynamic drawing.
+ * TODO: Improve cross platfrom modelling so we can test here and at destination.
+ */
+
 const sec = 1000;
 const min = 60 * sec;
 
