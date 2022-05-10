@@ -49,7 +49,7 @@ function updateGraphs() {
 }
 
 /**
- * Each of the tree entries below carry the following information returned from USNO:
+ * Each of the three entries below carry the following information returned from USNO:
  * { closestphase: { day: 1, month: 2, phase: 'New Moon', time: '00:46', year: 2022 },
  *   curphase: 'Waxing Crescent',  day: 4, day_of_week: 'Friday',  fracillum: '15%', isdst: false, label: null, month: 2,
  *   moondata: [ { phen: 'Rise', time: '09:17' }, { phen: 'Upper Transit', time: '15:12' }, { phen: 'Set', time: '21:19' } ],
@@ -59,6 +59,12 @@ function updateGraphs() {
  *   year: 2022 }
  */
 let astroData = {
+    yesterday: undefined,
+    today: undefined,
+    tomorrow: undefined,
+};
+
+let moonImage = {
     yesterday: undefined,
     today: undefined,
     tomorrow: undefined,
@@ -81,6 +87,26 @@ async function fetchUSNavalDailyData(theDate, when) {
     } catch (error) {
         console.error(`Failed to fetch ${url}`, error);
         astroData[when] = { error, response: null };
+    }
+}
+
+/**
+ * fetchMoonImage
+ * @param {'yesterday' | 'today' | 'tomorrow'} when
+ */
+async function fetchMoonImage(when) {
+    const phase = astroData[when].curphase.split(' ')[0];
+    const fracillum = astroData[when].fracillum.slice(0, -1);
+    let url = `http://localhost:8000/cgi-bin/moonFetch.py?fracillum=${fracillum}&phase=${phase}`;
+    console.log(url);
+
+    try {
+        const response = await fetch(url);
+        const moonFetch = await response.json();
+        moonImage[when] = moonFetch.properties.data;
+    } catch (error) {
+        console.error(`Failed to fetch ${url}`, error);
+        moonImage[when] = { error, response: null };
     }
 }
 
