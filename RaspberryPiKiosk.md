@@ -1,5 +1,5 @@
 # Notes on Raspberry Pi kiosk
-The concrete mission for me was to build a kiosk weather and tide reporting system for a 
+The concrete mission for me was to build a kiosk weather and tide reporting system for a
 small boat club that combined data from various sources (most notably NOAA and NWS) for easy
 interpretation for skippers and owners heading out to their craft.
 
@@ -7,12 +7,12 @@ I started by building the system from a full Raspbian OS install and started str
 unnecessary apps when I realized what I should have done was build it up from a minimal
 insatllation of [Raspbian Lite](https://www.raspberrypi.org/downloads/raspbian/).
 
-I found a number of references on the interweb but the two I found most helpful were 
+I found a number of references on the interweb but the two I found most helpful were
   - [A minimal kiosk mode for a Raspberry Pi](https://blog.r0b.io/post/minimal-rpi-kiosk/) a step by step
   - [Minimal Kiosk OS](https://github.com/TheLastProject/minimalKioskOS) a slimmed down version prebuilt with a lot of security
 
-My setup doesn't have an easy profile and the resources for the display are generated on the fly using periodic 
-python programs (could have been any language this was just easiest for what I wanted to do.)  Thus the actual connectionion 
+My setup doesn't have an easy profile and the resources for the display are generated on the fly using periodic
+python programs (could have been any language this was just easiest for what I wanted to do.)  Thus the actual connectionion
 is through the periodic daemons and not the browser which is just used as a configurable display environment.
 
 ## Begin the process
@@ -54,7 +54,7 @@ sudo apt-get install --no-install-recommends xdotool
 sudo apt-get install git
 ```
 
-I also installed the [gh tool](https://github.com/cli/cli/blob/trunk/docs/install_linux.md) to make connection to repositories easy.  We can set up a temporary key to allow downloading of the resources. Be sure to enable the user:read context 
+I also installed the [gh tool](https://github.com/cli/cli/blob/trunk/docs/install_linux.md) to make connection to repositories easy.  We can set up a temporary key to allow downloading of the resources. Be sure to enable the user:read context
 
 
 ```
@@ -95,24 +95,21 @@ xset -dpms
 xset s off
 xset s noblank
 
+# sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' ~/.config/chromium/Default/Preferences
+# sed -i 's/"exit_type":"Crashed"/"exit_type": "Normal"/' ~/.config/chromium/Default/Preferences
+
+cd /home/pi
 unclutter &
-cd /home/pi/TideClock
-chromium-browser file:///home/pi/WeatherKiosk/WeatherKiosk.html \
-	--window-size=1440,900 \
-	--window-position=0,0 \
-	--start-fullscreen \
-	--kiosk \
-	--incognito \
-	--no-first-run \
-	--fast \
-	--fast-start \
-	--disk-cache-dir=/dev/null
-	--noerrordialogs \
-	--disable-translate \
-	--diable-infobars \
-	--disable-features=TranslateUS \
-	--overscroll-history-navigation=0 \
-	--disable-pinch
+WeatherKiosk/bin/testRotate.sh
+
+# cd /home/pi/WeatherKiosk
+chromium-browser http://localhost:8000/WeatherKiosk.html http://localhost:8000/BoatReservations.html\
+        --window-size=1440,900 --window-position=0,0 --start-fullscreen \
+        --disk-cache-dir=/dev/null \
+        --disable-infobars
+#        --kiosk --start-fullscreen \
+#        --no-first-run --noerrdialogs \
+#        --disable-infobars
 ```
 
 **.gitconfig**
@@ -123,7 +120,7 @@ chromium-browser file:///home/pi/WeatherKiosk/WeatherKiosk.html \
 	name = nyname
 	email = myemail
 [credential "https://github.com"]
-	helper = 
+	helper =
 	helper = !/usr/bin/gh auth git-credential
 ```
 
@@ -141,20 +138,14 @@ network={
 ```
 
 personal cron tab. use `cron -e` from the command line to edit
-``
-# m h  dom mon dow   command
-# Time syntax (for any field: minute, hour, etc.):
-#    5        on the indicated value
-#    5,10,15  on the specifically indicated values
-#    */10     every 10 units
-#    *        ignore
-# For more information see the manual pages of crontab(5) and cron(8)
-#
+```
 # m h  dom mon dow command
-*/5  * * * *          /bin/bash /home/pi/WeatherKiosk/updateTides.sh
-2,12,27,32,47 * * * * /bin/bash /home/pi/WeatherKiosk/updateWinds.sh
+*/5  * * * *          /bin/bash /home/pi/WeatherKiosk/bin/updateTides.sh
+2,12,27,32,47 * * * * /bin/bash /home/pi/WeatherKiosk/bin/updateWinds.sh
 */14 * * * *          /bin/bash /home/pi/WeatherKiosk/bin/testRotate.sh
 45 21 * * *           /bin/bash /home/pi/WeatherKiosk/bin/shutDown.sh
+# update ssl libraries  This turned out to be a problem with one info site so we do thie regularly
+* * 5,10,15,20,25 * * /usr/lib/python3/dist-packages/pip install certifi --upgrade # update ssl libraries
 ```
 
 Turn on cron logging `sudo nano /etc/rsyslog.conf` and uncommenting the generation of the log file (really useful for debugging)
