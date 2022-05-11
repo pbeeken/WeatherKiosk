@@ -112,8 +112,7 @@ async function fetchMoonImage(when) {
     try {
         const response = await fetch(url);
         const moonFetch = await response.json();
-        moonFetch.properties.data.requestedDate = when;
-        moonImage[when] = moonFetch.properties.data;
+        moonImage[when] = moonFetch;
     } catch (error) {
         console.error(`Failed to fetch ${url}`, error);
         moonImage[when] = { error, response: null };

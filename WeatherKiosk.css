@@ -143,20 +143,34 @@ div.header > .logo {
 }
 
 .circlemask {
-    -webkit-mask-image: radial-gradient(circle at center, black 60%, rgb(0 0 0 / 0%) 77%);
+    /* -webkit-mask-image: radial-gradient(circle at center, black 60%, rgb(0 0 0 / 0%) 77%); */
     mask-image: radial-gradient(circle at center, black 60%, rgb(0 0 0 / 0%) 77%);
 }
 
-#mooncontainer {
+#moonYD {
     position: fixed;
     z-index: -20;
-    top: 160px;
-    left: 390px;
+    top: 345px;
+    left: 100px;
+}
+
+#moonTD {
+    position: fixed;
+    z-index: -20;
+    top: 345px;
+    left: 420px;
+}
+
+#moonTM {
+    position: fixed;
+    z-index: -20;
+    top: 345px;
+    left: 760px;
 }
 
 
-#moon {
+.phase {
     position: static;
-    height: 80px;
-    opacity: 90%;
+    height: 60px;
+    opacity: 80%;
 }
