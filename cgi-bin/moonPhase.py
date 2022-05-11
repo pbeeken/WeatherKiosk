@@ -81,11 +81,12 @@ if __name__ == '__main__':
   try:
     makeMoonLune(fracillum)
 
-    plt.savefig("../"+filename, transparent=True)
+    plt.savefig(filename, transparent=True)
     result['rc'] = 200
 
     print("Content-Type: application/json\n")
     print(json.dumps(result))
+    print("\n")
 
   except:
     result['rc'] = 400
