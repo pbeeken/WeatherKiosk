@@ -95,14 +95,15 @@ async function fetchUSNavalDailyData(theDate, when) {
  * @param {'yesterday' | 'today' | 'tomorrow'} when
  */
 async function fetchMoonImage(when) {
-    const stage = astroData[when].curphase.split(' ')[0];
-    const fracillum = astroData[when].fracillum.slice(0, -1);
+    const stage = astroData[when].curphase;
+    const fracillum = astroData[when].fracillum.slice(0, -1); // Strip the % off.
     let url = `http://localhost:8000/cgi-bin/moonPhase.py?fracillum=${fracillum}&stage=${stage}&filename=moon_${when}.svg`;
     console.log(url);
 
     try {
         const response = await fetch(url);
         const moonFetch = await response.json();
+        moonFetch.properties.data.requestedDate = when;
         moonImage[when] = moonFetch.properties.data;
     } catch (error) {
         console.error(`Failed to fetch ${url}`, error);

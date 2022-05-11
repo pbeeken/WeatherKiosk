@@ -86,6 +86,7 @@ if __name__ == '__main__':
 
     print("Content-Type: application/json\n")
     print(json.dumps(result))
+
   except:
     result['rc'] = 400
     result['error'] = "python error"
