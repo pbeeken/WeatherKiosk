@@ -3,6 +3,8 @@
 # Launch the following simple server
 # python -m http.server --bind localhost --cgi 8000
 
+import cgi
+import json
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -78,7 +80,8 @@ if __name__ == '__main__':
 
   makeMoonLune(fracillum)
 
-  plt.savefig(filename, transparent=True)
+  plt.savefig("../"+filename, transparent=True)
+  result['rc'] = 200
 
   print("Content-Type: application/json\n")
   print(json.dumps(result))
