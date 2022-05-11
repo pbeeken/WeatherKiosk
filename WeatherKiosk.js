@@ -95,9 +95,9 @@ async function fetchUSNavalDailyData(theDate, when) {
  * @param {'yesterday' | 'today' | 'tomorrow'} when
  */
 async function fetchMoonImage(when) {
-    const phase = astroData[when].curphase.split(' ')[0];
+    const stage = astroData[when].curphase.split(' ')[0];
     const fracillum = astroData[when].fracillum.slice(0, -1);
-    let url = `http://localhost:8000/cgi-bin/moonFetch.py?fracillum=${fracillum}&phase=${phase}`;
+    let url = `http://localhost:8000/cgi-bin/moonPhase.py?fracillum=${fracillum}&stage=${stage}&filename=${moon_when.svg}`;
     console.log(url);
 
     try {
