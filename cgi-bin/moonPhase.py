@@ -57,7 +57,7 @@ if __name__ == '__main__':
   stage = ""
   fracillum = 0
   filename = "moon.svg"
-  result = {'rc': 400, 'filename': None, 'fracillum': None, 'stage': None, 'error':""}
+  result = {'rc': 400, 'filename': "moon.svg", 'fracillum': 0.0, 'stage': "", 'error':""}
 
   if "fracillum" in fs:
     fracillum = fs['fracillum'].value
