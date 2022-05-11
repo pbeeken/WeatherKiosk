@@ -83,9 +83,9 @@ if __name__ == '__main__':
     plt.savefig(filename, transparent=True)
     result['rc'] = 200
 
-  except:
+  except Exception as ex:
     result['rc'] = 400
-    result['error'] = "python error"
+    result['error'] = f"*{ex}*"
 
   print("Content-Type: application/json\n")
   print(json.dumps(result))

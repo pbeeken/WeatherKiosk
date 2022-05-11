@@ -70,6 +70,15 @@ let moonImage = {
     tomorrow: undefined,
 };
 
+// /**
+//  * loadLunarImages Load the Lunar images based on AstroData
+//  * @param {*} theDate
+//  * @param {*} when
+//  */
+// async loadLunarImages() {
+
+// }
+
 /**
  * fetchUSNavalObsData
  * @param {Date} theDate
@@ -91,7 +100,7 @@ async function fetchUSNavalDailyData(theDate, when) {
 }
 
 /**
- * fetchMoonImage
+ * fetchMoonImage calls the cgi script to build the lunar svg images. N.B. assumes astroData is fully loaded.
  * @param {'yesterday' | 'today' | 'tomorrow'} when
  */
 async function fetchMoonImage(when) {
@@ -115,77 +124,77 @@ async function fetchMoonImage(when) {
  * NASA's Lookup Table
  * root: https://moon.nasa.gov/internal_resources/### where ### is based on lookup
  **/
-const imageTableNASA = {
-    rootURL: 'https://moon.nasa.gov/internal_resources/',
-    // basic table
-    newmoon: 366,
-    waxingcrescent: 368,
-    firstquarter: 367,
-    waxinggibbous: 365,
-    fullmoon: 364,
-    waninggibbous: 363,
-    lastquarter: 362,
-    waningcrescent: 361,
-};
+// const imageTableNASA = {
+//     rootURL: 'https://moon.nasa.gov/internal_resources/',
+//     // basic table
+//     newmoon: 366,
+//     waxingcrescent: 368,
+//     firstquarter: 367,
+//     waxinggibbous: 365,
+//     fullmoon: 364,
+//     waninggibbous: 363,
+//     lastquarter: 362,
+//     waningcrescent: 361,
+// };
 
 /**
  * Mooninfo.org's table (more images)
  * root: local or https://www.mooninfo.org/images/50/{name}
  */
-const imageTableMoon = {
-    rootURL: 'https://www.mooninfo.org/images/50/',
-    // basic table
-    newmoon: 'New_Moon.jpg',
-    waxingcrescent: 'Waxing_Crescent_25.jpg',
-    firstquarter: 'First_Quarter.jpg',
-    waxinggibbous: 'Waxing_Gibbous_75.jpg',
-    fullmoon: 'Full_Moon.jpg',
-    waninggibbous: 'Waning_Gibbous_75.jpg',
-    lastquarter: 'Last_Quarter.jpg',
-    waningcrescent: 'Waning_Crescent_25.jpg',
-    // extensions to above
-    waxingcrescent_0: 'Waxing_Crescent_0.jpg',
-    waxingcrescent_5: 'Waxing_Crescent_5.jpg',
-    waxingcrescent_10: 'Waxing_Crescent_10.jpg',
-    waxingcrescent_15: 'Waxing_Crescent_15.jpg',
-    waxingcrescent_20: 'Waxing_Crescent_20.jpg',
-    waxingcrescent_25: 'Waxing_Crescent_25.jpg',
-    waxingcrescent_30: 'Waxing_Crescent_30.jpg',
-    waxingcrescent_35: 'Waxing_Crescent_35.jpg',
-    waxingcrescent_40: 'Waxing_Crescent_40.jpg',
-    waxingcrescent_45: 'Waxing_Crescent_45.jpg',
+// const imageTableMoon = {
+//     rootURL: 'https://www.mooninfo.org/images/50/',
+//     // basic table
+//     newmoon: 'New_Moon.jpg',
+//     waxingcrescent: 'Waxing_Crescent_25.jpg',
+//     firstquarter: 'First_Quarter.jpg',
+//     waxinggibbous: 'Waxing_Gibbous_75.jpg',
+//     fullmoon: 'Full_Moon.jpg',
+//     waninggibbous: 'Waning_Gibbous_75.jpg',
+//     lastquarter: 'Last_Quarter.jpg',
+//     waningcrescent: 'Waning_Crescent_25.jpg',
+//     // extensions to above
+//     waxingcrescent_0: 'Waxing_Crescent_0.jpg',
+//     waxingcrescent_5: 'Waxing_Crescent_5.jpg',
+//     waxingcrescent_10: 'Waxing_Crescent_10.jpg',
+//     waxingcrescent_15: 'Waxing_Crescent_15.jpg',
+//     waxingcrescent_20: 'Waxing_Crescent_20.jpg',
+//     waxingcrescent_25: 'Waxing_Crescent_25.jpg',
+//     waxingcrescent_30: 'Waxing_Crescent_30.jpg',
+//     waxingcrescent_35: 'Waxing_Crescent_35.jpg',
+//     waxingcrescent_40: 'Waxing_Crescent_40.jpg',
+//     waxingcrescent_45: 'Waxing_Crescent_45.jpg',
 
-    waxinggibbous_55: 'Waxing_Gibbous_55.jpg',
-    waxinggibbous_60: 'Waxing_Gibbous_60.jpg',
-    waxinggibbous_65: 'Waxing_Gibbous_65.jpg',
-    waxinggibbous_70: 'Waxing_Gibbous_70.jpg',
-    waxinggibbous_75: 'Waxing_Gibbous_75.jpg',
-    waxinggibbous_80: 'Waxing_Gibbous_80.jpg',
-    waxinggibbous_85: 'Waxing_Gibbous_85.jpg',
-    waxinggibbous_90: 'Waxing_Gibbous_90.jpg',
-    waxinggibbous_95: 'Waxing_Gibbous_95.jpg',
+//     waxinggibbous_55: 'Waxing_Gibbous_55.jpg',
+//     waxinggibbous_60: 'Waxing_Gibbous_60.jpg',
+//     waxinggibbous_65: 'Waxing_Gibbous_65.jpg',
+//     waxinggibbous_70: 'Waxing_Gibbous_70.jpg',
+//     waxinggibbous_75: 'Waxing_Gibbous_75.jpg',
+//     waxinggibbous_80: 'Waxing_Gibbous_80.jpg',
+//     waxinggibbous_85: 'Waxing_Gibbous_85.jpg',
+//     waxinggibbous_90: 'Waxing_Gibbous_90.jpg',
+//     waxinggibbous_95: 'Waxing_Gibbous_95.jpg',
 
-    waninggibbous_95: 'Waning_Gibbous_95.jpg',
-    waninggibbous_90: 'Waning_Gibbous_90.jpg',
-    waninggibbous_85: 'Waning_Gibbous_85.jpg',
-    waninggibbous_80: 'Waning_Gibbous_80.jpg',
-    waninggibbous_75: 'Waning_Gibbous_75.jpg',
-    waninggibbous_70: 'Waning_Gibbous_70.jpg',
-    waninggibbous_65: 'Waning_Gibbous_65.jpg',
-    waninggibbous_60: 'Waning_Gibbous_60.jpg',
-    waninggibbous_55: 'Waning_Gibbous_55.jpg',
-    waninggibbous_50: 'Waning_Gibbous_50.jpg',
+//     waninggibbous_95: 'Waning_Gibbous_95.jpg',
+//     waninggibbous_90: 'Waning_Gibbous_90.jpg',
+//     waninggibbous_85: 'Waning_Gibbous_85.jpg',
+//     waninggibbous_80: 'Waning_Gibbous_80.jpg',
+//     waninggibbous_75: 'Waning_Gibbous_75.jpg',
+//     waninggibbous_70: 'Waning_Gibbous_70.jpg',
+//     waninggibbous_65: 'Waning_Gibbous_65.jpg',
+//     waninggibbous_60: 'Waning_Gibbous_60.jpg',
+//     waninggibbous_55: 'Waning_Gibbous_55.jpg',
+//     waninggibbous_50: 'Waning_Gibbous_50.jpg',
 
-    waningcrescent_40: 'Waning_Crescent_40.jpg',
-    waningcrescent_35: 'Waning_Crescent_35.jpg',
-    waningcrescent_30: 'Waning_Crescent_30.jpg',
-    waningcrescent_25: 'Waning_Crescent_25.jpg',
-    waningcrescent_20: 'Waning_Crescent_20.jpg',
-    waningcrescent_15: 'Waning_Crescent_15.jpg',
-    waningcrescent_10: 'Waning_Crescent_10.jpg',
-    waningcrescent_5: 'Waning_Crescent_5.jpg',
-    waningcrescent_0: 'Waning_Crescent_0.jpg',
-};
+//     waningcrescent_40: 'Waning_Crescent_40.jpg',
+//     waningcrescent_35: 'Waning_Crescent_35.jpg',
+//     waningcrescent_30: 'Waning_Crescent_30.jpg',
+//     waningcrescent_25: 'Waning_Crescent_25.jpg',
+//     waningcrescent_20: 'Waning_Crescent_20.jpg',
+//     waningcrescent_15: 'Waning_Crescent_15.jpg',
+//     waningcrescent_10: 'Waning_Crescent_10.jpg',
+//     waningcrescent_5: 'Waning_Crescent_5.jpg',
+//     waningcrescent_0: 'Waning_Crescent_0.jpg',
+// };
 
 /**
  * update the lunar data slug (whereever I decide to put it). It calculates the icon to use
@@ -193,36 +202,48 @@ const imageTableMoon = {
  * IMPORTANT: This presumes the global `astroData` has been populated
  */
 function updateLunarData() {
+    // Make sure the astroData object is loaded
     if (astroData == null || astroData.today == null) {
         loadAstroData();
         setTimeout(updateLunarData, 2 * sec);
         return; // do nothing because astroData hasn't been fully populated
     }
-    let currentdata = astroData.today;
-    let closestdata = astroData.today.closestphase; // BTW this could be in the past!
-    let imageTable = imageTableMoon;
 
-    let rootURL = imageTable.rootURL;
-
-    console.log(`Lunar update ${currentdata.curphase}`);
-
-    // console.log(currentdata.fracillum.slice(0,-1)) // cut off %
-    // the basic shape is from the library
-    let namedPhase = currentdata.curphase.toLocaleLowerCase().replace(' ', '');
-
-    let fracillum = 1.0 * currentdata.fracillum.slice(0, -1);
-    fracillum = Math.round(fracillum / 5) * 5; // round to the nearest 5%
-    // console.log(` ${currentdata.fracillum} -> ${fracillum}`)
-
-    if (imageTable[namedPhase + '_' + fracillum] != null) {
-        // console.log(rootURL + imageTable[namedPhase + '_' + fracillum])
-        document.getElementById('moon').src = rootURL + imageTable[namedPhase + '_' + fracillum];
-        // console.log(namedPhase)
-    } else {
-        // console.log(rootURL + imageTable[namedPhase])
-        document.getElementById('moon').src = rootURL + imageTable[namedPhase];
-        // console.log(namedPhase)
+    // Make sure the moonImages object are loaded  TODO: May be necessary to load these sequentially.
+    if (moonImage == null || moonImage.today == null) {
+        fetchMoonImage('yesterday');
+        fetchMoonImage('tomorrow');
+        fetchMoonImage('today');
+        setTimeout(updateLunarData, 2 * sec);
     }
+
+    document.getElementById('')
+
+    // let currentdata = astroData.today;
+    // // let closestdata = astroData.today.closestphase; // BTW this could be in the past!
+    // let imageTable = imageTableMoon;
+
+    // let rootURL = imageTable.rootURL;
+
+    // console.log(`Lunar update ${currentdata.curphase}`);
+
+    // // console.log(currentdata.fracillum.slice(0,-1)) // cut off %
+    // // the basic shape is from the library
+    // let namedPhase = currentdata.curphase.toLocaleLowerCase().replace(' ', '');
+
+    // let fracillum = 1.0 * currentdata.fracillum.slice(0, -1);
+    // fracillum = Math.round(fracillum / 5) * 5; // round to the nearest 5%
+    // // console.log(` ${currentdata.fracillum} -> ${fracillum}`)
+
+    // if (imageTable[namedPhase + '_' + fracillum] != null) {
+    //     // console.log(rootURL + imageTable[namedPhase + '_' + fracillum])
+    //     document.getElementById('moon').src = rootURL + imageTable[namedPhase + '_' + fracillum];
+    //     // console.log(namedPhase)
+    // } else {
+    //     // console.log(rootURL + imageTable[namedPhase])
+    //     document.getElementById('moon').src = rootURL + imageTable[namedPhase];
+    //     // console.log(namedPhase)
+    // }
 
     setTimeout(updateLunarData, 10 * min);
 }
