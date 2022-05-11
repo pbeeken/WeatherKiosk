@@ -51,13 +51,13 @@ def makeMoonLune(beta):
 if __name__ == '__main__':
   #   first fetch the strings passed to us with the fields outlined
   fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
-  # fs = { "fracillum":   "23%", "stage": "waxing" }
+  # fs = { 'fracillum':   "23%", 'stage': "Waxing", 'filename': "moon_today.svg" }
 
   # phase and fracillum is passed from javascript
   stage = ""
   fracillum = 0
   filename = "moon.svg"
-  result = {'rc': 400, 'filename': None, 'fracillum': None, 'stage': None}
+  result = {'rc': 400, 'filename': None, 'fracillum': None, 'stage': None, 'error':""}
 
   if "fracillum" in fs:
     fracillum = fs['fracillum'].value
@@ -80,16 +80,12 @@ if __name__ == '__main__':
 
   try:
     makeMoonLune(fracillum)
-
     plt.savefig(filename, transparent=True)
     result['rc'] = 200
-
-    print("Content-Type: application/json\n")
-    print(json.dumps(result))
-    print("\n")
 
   except:
     result['rc'] = 400
     result['error'] = "python error"
-    print("Content-Type: application/json\n")
-    print(json.dumps(result))
+
+  print("Content-Type: application/json\n")
+  print(json.dumps(result))
