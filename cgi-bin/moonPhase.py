@@ -20,10 +20,10 @@ def makeMoonLune(beta):
 
   def ellipFunc(t, b=0.0):
     if b>0:
-      dir = 1.0
-    else:
       dir = -1.0
-    return (dir *  b * np.sin(np.pi * t), np.cos(np.pi * t))
+    else:
+      dir = 1.0
+    return (dir * 2 * (np.abs(b)-1/2) * np.sin(np.pi * t), np.cos(np.pi * t)) # was b <- np.cos(np.pi * b)
 
   plt.axes().set_aspect('equal')
   plt.xlim(left=-1.0, right=1.0)
