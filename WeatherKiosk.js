@@ -216,7 +216,9 @@ function updateLunarData() {
         setTimeout(updateLunarData, 2 * sec);
     }
 
-    document.getElementById('')
+    document.getElementById('moonYD').getElementsByClassName('phase')[0].src = moonImage.yesterday.filename;
+    document.getElementById('moonTD').getElementsByClassName('phase')[0].src = moonImage.yesterday.filename;
+    document.getElementById('moonTM').getElementsByClassName('phase')[0].src = moonImage.yesterday.filename;
 
     // let currentdata = astroData.today;
     // // let closestdata = astroData.today.closestphase; // BTW this could be in the past!
@@ -319,8 +321,8 @@ function postDataWeather() {
     /** Get and post the sunrise and sunset data */
     loadAstroData();
     updateGraphs();
-    setTimeout(updateSunRiseSunset, 10 * sec); // first run
-    setTimeout(updateLunarData, 10 * sec); // first run
+    setTimeout(updateSunRiseSunset, 5 * sec); // first run
+    setTimeout(updateLunarData, 3 * sec); // first run
 }
 
 function postDataSchedule() {
