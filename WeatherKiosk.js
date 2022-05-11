@@ -107,7 +107,7 @@ async function fetchMoonImage(when) {
     const stage = astroData[when].curphase.split(' ')[0];
     const fracillum = astroData[when].fracillum.slice(0, -1); // Strip the % off.
     let url = `http://localhost:8000/cgi-bin/moonPhase.py?fracillum=${fracillum}&stage=${stage}&filename=moon_${when}.svg`;
-    console.log(url);
+    //console.log(url);
 
     try {
         const response = await fetch(url);
@@ -204,21 +204,24 @@ function updateLunarData() {
     // Make sure the astroData object is loaded
     if (astroData == null || astroData.today == null) {
         loadAstroData();
-        setTimeout(updateLunarData, 2 * sec);
+        setTimeout(updateLunarData, 4 * sec);
         return; // do nothing because astroData hasn't been fully populated
     }
 
     // Make sure the moonImages object are loaded  TODO: May be necessary to load these sequentially.
-    if (moonImage == null || moonImage.today == null) {
-        fetchMoonImage('yesterday');
-        fetchMoonImage('tomorrow');
+    if (moonImage == null || 
+           moonImage.today == null || 
+           moonImage.tomorrow == null ||
+           moonImage.yesterday == null) {
         fetchMoonImage('today');
-        setTimeout(updateLunarData, 2 * sec);
+        fetchMoonImage('tomorrow');
+        fetchMoonImage('yesterday');
+        setTimeout(updateLunarData, 10 * sec);
     }
 
     document.getElementById('moonYD').getElementsByClassName('phase')[0].src = moonImage.yesterday.filename;
-    document.getElementById('moonTD').getElementsByClassName('phase')[0].src = moonImage.yesterday.filename;
-    document.getElementById('moonTM').getElementsByClassName('phase')[0].src = moonImage.yesterday.filename;
+    document.getElementById('moonTD').getElementsByClassName('phase')[0].src = moonImage.today.filename;
+    document.getElementById('moonTM').getElementsByClassName('phase')[0].src = moonImage.tomorrow.filename;
 
     // let currentdata = astroData.today;
     // // let closestdata = astroData.today.closestphase; // BTW this could be in the past!
