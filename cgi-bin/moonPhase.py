@@ -78,10 +78,16 @@ if __name__ == '__main__':
 
   result['beta'] = fracillum
 
-  makeMoonLune(fracillum)
+  try:
+    makeMoonLune(fracillum)
 
-  plt.savefig("../"+filename, transparent=True)
-  result['rc'] = 200
+    plt.savefig("../"+filename, transparent=True)
+    result['rc'] = 200
 
-  print("Content-Type: application/json\n")
-  print(json.dumps(result))
+    print("Content-Type: application/json\n")
+    print(json.dumps(result))
+  except:
+    result['rc'] = 400
+    result['error'] = "python error"
+    print("Content-Type: application/json\n")
+    print(json.dumps(result))
