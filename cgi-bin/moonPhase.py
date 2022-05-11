@@ -57,7 +57,7 @@ if __name__ == '__main__':
   stage = ""
   fracillum = 0
   filename = "moon.svg"
-  result = {'rc': 400, 'filename': None, 'beta': None, 'stage': None}
+  result = {'rc': 400, 'filename': None, 'fracillum': None, 'stage': None}
 
   if "fracillum" in fs:
     fracillum = fs['fracillum'].value
@@ -76,7 +76,7 @@ if __name__ == '__main__':
   else: # Waxing, First, New, Full
     fracillum = fracillum
 
-  result['beta'] = fracillum
+  result['fracillum'] = fracillum
 
   try:
     makeMoonLune(fracillum)
