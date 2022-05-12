@@ -150,22 +150,22 @@ div.header > .logo {
 #moonYD {
     position: fixed;
     z-index: -20;
-    top: 345px;
-    left: 100px;
+    top: 335px;
+    left: 105px;
 }
 
 #moonTD {
     position: fixed;
     z-index: -20;
-    top: 345px;
+    top: 335px;
     left: 420px;
 }
 
 #moonTM {
     position: fixed;
     z-index: -20;
-    top: 345px;
-    left: 760px;
+    top: 335px;
+    left: 735px;
 }
 
 
