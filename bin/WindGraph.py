@@ -26,13 +26,16 @@ def fetchWindData(source):
   windDF['Time'] = windDF['DateTime'].apply(lambda t: t.time())
   windDF['Date'] = windDF['DateTime'].apply(lambda d: d.date())
   # We need to average the components rather than the angles when resamping.
-  windDF['WdirSin'] = np.sin(np.radians(windDF['WDIR'])) 
-  windDF['WdirCos'] = np.cos(np.radians(windDF['WDIR'])) 
+  windDF['WdirSin'] = np.sin(np.radians(windDF['WDIR']))
+  windDF['WdirCos'] = np.cos(np.radians(windDF['WDIR']))
 
   return windDF #.set_index(windDF['DateTime'] - windDF['DateTime'].min()) # returns a new copy
 #  return windDF.set_index('DateTime')
 
 def makeWindGraph(windDF, whereFrom=""):
+  if len(windDF) < 16:
+    raise BaseException("Not enough points")
+
   imageRef = pathToResources + "windGraph.png" # fetch locally (way faster on a pi)
   fig, ax = plt.subplots(figsize=(8, 4))
 
@@ -44,14 +47,14 @@ def makeWindGraph(windDF, whereFrom=""):
   ax.plot(tme, wspd/0.5144, 'bo-', alpha=0.8)
   ax.plot(tme, mxsp/0.5144, 'ro-', alpha=0.8)
 
-  
+
   # Plot direction arrows
   yloc = 3.0 * np.ones(windDF.shape[0])
   # we stored the direction components so the averages would be modulo 360 (or 2pi)
   #    The average between 10 and 350 should be 0 (or 360) NOT 180.
   # An arrow every other step
   (cosines, sines) = (windDF['WdirCos'], windDF['WdirSin'])
-  ax.quiver(tme[::2], yloc[::2], sines[::2], cosines[::2], 
+  ax.quiver(tme[::2], yloc[::2], sines[::2], cosines[::2],
             angles='uv', color='DodgerBlue', alpha=0.6, pivot='middle')
   # Set the axis labels
   # ax.set_xlabel("Date and Time", fontsize=10, fontstyle='italic', color='SlateGray')  #obvious don't need it.
@@ -79,8 +82,8 @@ def makeWindGraph(windDF, whereFrom=""):
   ax.set_ylim(bottom=0.0)
 
   # where did this come from?
-  plt.text(0.99, 0.96, f"{whereFrom}", 
-        horizontalalignment='right', verticalalignment='center', 
+  plt.text(0.99, 0.96, f"{whereFrom}",
+        horizontalalignment='right', verticalalignment='center',
         transform=ax.transAxes, color='gray', alpha=0.6 )
 
 #   fig.show()
