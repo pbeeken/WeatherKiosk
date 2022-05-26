@@ -209,10 +209,7 @@ function updateLunarData() {
     }
 
     // Make sure the moonImages object are loaded  TODO: May be necessary to load these sequentially.
-    if (moonImage == null || 
-           moonImage.today == null || 
-           moonImage.tomorrow == null ||
-           moonImage.yesterday == null) {
+    if (moonImage == null || moonImage.today == null || moonImage.tomorrow == null || moonImage.yesterday == null) {
         fetchMoonImage('today');
         fetchMoonImage('tomorrow');
         fetchMoonImage('yesterday');
@@ -347,4 +344,21 @@ async function networkUpDown() {
     } catch (error) {
         console.error('Cannot check the network status', error);
     }
+}
+
+/**
+ *
+ */
+function refreshFrames() {
+    console.log('refresh frames');
+    const change = '&garb=' + Math.trunc(Math.random() * 1000); // we need to force the cache to update by passing a bogus tag.
+    const dayBoatSrc =
+        'https://docs.google.com/spreadsheets/d/e/2PACX-1vQfkbGPQgtOsolvk6_VMVDx77C31iISIxv74YjIMiCUbOXJa2gbTu1WHXd4B2p2XnrDVZ5VTD1zC9uq/pubhtml?gid=696214441&single=true' +
+        change;
+    const ideal18Src =
+        'https://docs.google.com/spreadsheets/d/e/2PACX-1vRdr-1WqdwRBrSuXwyaLDJg8hURpnU9WDQSA1JWgk-vnsKexrb0INK6dZyl1ToHvQFMwZdxsTvnX8HS/pubhtml?gid=696214441&single=true' +
+        change;
+    document.getElementById('dayboat').src = dayBoatSrc;
+    document.getElementById('ideal18').src = ideal18Src;
+    setTimeout(refreshFrames, 600 * sec);
 }
