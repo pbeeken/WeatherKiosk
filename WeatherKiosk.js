@@ -346,19 +346,44 @@ async function networkUpDown() {
     }
 }
 
+let dayBoatSheet = '';
+let ideal18Sheet = '';
+
 /**
- *
+ * This is one of many attempts to fix the cache problem of retrieving the Google Sheets
+ * page. I have tried to force updating according to recommendations in Stack Exchange to
+ * no avail. The problem seems to be some interplay between the browser and Google
  */
 function refreshFrames() {
-    console.log('refresh frames');
-    const change = '&garb=' + Math.trunc(Math.random() * 1000); // we need to force the cache to update by passing a bogus tag.
-    const dayBoatSrc =
-        'https://docs.google.com/spreadsheets/d/e/2PACX-1vQfkbGPQgtOsolvk6_VMVDx77C31iISIxv74YjIMiCUbOXJa2gbTu1WHXd4B2p2XnrDVZ5VTD1zC9uq/pubhtml?gid=696214441&single=true' +
-        change;
-    const ideal18Src =
-        'https://docs.google.com/spreadsheets/d/e/2PACX-1vRdr-1WqdwRBrSuXwyaLDJg8hURpnU9WDQSA1JWgk-vnsKexrb0INK6dZyl1ToHvQFMwZdxsTvnX8HS/pubhtml?gid=696214441&single=true' +
-        change;
-    document.getElementById('dayboat').src = dayBoatSrc;
-    document.getElementById('ideal18').src = ideal18Src;
-    setTimeout(refreshFrames, 600 * sec);
+    console.log('refresh frames FF');
+    const change = '&cachekiller=' + Math.floor(Math.random() * 1010); // we need to force the cache to update by passing a bogus tag.
+
+    //save the source of the iframe minus the unique identifier
+    // I already have this saved
+    const dayBoatSrc = dayBoatSheet + change;
+    console.log(dayBoatSrc.substring(dayBoatSrc.length - 20));
+    const ideal18Src = ideal18Sheet + change;
+    console.log(ideal18Src.substring(ideal18Src.length - 20));
+
+    // METHOD 1: simply update the source with the 'dummy' to fool the cache into reloading.
+    // document.getElementById('dayboat').src = dayBoatSrc;
+    // document.getElementById('ideal18').src = ideal18Src;
+
+    // METHOD 2: remove the iframe and rebuild. (Can't seem to get this to work right)
+    // document.getElementById('dayboat').remove();
+    // document.getElementById('ideal18').remove();
+
+    // const dbFrame = document.createElement('<iframe id="dayboat" class="import" src="' + dayBoatSrc + '">');
+    // const idFrame = document.createElement('<iframe id="ideal18" class="import" src="' + ideal18Src + '">');
+
+    // //re-add the iframe with the new source including random query string
+    // document.getElementById('dayboat').append(dbFrame);
+    // document.getElementById('ideal18').append(idFrame);
+
+    // METHOD 3: simply add an empty string.
+    document.getElementById('dayboat').src += '';
+    document.getElementById('ideal18').src += '';
+    document.location.reload();
+
+    setTimeout(refreshFrames, 3 * min);
 }

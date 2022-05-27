@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="refresh" content="240" />
+        <!--meta http-equiv="refresh" content="300" /-->
+        <meta http-Equiv="Cache-Control" Content="no-cache" />
+        <meta http-Equiv="Pragma" Content="no-cache" />
+        <meta http-Equiv="Expires" Content="0" />
         <link rel="preconnect" href="https://fonts.googleapis.com"/>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
         <link href="https://fonts.googleapis.com/css2?family=Trade+Winds&display=swap" rel="stylesheet"/>
@@ -12,13 +15,13 @@
         <div class="shell">
             <div class="header">
                 <img class="logo" src="resources/HHYC_Flag.png"alt="HHYC Logo">
-                <span class="title">Horseshoe Harbor Yacht Club Boat Reservations</span>
+                <span class="title">Horseshoe Harbor Yacht Club Boat Reservations</span> <!--htmlembed/sheet? pubhtml?-->
             </div>
             <div class="wrapper">
-                <div class="box1">
+                <div class="box1" id="dayb">
                     <iframe id="dayboat" class="import" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQfkbGPQgtOsolvk6_VMVDx77C31iISIxv74YjIMiCUbOXJa2gbTu1WHXd4B2p2XnrDVZ5VTD1zC9uq/pubhtml?gid=696214441&single=true"></iframe>
                 </div>
-                <div class="box2">
+                <div class="box2" id="idlb">
                     <iframe id="ideal18" class="import" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRdr-1WqdwRBrSuXwyaLDJg8hURpnU9WDQSA1JWgk-vnsKexrb0INK6dZyl1ToHvQFMwZdxsTvnX8HS/pubhtml?gid=696214441&single=true"></iframe>
                 </div>
              </div>
@@ -31,9 +34,13 @@
     <script src="WeatherKiosk.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+
+            dayBoatSheet = document.getElementById('dayboat').src
+            ideal18Sheet = document.getElementById('ideal18').src
+
             runClock(document.timeline.currentTime);
             postDataSchedule();
-            setTimeout(refreshFrames, 20 * sec);
+            setTimeout(refreshFrames, 10 * sec);
         });
     </script>
 </html>
