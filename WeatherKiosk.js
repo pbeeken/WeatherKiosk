@@ -355,15 +355,14 @@ let ideal18Sheet = '';
  * no avail. The problem seems to be some interplay between the browser and Google
  */
 function refreshFrames() {
-    console.log('refresh frames FF');
     const change = '&cachekiller=' + Math.floor(Math.random() * 1010); // we need to force the cache to update by passing a bogus tag.
 
     //save the source of the iframe minus the unique identifier
     // I already have this saved
-    const dayBoatSrc = dayBoatSheet + change;
-    console.log(dayBoatSrc.substring(dayBoatSrc.length - 20));
-    const ideal18Src = ideal18Sheet + change;
-    console.log(ideal18Src.substring(ideal18Src.length - 20));
+    // const dayBoatSrc = dayBoatSheet + change;
+    // console.log(dayBoatSrc.substring(dayBoatSrc.length - 20));
+    // const ideal18Src = ideal18Sheet + change;
+    // console.log(ideal18Src.substring(ideal18Src.length - 20));
 
     // METHOD 1: simply update the source with the 'dummy' to fool the cache into reloading.
     // document.getElementById('dayboat').src = dayBoatSrc;
@@ -385,5 +384,7 @@ function refreshFrames() {
     document.getElementById('ideal18').src += '';
     document.location.reload();
 
-    setTimeout(refreshFrames, 3 * min);
+    console.log('refresh frames FT');
+
+    setTimeout(refreshFrames, 1 * min);
 }
