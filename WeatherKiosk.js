@@ -1,9 +1,7 @@
 /**
  * Common code between kiosk pages that controls the presentation.
- * TODO: Loose the .jpg moon phase and implement .svg dynamic drawing.
  * TODO: Improve cross platfrom modelling so we can test here and at destination.
  */
-
 const sec = 1000;
 const min = 60 * sec;
 
@@ -29,7 +27,6 @@ function runClock(start) {
  */
 function updateForecast() {
     document.getElementById('forecast').src = document.getElementById('forecast').src;
-
     setTimeout(updateForecast, 15 * min); // reasonable update for updates
 }
 
@@ -69,15 +66,6 @@ let moonImage = {
     today: undefined,
     tomorrow: undefined,
 };
-
-// /**
-//  * loadLunarImages Load the Lunar images based on AstroData
-//  * @param {*} theDate
-//  * @param {*} when
-//  */
-// async loadLunarImages() {
-
-// }
 
 /**
  * fetchUSNavalObsData
@@ -120,82 +108,6 @@ async function fetchMoonImage(when) {
 }
 
 /**
- * NASA's Lookup Table
- * root: https://moon.nasa.gov/internal_resources/### where ### is based on lookup
- **/
-// const imageTableNASA = {
-//     rootURL: 'https://moon.nasa.gov/internal_resources/',
-//     // basic table
-//     newmoon: 366,
-//     waxingcrescent: 368,
-//     firstquarter: 367,
-//     waxinggibbous: 365,
-//     fullmoon: 364,
-//     waninggibbous: 363,
-//     lastquarter: 362,
-//     waningcrescent: 361,
-// };
-
-/**
- * Mooninfo.org's table (more images)
- * root: local or https://www.mooninfo.org/images/50/{name}
- */
-// const imageTableMoon = {
-//     rootURL: 'https://www.mooninfo.org/images/50/',
-//     // basic table
-//     newmoon: 'New_Moon.jpg',
-//     waxingcrescent: 'Waxing_Crescent_25.jpg',
-//     firstquarter: 'First_Quarter.jpg',
-//     waxinggibbous: 'Waxing_Gibbous_75.jpg',
-//     fullmoon: 'Full_Moon.jpg',
-//     waninggibbous: 'Waning_Gibbous_75.jpg',
-//     lastquarter: 'Last_Quarter.jpg',
-//     waningcrescent: 'Waning_Crescent_25.jpg',
-//     // extensions to above
-//     waxingcrescent_0: 'Waxing_Crescent_0.jpg',
-//     waxingcrescent_5: 'Waxing_Crescent_5.jpg',
-//     waxingcrescent_10: 'Waxing_Crescent_10.jpg',
-//     waxingcrescent_15: 'Waxing_Crescent_15.jpg',
-//     waxingcrescent_20: 'Waxing_Crescent_20.jpg',
-//     waxingcrescent_25: 'Waxing_Crescent_25.jpg',
-//     waxingcrescent_30: 'Waxing_Crescent_30.jpg',
-//     waxingcrescent_35: 'Waxing_Crescent_35.jpg',
-//     waxingcrescent_40: 'Waxing_Crescent_40.jpg',
-//     waxingcrescent_45: 'Waxing_Crescent_45.jpg',
-
-//     waxinggibbous_55: 'Waxing_Gibbous_55.jpg',
-//     waxinggibbous_60: 'Waxing_Gibbous_60.jpg',
-//     waxinggibbous_65: 'Waxing_Gibbous_65.jpg',
-//     waxinggibbous_70: 'Waxing_Gibbous_70.jpg',
-//     waxinggibbous_75: 'Waxing_Gibbous_75.jpg',
-//     waxinggibbous_80: 'Waxing_Gibbous_80.jpg',
-//     waxinggibbous_85: 'Waxing_Gibbous_85.jpg',
-//     waxinggibbous_90: 'Waxing_Gibbous_90.jpg',
-//     waxinggibbous_95: 'Waxing_Gibbous_95.jpg',
-
-//     waninggibbous_95: 'Waning_Gibbous_95.jpg',
-//     waninggibbous_90: 'Waning_Gibbous_90.jpg',
-//     waninggibbous_85: 'Waning_Gibbous_85.jpg',
-//     waninggibbous_80: 'Waning_Gibbous_80.jpg',
-//     waninggibbous_75: 'Waning_Gibbous_75.jpg',
-//     waninggibbous_70: 'Waning_Gibbous_70.jpg',
-//     waninggibbous_65: 'Waning_Gibbous_65.jpg',
-//     waninggibbous_60: 'Waning_Gibbous_60.jpg',
-//     waninggibbous_55: 'Waning_Gibbous_55.jpg',
-//     waninggibbous_50: 'Waning_Gibbous_50.jpg',
-
-//     waningcrescent_40: 'Waning_Crescent_40.jpg',
-//     waningcrescent_35: 'Waning_Crescent_35.jpg',
-//     waningcrescent_30: 'Waning_Crescent_30.jpg',
-//     waningcrescent_25: 'Waning_Crescent_25.jpg',
-//     waningcrescent_20: 'Waning_Crescent_20.jpg',
-//     waningcrescent_15: 'Waning_Crescent_15.jpg',
-//     waningcrescent_10: 'Waning_Crescent_10.jpg',
-//     waningcrescent_5: 'Waning_Crescent_5.jpg',
-//     waningcrescent_0: 'Waning_Crescent_0.jpg',
-// };
-
-/**
  * update the lunar data slug (whereever I decide to put it). It calculates the icon to use
  * for displaying the moon based on the fracillum.
  * IMPORTANT: This presumes the global `astroData` has been populated
@@ -220,32 +132,7 @@ function updateLunarData() {
     document.getElementById('moonTD').getElementsByClassName('phase')[0].src = moonImage.today.filename;
     document.getElementById('moonTM').getElementsByClassName('phase')[0].src = moonImage.tomorrow.filename;
 
-    // let currentdata = astroData.today;
-    // // let closestdata = astroData.today.closestphase; // BTW this could be in the past!
-    // let imageTable = imageTableMoon;
-
-    // let rootURL = imageTable.rootURL;
-
-    // console.log(`Lunar update ${currentdata.curphase}`);
-
-    // // console.log(currentdata.fracillum.slice(0,-1)) // cut off %
-    // // the basic shape is from the library
-    // let namedPhase = currentdata.curphase.toLocaleLowerCase().replace(' ', '');
-
-    // let fracillum = 1.0 * currentdata.fracillum.slice(0, -1);
-    // fracillum = Math.round(fracillum / 5) * 5; // round to the nearest 5%
-    // // console.log(` ${currentdata.fracillum} -> ${fracillum}`)
-
-    // if (imageTable[namedPhase + '_' + fracillum] != null) {
-    //     // console.log(rootURL + imageTable[namedPhase + '_' + fracillum])
-    //     document.getElementById('moon').src = rootURL + imageTable[namedPhase + '_' + fracillum];
-    //     // console.log(namedPhase)
-    // } else {
-    //     // console.log(rootURL + imageTable[namedPhase])
-    //     document.getElementById('moon').src = rootURL + imageTable[namedPhase];
-    //     // console.log(namedPhase)
-    // }
-
+    // Reassert for update
     setTimeout(updateLunarData, 10 * min);
 }
 
@@ -317,6 +204,9 @@ function loadAstroData(testDate) {
     fetchUSNavalDailyData(day, 'tomorrow');
 }
 
+/**
+ * Post the weather information gained from NWS marine forecast
+ */
 function postDataWeather() {
     /** Get and post the sunrise and sunset data */
     loadAstroData();
@@ -325,6 +215,9 @@ function postDataWeather() {
     setTimeout(updateLunarData, 3 * sec); // first run
 }
 
+/**
+ * Schedule the updates needed for a webpage
+ */
 function postDataSchedule() {
     /** Get and post the sunrise and sunset data */
     loadAstroData();
@@ -332,7 +225,7 @@ function postDataSchedule() {
 }
 
 /**
- *
+ * Test if the network is up or down.
  **/
 async function networkUpDown() {
     let url = `http://localhost:8000/cgi-bin/networkStatus.sh`;
@@ -349,13 +242,13 @@ async function networkUpDown() {
 let dayBoatSheet = '';
 let ideal18Sheet = '';
 
-/**
+/** For Reservation Sheets Only
  * This is one of many attempts to fix the cache problem of retrieving the Google Sheets
  * page. I have tried to force updating according to recommendations in Stack Exchange to
- * no avail. The problem seems to be some interplay between the browser and Google
+ * no avail. The problem seems to be some interplay between the browser and Google and intermediate caches
  */
 function refreshFrames() {
-    const change = '&cachekiller=' + Math.floor(Math.random() * 1010); // we need to force the cache to update by passing a bogus tag.
+    // const change = '&cachekiller=' + Math.floor(Date.time()/1000); // we need to force the cache to update by passing a bogus tag.
 
     //save the source of the iframe minus the unique identifier
     // I already have this saved
@@ -380,11 +273,11 @@ function refreshFrames() {
     // document.getElementById('ideal18').append(idFrame);
 
     // METHOD 3: simply add an empty string.
-    document.getElementById('dayboat').src += '';
+    document.getElementById('dayboat').src += ''; // cache killer not needed
     document.getElementById('ideal18').src += '';
-    document.location.reload();
+    //    document.location.reload();
 
-    console.log('refresh frames FT');
+    console.log('refresh frames NT');
 
-    setTimeout(refreshFrames, 1 * min);
+    setTimeout(refreshFrames, 2 * min);
 }
