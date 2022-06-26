@@ -92,6 +92,8 @@ def makeWindGraph(windDF, whereFrom=""):
   tme = windDF.index[-1]
   wspd = np.round(2.23694 * windDF['WSPD'].to_numpy()[-1][0],1)
   mxsp = np.round(2.23694 * windDF['GST'].to_numpy()[-1][0],1)
+  if mxsp != mxsp:
+    mxsp = "-"
   temp = windDF['ATMP'].to_numpy()[-1][0]
   wdir = windDF['WDIR'].to_numpy()[-1][0]
   old = datetime.now(tz=EST)-tme
