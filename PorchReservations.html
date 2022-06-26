@@ -18,16 +18,10 @@
         <div class="header">
             <img class="logo" src="resources/HHYC_Flag.png" alt="HHYC Logo">
             <span class="title">Horseshoe Harbor Yacht Club Boat Reservations</span>
-            <!--htmlembed/sheet? pubhtml?-->
         </div>
         <div class="wrapper">
-            <div class="box1" id="dayb">
-                <iframe id="dayboat" class="import" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQfkbGPQgtOsolvk6_VMVDx77C31iISIxv74YjIMiCUbOXJa2gbTu1WHXd4B2p2XnrDVZ5VTD1zC9uq/pub?gid=696214441&single=true&output=html"></iframe>
-                <!--iframe id="dayboat" class="import" src="reservations/dayboat.html"></iframe-->
-            </div>
-            <div class="box2" id="idlb">
-                <iframe id="ideal18" class="import" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRdr-1WqdwRBrSuXwyaLDJg8hURpnU9WDQSA1JWgk-vnsKexrb0INK6dZyl1ToHvQFMwZdxsTvnX8HS/pub?gid=696214441&single=true&output=html"></iframe>
-                <!--iframe id="ideal18" class="import" src="reservations/i18boat.html"></iframe-->
+            <div class="box1" id="porch">
+                <iframe id="dayboat" class="import" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQnnTZxr5_VX1WYHycn3L16_38-XmNOwf3DJfXJSGD90e4JYgUZj9r3W9B4miZGuQDU67A92rTzNuDr/pub?gid=696214441&single=true&output=html"></iframe>
             </div>
         </div>
         <div class="footer">
@@ -39,10 +33,6 @@
 <script src="WeatherKiosk.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-
-        dayBoatSheet = document.getElementById('dayboat').src
-        ideal18Sheet = document.getElementById('ideal18').src
-
         runClock(document.timeline.currentTime);
         postDataSchedule();
         //setTimeout(refreshFrames, 1 * min);
