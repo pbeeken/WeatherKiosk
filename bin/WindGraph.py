@@ -13,6 +13,7 @@ import matplotlib.transforms
 import matplotlib.dates as mdates
 
 pathToResources = "/home/pi/WeatherKiosk/resources/"
+pathToResources = 'resources\\'
 
 # Getting Weather Data from execution rocks (station 44022)  Only needs to run every 15 minutes.
 
@@ -86,9 +87,40 @@ def makeWindGraph(windDF, whereFrom=""):
         horizontalalignment='right', verticalalignment='center',
         transform=ax.transAxes, color='gray', alpha=0.6 )
 
+  ##
+  # Put a current conditions slug at the top
+  tme = windDF.index[-1]
+  wspd = np.round(2.23694 * windDF['WSPD'].to_numpy()[-1][0],1)
+  mxsp = np.round(2.23694 * windDF['GST'].to_numpy()[-1][0],1)
+  temp = windDF['ATMP'].to_numpy()[-1][0]
+  wdir = windDF['WDIR'].to_numpy()[-1][0]
+  old = datetime.now(tz=EST)-tme
+  oldmin = np.int32(old.total_seconds()%60)
+  oldhrs = np.int32(old.total_seconds()/3600)
+  # print(f"***{tme}, {oldhrs}:{oldmin} old, {np.round(wspd,1)} mph, {np.round(mxsp,1)} mph, {wdir:4.0f}°T, {temp}°C")
+  plt.text(0.99, 0.90, f"Last readings spd:{wspd}, max:{mxsp}, dir:{windDirection(wdir)}",
+        horizontalalignment='right', verticalalignment='center',
+        transform=ax.transAxes, color='blue', alpha=0.6 )
+  if oldhrs > 1 or oldmin > 40:
+    plt.text(0.99, 0.84, f"Warning {oldhrs}:{oldmin} old",
+          horizontalalignment='right', verticalalignment='center',
+          transform=ax.transAxes, color='darkred', alpha=0.6 )
+
 #   fig.show()
   fig.savefig(imageRef, bbox_inches='tight', transparent=True)
   plt.close(fig)
+
+# direction indexer
+def windDirection(ang):
+  labels = {
+    'N': (-11.25, 11.25), 'NNE': (11.25, 33.75),   'NE': (33.75, 56.25),   'ENE': (56.25, 78.75),
+    'E': (78.75, 101.25), 'ESE': (101.25, 123.75), 'SE': (123.75, 146.25), 'SSE': (146.25, 168.75),
+    'S': (168.75, 191.25),'SSW': (191.25, 213.75), 'SW': (213.75, 236.25), 'WSW': (236.25, 258.75),
+    'W': (258.75, 281.25),'WNW': (281.25, 303.75), 'NW': (303.75, 326.25), 'NNW': (326.25, 348.75),
+    }
+  for tag in labels.keys():
+    if ang > labels[tag][0] and ang <= labels[tag][1]:
+      return tag
 
 # Exscution Rocks weather buoy
 real_EXR_TimeDataFile = "https://www.ndbc.noaa.gov/data/realtime2/44022.txt"
@@ -107,6 +139,7 @@ if __name__ == '__main__':
     # try to get execution rocks
     try:
       source = "Execution Rocks"
+      # raise NameError('Skip')
       print(f"\t...source: {source}")
       theDF = fetchWindData(real_EXR_TimeDataFile)
       smpl = theDF['DateTime'] > (now - d)
@@ -116,6 +149,7 @@ if __name__ == '__main__':
       # if that fails then try western LI buoy
       try:
         source = "Western LI"
+        # raise NameError('Skip')
         print(f"\t...source: {source}")
         theDF = fetchWindData(real_WLI_TimeDataFile)
         smpl = theDF['DateTime'] > (now - d)
