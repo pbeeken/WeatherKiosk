@@ -56,8 +56,8 @@ if __name__ == '__main__':
   # phase and fracillum is passed from javascript
   stage = ""
   fracillum = 0
-  filename = "moon.svg"
-  result = {'rc': 400, 'filename': "moon.svg", 'fracillum': 0.0, 'stage': "", 'error':""}
+  filename = "resources/moon.svg"
+  result = {'rc': 400, 'filename': filename, 'fracillum': 0.0, 'stage': "", 'error':""}
 
   if "fracillum" in fs:
     fracillum = fs['fracillum'].value
@@ -70,6 +70,7 @@ if __name__ == '__main__':
   if "filename" in fs:
     filename = fs['filename'].value
     result['filename'] = filename.replace("%2F","/")
+
 
   if stage.find("Waning")>=0 or stage.find("Last")>=0:
     fracillum = -fracillum
