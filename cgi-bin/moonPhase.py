@@ -69,7 +69,7 @@ if __name__ == '__main__':
 
   if "filename" in fs:
     filename = fs['filename'].value
-    result['filename'] = filename
+    result['filename'] = filename.replace("%2F","/")
 
   if stage.find("Waning")>=0 or stage.find("Last")>=0:
     fracillum = -fracillum

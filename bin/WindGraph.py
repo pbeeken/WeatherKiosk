@@ -13,7 +13,7 @@ import matplotlib.transforms
 import matplotlib.dates as mdates
 
 pathToResources = "/home/pi/WeatherKiosk/resources/"
-pathToResources = 'resources\\'
+#pathToResources = 'resources\\' # Windows Testing
 
 # Getting Weather Data from execution rocks (station 44022)  Only needs to run every 15 minutes.
 
