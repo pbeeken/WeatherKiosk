@@ -142,7 +142,7 @@ personal cron tab. use `cron -e` from the command line to edit
 # m h  dom mon dow command
 */5  * * * *          /bin/bash /home/pi/WeatherKiosk/bin/updateTides.sh
 2,12,27,32,47 * * * * /bin/bash /home/pi/WeatherKiosk/bin/updateWinds.sh
-*/14 * * * *          /bin/bash /home/pi/WeatherKiosk/bin/testRotate.sh
+*/14 * * * *          /bin/bash /home/pi/WeatherKiosk/bin/RotateTabs.sh
 45 21 * * *           /bin/bash /home/pi/WeatherKiosk/bin/shutDown.sh
 # update ssl libraries  This turned out to be a problem with one info site so we do thie regularly
 * * 5,10,15,20,25 * * /usr/lib/python3/dist-packages/pip install certifi --upgrade # update ssl libraries
