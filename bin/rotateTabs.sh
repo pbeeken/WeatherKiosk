@@ -1,6 +1,6 @@
 #!/bin/bash
 # unclutter needs to be running
 export DISPLAY=:0
-while sleep 20; do
+while sleep 30; do
   xdotool key Ctrl+Tab
 done
