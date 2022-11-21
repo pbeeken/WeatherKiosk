@@ -1,4 +1,4 @@
-# .gitignore 
+# .gitignore
 
 # Temporary files as part of testing and debugging
 *.zip
@@ -7,6 +7,7 @@ __pycache__
 resources/tideGraph.png
 resources/windGraph.png
 resources/tideGraphic.png
+resources/moon*.svg
 tideTable.html
 forecastGrid.html
 env
