@@ -112,13 +112,26 @@ if ! shopt -oq posix; then
   fi
 fi
 
-PATH=/home/pi/.local/bin:$PATH
-# launch xstart
+# PATH=/home/pi/.local/bin:$PATH
+# launch startx if we are not connecting remotely
 if [ -z $DISPLAY ] && [ $(tty) = /dev/tty1 ]
+  # ssh connection. don't start x-window
+
 then
-   ./rotatetabs.sh &
+   # This checks in with github and sees if there are any updates.
+   /bin/bash /home/pi/WeatherKiosk/bin/updateSystem.sh
+
+   # This prevents the 'crash report' in case there was a power outage.
+   sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' /home/pi/.config/chromium/Default/Preferences
+   sed -i 's/"exit_type":"Crashed"/"exit_type":"Normal"/' /home/pi/.config/chromium/Default/Preferences
+
    cd WeatherKiosk/
-   python -m http.server --cgi -d WeatherKiosk/ &
+
+   # update tables and graphs
+   /bin/bash /home/pi/WeatherKiosk/bin/updateTides.sh
+   /bin/bash /home/pi/WeatherKiosk/bin/updateWinds.sh
+
+   #launch the server
+   python -m http.server --cgi &
    startx
 fi
-

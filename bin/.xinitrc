@@ -4,12 +4,12 @@ xset -dpms
 xset s off
 xset s noblank
 
+# this is now in .bashrc
 # sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' ~/.config/chromium/Default/Preferences
 # sed -i 's/"exit_type":"Crashed"/"exit_type": "Normal"/' ~/.config/chromium/Default/Preferences
 
 cd /home/pi
 unclutter &
-testRotate
 
 theDay=`date +"%a"`
 

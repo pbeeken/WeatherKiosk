@@ -1,4 +1,9 @@
 #!/bin/bash
+#
+# This tests if the unclutter daemon is running and launches
+# it if it isn't running. rotateTabs needs unclutter to pass
+# keystrokes to the foremost application in the xwindow.
+#
 pid=0`pidof unclutter`
 if [ $pid -gt 0 ]; then
   echo "unclutter operational"
