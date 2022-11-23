@@ -7,6 +7,7 @@ KIOSK="$HOME/WeatherKiosk"
 
 # Move to kiosk folder
 cd $KIOSK
+git fetch # update from upstream (nothing is overwritten)
 
 # fetch from git any updates
 localHash="`git rev-parse HEAD`"
