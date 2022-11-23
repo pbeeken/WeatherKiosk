@@ -188,6 +188,26 @@ function updateSunRiseSunset() {
 }
 
 /**
+ * update the NOAA NWS gif for current radar in KOKX
+ * Initial image set in html should be...
+ *    "https://radar.weather.gov/ridge/standard/KOKX_loop.gif"
+ */
+function updateRadarView() {
+    try {
+        let now = Date.now();
+        let origImg = document.getElementById('radar').src;
+        origImg = origImg.split('?')[0];
+        document.getElementById('radar').src = origImg + '?' + now; // trick to force an image refresh with the same URL
+    } catch (err) {
+        // whatever has gone wrong just try again in a couple of seconds
+        setTimeout(updateRadarView, 20 * sec); // rerun in a second or so
+        return;
+    }
+
+    setTimeout(updateRadarView, 5 * min); // rerun in 10 minutes
+}
+
+/**
  * will load the global astroData parameter with the moon and solar data needed for various
  * display routines.
  * @param {Date} testDate is an optional parameter to override the default of 'today'
@@ -213,6 +233,7 @@ function postDataWeather() {
     updateGraphs();
     setTimeout(updateSunRiseSunset, 5 * sec); // first run
     setTimeout(updateLunarData, 3 * sec); // first run
+    setTimeout(updateRadarView, 2 * min); // first run in 2 minutes
 }
 
 /**
