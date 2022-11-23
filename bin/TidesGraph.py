@@ -40,6 +40,7 @@ import matplotlib.pyplot as plt
 from datetime import tzinfo, timedelta, datetime, date
 from pytz import timezone  # should already be part of pandas but it doesn't hurt to do it again.
 import time
+import os
 
 ###
 # With each call we flip the units so we toggle back and
@@ -66,8 +67,10 @@ stationsNearUs = {  'NewRochelleNY':  "8518490",
 
 tideStation = stationsNearUs['RyePlaylandNY']  # Closest one to us with reliable data
 
-pathToResources = "/home/pi/WeatherKiosk/resources/"
-#pathToResources = 'resources\\' # Windows Testing
+if os.name == 'nt':
+    pathToResources = 'resources\\' # Windows Testing
+else:
+    pathToResources = "/home/pi/WeatherKiosk/resources/"
 
 ###
 # import common library
@@ -96,7 +99,7 @@ def makeTideGraph(detailDF, extremaDF):
 
     # Set up the plot and plot the data
     # px = 1/plt.rcParams['figure.dpi']  # pixel in inches (doesn't work if bbox is 'tight')
-    fig, ax = plt.subplots(figsize=(11.5, 4))
+    fig, ax = plt.subplots(figsize=(2*11.5/3, 4))
 
     ax.plot(detailDF['DateTime'], detailDF[gTideUnit], color="blue", alpha=0.8)
 
@@ -133,7 +136,7 @@ def makeTideGraph(detailDF, extremaDF):
         label.set_transform(label.get_transform() + offset)
 
     for label in ax.xaxis.get_minorticklabels():
-        label.set(horizontalalignment='center', color="darkred")
+        label.set(horizontalalignment='center', color="darkred", fontsize=6.5)
 
     ax.grid(True, which='major', linewidth=2, axis='both', alpha=0.7)
     ax.grid(True, which='minor', linestyle="--", axis='both', alpha = 0.5)
