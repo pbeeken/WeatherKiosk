@@ -57,7 +57,7 @@ div.header > .logo {
 
 .box1 {
     grid-column-start: 1;
-    grid-column-end: 4;
+    grid-column-end: 3;
     grid-row-start: 1;
     grid-row-end: 3;
     /* This isn't a good idea: https://stackoverflow.com/questions/492809/when-to-use-img-vs-css-background-image
