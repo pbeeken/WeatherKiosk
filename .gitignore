@@ -1,8 +1,13 @@
 # .gitignore
 
+# base modules
+node_modules
+
 # Temporary files as part of testing and debugging
 *.zip
+bin/EXP_*.sh
 __pycache__
+
 # Files that are generated.
 resources/tideGraph.png
 resources/windGraph.png
@@ -10,6 +15,6 @@ resources/tideGraphic.png
 resources/moon*.svg
 tideTable.html
 forecastGrid.html
+
 env
 .env
-node_modules
