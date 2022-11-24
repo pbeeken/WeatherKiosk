@@ -2,7 +2,7 @@
 #
 # Check in with github to see if there are any updates.
 # Save location...
-currLoc="`pwd`"
+currLoc="$(pwd)"
 KIOSK="$HOME/WeatherKiosk"
 
 # Move to kiosk folder

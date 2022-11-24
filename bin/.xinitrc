@@ -8,7 +8,7 @@ xset s noblank
 cd /home/pi
 unclutter &
 
-theDay=`date +"%a"`
+theDay=$(date +"%a")
 
 if [ $theDay = "Fri" ] || [ $theDay = "Sat" ] || [ $theDay = "Sun" ]
 then

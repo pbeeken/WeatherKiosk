@@ -5,7 +5,7 @@
 cd /home/pi/WeatherKiosk/
 
 # fetch unit cycle (1 or 2) This allows us to switch displayed units from m to ft (international audience)
-TIDECNT=`cat resources/env` || 1
+TIDECNT=$(cat resources/env) || 1
 
 #update variable for unit change
 export TIDECNT=$(( (TIDECNT+1) % 2 ))

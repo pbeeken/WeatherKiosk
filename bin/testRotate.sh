@@ -12,7 +12,7 @@ else
   unclutter &
 fi
 
-pid=0`pidof -x rotateTabs.sh`
+pid=0$(pidof -x rotateTabs.sh)
 if [ $pid -gt 0 ]; then
   echo "rotateTabs operational"
 else

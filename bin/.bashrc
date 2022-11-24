@@ -118,6 +118,9 @@ if [ -z $DISPLAY ] && [ $(tty) = /dev/tty1 ]
   # ssh connection. don't start x-window
 
 then
+   # This delays startup so networking can begin.
+   read -t 10 -p "Wait 10 seconds so networking can begin..."
+
    # This checks in with github and sees if there are any updates.
    /bin/bash /home/pi/WeatherKiosk/bin/updateSystem.sh
 
