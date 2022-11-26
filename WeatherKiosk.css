@@ -47,8 +47,8 @@ div.header > .logo {
 .wrapper {
     position: absolute;
     top: 70px;
-    left: 20px;
-    right: 20px;
+    left: 10px;
+    right: 10px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     column-gap: 5px;

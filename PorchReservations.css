@@ -64,7 +64,7 @@ div.header>.logo {
     grid-column-start: 1;
     grid-column-end: 1;
     grid-row-start: 1;
-    background-color: rgb(217, 202, 228);
+    /* background-color: rgb(217, 202, 228); */
 }
 
 .footer {
