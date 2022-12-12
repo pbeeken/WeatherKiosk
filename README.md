@@ -22,7 +22,7 @@ Another important part to make this project a reality is to turn the whole machi
 Finally is the building of a weatherproof case that allows the Pi to not get too hot. (Fortunately the wall where this is likely to be mounted is just inside a covered area out of direct weather.)  For me, this is the easy part.
 
 ## Making the Pi into a kiosk device
-There is a [seperate document on this](RaspberryPiKiosk.md). There is a lot of helpful information out there but, really, every setup is different and each use case requires tinkering, experimentation and testing. After starting with a full copy of Raspbian and peeling away unneeded software, I downgraded to Raspian Lite and built up.  Because I am running python I needed to get a few important libraries installed that worked correctly on a RPi (*hint, don't use pip in this situation, matplotlib, numpy and pandas need to be built specifically for the arm processor*).  Could I have used node? Sure, but because I am gathering data from disparate sources and wanted the convenience of pandas' robust importing to read and formatting data.  I was even able to write a simple caching tool so I wouldn't be rude to the NWS and NOAA servers.  In short: not a learning curve I wanted to go up right now.
+There is a [seperate document on this](RaspberryPiKiosk.md). There is a lot of helpful information out there but, really, every setup is different and each use case requires tinkering, experimentation and testing. After starting with a full copy of Raspbian and peeling away unneeded software, I downgraded to Raspian Lite and built up.  Because I am running python I needed to get a few important libraries installed that worked correctly on a RPi (*hint, don't use pip in this situation, matplotlib, numpy and pandas need to be built specifically for the arm processor*).  Could I have used node? Sure, but because I am gathering data from disparate sources and wanted the convenience of pandas' robust importing to read and formatting data I'm kinda forced along the python path.  I have since discovered that there is an effort to build a matplotlib type library in ts.  I was even able to write a simple caching tool so I wouldn't be rude to the NWS and NOAA servers.  In short: not a learning curve I wanted to go up right now.
 
 ## Some of the tools I needed to build
 While I had some familiarity with html from back in the days where all pages were built by hand, the huge addition of new tags and 'best practices' of how to set up css was new.  The idea was to let the html do the layout while asynchronous background processes kept the graphics up to date. The main processes that I planed to have running:
@@ -54,3 +54,35 @@ I have added a routine to fetch timing data from the US Naval Observatory.  Beca
  Because there is an interaction between the cgi-bin, timed updates using cron and shell scripts there are a few moving parts that have to inderoperate. The bin/ folder contains the materials that need to run asynchronously with the web page kiosk to update the background information.  In addition there are crontab scripts that have to run as well.
 
 ## Moon
+  Finally I built an background app (triggered by a cgi-bin request) to provide 3 moon 'lunes' to represent the current state of the moon to superimpose on the tide graph (for pure giggles.)  It pulls its information from the USNO who maintain a really equisite REST API.
+
+
+# REEFACTOR 2022
+
+
+## Refactoring 2022
+The final device [tag](Working-V01) worked well the first summer and did exactly what I wanted. Another sailor asked the valid question as to why radar might not be on the screen.
+While the original NOAA radar choked the poor little $\color{red}{Rasp} \Pi$ the new gif animation they released mid-summer 2022 worked perfectly.  So I figured out how to embed it in the page.
+
+This, of course, led to a rethinking of the whole 'full stack' management of the various elements. Instead of carefully choreographing the action with crontab, cgi calls and such
+why not control the whole thing through the web applications.
+
+The hard layout work is done.  I need to
+
+ - Since I a launch the browser on the pi with all the safeties off (it's a kiosk! No one is typing things in.) We can run scripts directly from the code on a schedule we set.
+ - After setting up the frame we only need to toggle the visibility of the three &lt;div>&lt;/div> regions in the middle on a schedule.
+ - This keeps the outer region (with a clock and a sunrise and sunset time) consitstent. I can even put easter eggs in the border area to flag the health of the system.
+
+I created a branch from the main route with the tag `Working-V01` so I could get back to my original kuldgy system.  Now that I know what the final product should look like here is the overall plan.
+
+  - At boot, the system will...
+    - pull the latest changes from git `updateSystem.sh`.
+    - move files where they need to be if not in the "kiosk" folder.
+    - pre-load the initial graphics (all python programs).
+    - launch the browser in kiosk mode.
+
+  - During operations commands from the browser will periodically...
+    - run the graphics commands to update images.
+    - based on the day of the week, cycle through the information screens.
+
+Much of the work will be relocating and consolidating the different codebits.

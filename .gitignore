@@ -2,6 +2,7 @@
 
 # base modules
 node_modules
+deprecated
 
 # Temporary files as part of testing and debugging
 *.zip
