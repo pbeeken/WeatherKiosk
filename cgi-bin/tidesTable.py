@@ -149,3 +149,6 @@ if __name__ == '__main__':                                                      
     refresh()
 
     logging.info("\t...I'm outta here!")
+
+    print("Content-Type: text/plain\n")
+    print("tidesTable done.")

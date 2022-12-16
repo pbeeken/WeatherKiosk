@@ -157,7 +157,7 @@ def refresh():
 
 """
     Entrypoint for the call. expected optional parameters for cgi-call are:
-    units=metric | imperial
+    units=metric | imperial | 1 | 0
     It is expected that the web page runs this as a cgi request every 15 min or so.
 """
 if __name__ == '__main__':                                                               #01234567890123
@@ -173,8 +173,15 @@ if __name__ == '__main__':                                                      
             idx = 1
         elif fs['units'].value == 'imperial':
             idx = 0
+        elif fs['units'].value == '1':
+            idx = 1
+        elif fs['units'].value == '0':
+            idx = 0
 
     gTideUnit = ('Tide [ft]', 'Tide [m]')[idx]
     logging.info(f"\t...using {gTideUnit}")
 
     refresh()
+
+    print("Content-Type: text/plain\n")
+    print("tidesGraph done.")

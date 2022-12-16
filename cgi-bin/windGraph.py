@@ -173,3 +173,6 @@ if __name__ == '__main__':                                                      
         makeWindGraph( theDF[smpl].resample('1H', on='DateTime').mean(), source )
 
     logging.info("\t...I'm outta here!")
+
+    print("Content-Type: text/plain\n")
+    print("windGraph done.")

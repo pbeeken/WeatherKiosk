@@ -142,3 +142,7 @@ if __name__ == '__main__':                                                      
     # copy the html table into the text and write out a new file
     with open(pathToResources + f"..{os.sep}" + forecastFile, "w") as htmlFile:
         htmlFile.write(templateHtml)
+
+
+    print("Content-Type: text/plain\n")
+    print("forcast done.")

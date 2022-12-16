@@ -12,19 +12,19 @@
 
     </head>
     <body>
-        <div id="moonYD">
-            <img class="phase" src="resources/moon_yesterday.svg"/>
-        </div>
-        <div id="moonTD">
-            <img class="phase" src="resources/moon_today.svg"/>
-        </div>
-        <div id="moonTM">
-            <img class="phase" src="resources/moon_tomorrow.svg"/>
-        </div>
         <div class="shell">
             <div class="header">
                 <img class="logo" src="resources/HHYC_Flag.png"alt="HHYC Logo">
                 <span class="title">Horseshoe Harbor Yacht Club Tides, Wind &amp; Weather</span>
+            </div>
+            <div id="moonYD">
+                <img class="phase" src="resources/moon_yesterday.svg"/>
+            </div>
+            <div id="moonTD">
+                <img class="phase" src="resources/moon_today.svg"/>
+            </div>
+            <div id="moonTM">
+                <img class="phase" src="resources/moon_tomorrow.svg"/>
             </div>
             <div class="wrapper">
                 <div class="box1"><img id="tidegraph" src="resources/tideGraph.png" alt="Tide Graph" width="100%"/></div>
@@ -41,11 +41,10 @@
         </div>
     </body>
     <script src="coreScript.js"></script>
-    <script src="timers.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             runClock(document.timeline.currentTime);
-            postDataWeather();
+            buildWeatherPage();
         })
     </script>
 </html>

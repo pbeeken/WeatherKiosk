@@ -1,14 +1,38 @@
 /**
- * Common code between kiosk pages that controls the presentation.
- * TODO: Improve cross platfrom modelling so we can test here and at destination.
+ * Basic definitions for timing.
  */
 const sec = 1000;
 const min = 60 * sec;
 
 /**
- * RunClock
+ * Each of the three entries below carry the following information returned from USNO:
+ * { closestphase: { day: 1, month: 2, phase: 'New Moon', time: '00:46', year: 2022 },
+ *   curphase: 'Waxing Crescent',  day: 4, day_of_week: 'Friday',  fracillum: '15%', isdst: false, label: null, month: 2,
+ *   moondata: [ { phen: 'Rise', time: '09:17' }, { phen: 'Upper Transit', time: '15:12' }, { phen: 'Set', time: '21:19' } ],
+ *   sundata:  [ { phen: 'Begin Civil Twilight', time: '06:34' }, { phen: 'Rise', time: '07:02' }, { phen: 'Upper Transit', time: '12:09' },
+ *               { phen: 'Set', time: '17:16' }, { phen: 'End Civil Twilight', time: '17:45' } ],
+ *   tz: -5,
+ *   year: 2022 }
+ */
+let astroData = {
+    // holds the astronomical data for...
+    yesterday: undefined,
+    today: undefined,
+    tomorrow: undefined,
+};
+
+let moonImage = {
+    // holds the moon image data for...
+    yesterday: undefined,
+    today: undefined,
+    tomorrow: undefined,
+};
+
+/**
+ * runClock
  * This is a self re-asserting timer that displays a running clock in the 'clock'
- * box as the web page is active.
+ * box as the web page is active. This fancyness should be unnecessary as we move to
+ * a one page kiosk with mulitple divs
  */
 function runClock(start) {
     function clockRunner(time) {
@@ -22,16 +46,18 @@ function runClock(start) {
 }
 
 /**
- * UpdateForecast
+ * updateForecast
  * Use javascript to update forecast table
  */
 function updateForecast() {
-    document.getElementById('forecast').src = document.getElementById('forecast').src;
+    const now = new Date();
+    // works for iframes as well.
+    document.getElementById('forecast').src = 'forecastGrid.html?' + now.getMilliseconds();
     setTimeout(updateForecast, 15 * min); // reasonable update for updates
 }
 
 /**
- * UpdateGraphs
+ * updateGraphs
  * Using javascript to update graphs is less disruptive than refreshing the whole screen
  */
 function updateGraphs() {
@@ -46,104 +72,44 @@ function updateGraphs() {
 }
 
 /**
- * Each of the three entries below carry the following information returned from USNO:
- * { closestphase: { day: 1, month: 2, phase: 'New Moon', time: '00:46', year: 2022 },
- *   curphase: 'Waxing Crescent',  day: 4, day_of_week: 'Friday',  fracillum: '15%', isdst: false, label: null, month: 2,
- *   moondata: [ { phen: 'Rise', time: '09:17' }, { phen: 'Upper Transit', time: '15:12' }, { phen: 'Set', time: '21:19' } ],
- *   sundata:  [ { phen: 'Begin Civil Twilight', time: '06:34' }, { phen: 'Rise', time: '07:02' }, { phen: 'Upper Transit', time: '12:09' },
- *               { phen: 'Set', time: '17:16' }, { phen: 'End Civil Twilight', time: '17:45' } ],
- *   tz: -5,
- *   year: 2022 }
+ * loadLunarData
+ * fetch the lunar data slug. It also builds and works out the svg 'lune'
+ * needed for displaying the moon based on the fracillum.
+ * N.B.: if global `astroData` hasn't been populated, it will start the load and reschedule
  */
-let astroData = {
-    yesterday: undefined,
-    today: undefined,
-    tomorrow: undefined,
-};
-
-let moonImage = {
-    yesterday: undefined,
-    today: undefined,
-    tomorrow: undefined,
-};
-
-/**
- * fetchUSNavalObsData
- * @param {Date} theDate
- * @param {'yesterday' | 'today' | 'tomorrow'} when
- */
-async function fetchUSNavalDailyData(theDate, when) {
-    const datestr = theDate.toLocaleDateString();
-    let url = `http://localhost:8000/cgi-bin/usNavObsData.py?date=${datestr}`;
-
-    try {
-        const response = await fetch(url);
-        const sunFetch = await response.json();
-        sunFetch.properties.data.requestedDate = theDate;
-        astroData[when] = sunFetch.properties.data;
-    } catch (error) {
-        console.error(`Failed to fetch ${url}`, error);
-        astroData[when] = { error, response: null };
-    }
-}
-
-/**
- * fetchMoonImage calls the cgi script to build the lunar svg images. N.B. assumes astroData is fully loaded.
- * @param {'yesterday' | 'today' | 'tomorrow'} when
- */
-async function fetchMoonImage(when) {
-    const stage = astroData[when].curphase.split(' ')[0];
-    const fracillum = astroData[when].fracillum.slice(0, -1); // Strip the % off.
-    let url = `http://localhost:8000/cgi-bin/moonPhase.py?fracillum=${fracillum}&stage=${stage}&filename=resources%2Fmoon_${when}.svg`;
-    //console.log(url);
-
-    try {
-        const response = await fetch(url);
-        const moonFetch = await response.json();
-        moonImage[when] = moonFetch;
-    } catch (error) {
-        console.error(`Failed to fetch ${url}`, error);
-        moonImage[when] = { error, response: null };
-    }
-}
-
-/**
- * update the lunar data slug (whereever I decide to put it). It calculates the icon to use
- * for displaying the moon based on the fracillum.
- * IMPORTANT: This presumes the global `astroData` has been populated
- */
-function updateLunarData() {
+function loadLunarData() {
     // Make sure the astroData object is loaded
-    if (astroData == null || astroData.today == null) {
+    if (!astroData || !astroData.yesterday || !astroData.today || !astroData.tomorrow) {
         loadAstroData();
-        setTimeout(updateLunarData, 4 * sec);
+        setTimeout(loadLunarData, 4 * sec);
         return; // do nothing because astroData hasn't been fully populated
     }
 
-    // Make sure the moonImages object are loaded  TODO: May be necessary to load these sequentially.
-    if (moonImage == null || moonImage.today == null || moonImage.tomorrow == null || moonImage.yesterday == null) {
+    // Make sure the moonImages object are loaded
+    if (!moonImage || !moonImage.yesterday || !moonImage.today || !moonImage.tomorrow) {
         fetchMoonImage('today');
         fetchMoonImage('tomorrow');
         fetchMoonImage('yesterday');
-        setTimeout(updateLunarData, 10 * sec);
+        setTimeout(loadLunarData, 10 * sec);
+        return; // do nothing the lunar data is loaded.
     }
 
     document.getElementById('moonYD').getElementsByClassName('phase')[0].src = moonImage.yesterday.filename;
     document.getElementById('moonTD').getElementsByClassName('phase')[0].src = moonImage.today.filename;
     document.getElementById('moonTM').getElementsByClassName('phase')[0].src = moonImage.tomorrow.filename;
 
-    // Reassert for update
-    setTimeout(updateLunarData, 10 * min);
+    // Reassert for update NOTE: Shouldn't need this but for once per day.
+    // setTimeout(loadLunarData, 10 * min);
 }
 
 /**
  * update the sunrise sunset slug in the footer. It displays the current day's data
  * until after sunset when is switches to the next day.
- * IMPORTANT: This presumes the global `astroData` has been populated
+ * N.B.: if global `astroData` hasn't been populated, it will start the load and reschedule
  */
 function updateSunRiseSunset() {
     // We need these items to be populated so we exit quietly in case they are not.
-    if (astroData?.today == null || astroData?.tomorrow == null) {
+    if (!astroData || !astroData.yesterday || !astroData.today || !astroData.tomorrow) {
         loadAstroData();
         setTimeout(updateSunRiseSunset, 3 * sec); // rerun in a second or so
         return; // do nothing because astroData hasn't been fully populated
@@ -186,6 +152,111 @@ function updateSunRiseSunset() {
 }
 
 /**
+ * fetchUSNavalObsData
+ * As the name sez, gets the data from the US Naval Observatory, the
+ * definitive reference for all daily information. We us an external
+ * function through our server because of CORS restrictions within a
+ * browser.
+ * @param {Date} theDate
+ * @param {'yesterday' | 'today' | 'tomorrow'} when
+ */
+async function fetchUSNavalDailyData(theDate, when) {
+    const datestr = theDate.toLocaleDateString();
+    let url = `http://localhost:8000/cgi-bin/usNavObsData.py?date=${datestr}`;
+
+    try {
+        const response = await fetch(url);
+        const sunFetch = await response.json();
+        sunFetch.properties.data.requestedDate = theDate;
+        astroData[when] = sunFetch.properties.data;
+    } catch (error) {
+        console.error(`Failed to fetch ${url}`, error);
+        astroData[when] = { error, response: null };
+    }
+}
+
+/**
+ * fetchMoonImage calls the cgi script to build the lunar svg images.
+ * N.B. assumes astroData is fully loaded.
+ * @param {'yesterday' | 'today' | 'tomorrow'} when
+ */
+async function fetchMoonImage(when) {
+    const stage = astroData[when].curphase.split(' ')[0];
+    const fracillum = astroData[when].fracillum.slice(0, -1); // Strip the % off.
+    let url = `http://localhost:8000/cgi-bin/moonPhase.py?fracillum=${fracillum}&stage=${stage}&filename=resources%2Fmoon_${when}.svg`;
+
+    try {
+        const response = await fetch(url);
+        const moonFetch = await response.json();
+        moonImage[when] = moonFetch;
+    } catch (error) {
+        console.error(`Failed to fetch ${url}`, error);
+        moonImage[when] = { error, response: null };
+    }
+}
+
+/**
+ * updateTideGraphics uses a cgi-call to update the tide images
+ * @param {'metric' | 'imperial'}
+ */
+let lastUnit = 0;
+async function updateGraphics(units) {
+    if (!units) units = lastUnit++;
+
+    let url = `http://localhost:8000/cgi-bin/tidesGraph.py?units=${units}`;
+    await fetch(url)
+        .then((resp) => {
+            //updateGraphs();
+            console.log(resp.text());
+        })
+        .catch((error) => {
+            console.error(`Failed to fetch ${url}`, error);
+        });
+
+    url = `http://localhost:8000/cgi-bin/tidesGraphic.py?units=${units}`;
+    await fetch(url)
+        .then((resp) => {
+            //updateGraphs();
+            console.log(resp.text());
+        })
+        .catch((error) => {
+            console.error(`Failed to fetch ${url}`, error);
+        });
+
+    url = `http://localhost:8000/cgi-bin/tidesTable.py?units=${units}`;
+    await fetch(url)
+        .then((resp) => {
+            //updateGraphs();
+            console.log(resp.text());
+        })
+        .catch((error) => {
+            console.error(`Failed to fetch ${url}`, error);
+        });
+
+    url = `http://localhost:8000/cgi-bin/windGraph.py?units=${units}`;
+    await fetch(url)
+        .then((resp) => {
+            //updateGraphs();
+            console.log(resp.text());
+        })
+        .catch((error) => {
+            console.error(`Failed to fetch ${url}`, error);
+        });
+
+    url = `http://localhost:8000/cgi-bin/forecast.py?units=${units}`;
+    await fetch(url)
+        .then((resp) => {
+            //updateGraphs();
+            console.log(resp.text());
+        })
+        .catch((error) => {
+            console.error(`Failed to fetch ${url}`, error);
+        });
+
+    setTimeout(updateGraphs, 15 * min); // do it again in 15 minutes
+}
+
+/**
  * update the NOAA NWS gif for current radar in KOKX
  * Initial image set in html should be...
  *    "https://radar.weather.gov/ridge/standard/KOKX_loop.gif"
@@ -207,41 +278,59 @@ function updateRadarView() {
 
 /**
  * will load the global astroData parameter with the moon and solar data needed for various
- * display routines.
+ * display routines. This only needs to be done once per day. Since we restart the machine
+ * every morning we run this when the kiosk is loaded. We only run if astroData is empty. This
+ * costs nothing if we simpy run it at the head of any function that needs astroData to run.
  * @param {Date} testDate is an optional parameter to override the default of 'today'
  */
 function loadAstroData(testDate) {
-    let day;
-    if (testDate == null) day = new Date();
-    else day = testDate;
-    day.setDate(day.getDate() - 1);
-    fetchUSNavalDailyData(day, 'yesterday');
-    day.setDate(day.getDate() + 1);
-    fetchUSNavalDailyData(day, 'today');
-    day.setDate(day.getDate() + 1);
-    fetchUSNavalDailyData(day, 'tomorrow');
+    let day = testDate;
+    if (!testDate) day = new Date();
+
+    // load if needed
+    if (!astroData || !astroData.yesterday) {
+        day.setDate(day.getDate() - 1);
+        fetchUSNavalDailyData(day, 'yesterday');
+    }
+
+    // load if needed
+    if (!astroData || !astroData.today) {
+        day.setDate(day.getDate() + 1);
+        fetchUSNavalDailyData(day, 'today');
+    }
+
+    // load if needed
+    if (!astroData || !astroData.tomorrow) {
+        day.setDate(day.getDate() + 1);
+        fetchUSNavalDailyData(day, 'tomorrow');
+    }
 }
 
 /**
- * Post the weather information gained from NWS marine forecast
+ * This is the main entrypoint for populating all the content on this
+ * page. I sets in motion all of the actions that need to be loaded to
+ * complete the up to date content. Many of the routines will automatically
+ * relaunch themselves if dependancies are not in place.  Otherwise they set
+ * their own schedules for re-launching.
  */
-function postDataWeather() {
+function buildWeatherPage() {
     /** Get and post the sunrise and sunset data */
-    loadAstroData();
-    updateGraphs();
+    loadAstroData(); // Basic astronomical information all the other routines need.
+    updateGraphics();
+    setTimeout(loadLunarData, 3 * sec); // hold off a bit and launch to
     setTimeout(updateSunRiseSunset, 5 * sec); // first run
-    setTimeout(updateLunarData, 3 * sec); // first run
-    setTimeout(updateRadarView, 2 * min); // first run in 2 minutes
+    setTimeout(updateRadarView, 1 * min); // first run in 2 minutes
+    setTimeout(updateGraphs, 2 * min); // first run in 2 minutes
 }
 
-/**
- * Schedule the updates needed for a webpage
- */
-function postDataSchedule() {
-    /** Get and post the sunrise and sunset data */
-    loadAstroData();
-    setTimeout(updateSunRiseSunset, 10 * sec); // first run
-}
+// /**
+//  * Schedule the updates needed for a webpage
+//  */
+// function postDataSchedule() {
+//     /** Get and post the sunrise and sunset data */
+//     loadAstroData();
+//     setTimeout(updateSunRiseSunset, 10 * sec); // first run
+// }
 
 /**
  * Test if the network is up or down.
@@ -258,13 +347,15 @@ async function networkUpDown() {
     }
 }
 
-let dayBoatSheet = '';
-let ideal18Sheet = '';
+// let dayBoatSheet = '';
+// let ideal18Sheet = '';
 
 /** For Reservation Sheets Only
  * This is one of many attempts to fix the cache problem of retrieving the Google Sheets
  * page. I have tried to force updating according to recommendations in Stack Exchange to
  * no avail. The problem seems to be some interplay between the browser and Google and intermediate caches
+ * PROBLEM MAY BE SOLVED. Instead of 'publishing' a sheet, make it public (which it is anyway) and
+ * access the content as you would through any browser. It seems to work. No updating necessary.
  */
 function refreshFrames() {
     // const change = '&cachekiller=' + Math.floor(Date.time()/1000); // we need to force the cache to update by passing a bogus tag.
@@ -298,5 +389,5 @@ function refreshFrames() {
 
     console.log('refresh frames NT');
 
-    setTimeout(refreshFrames, 2 * min);
+    //setTimeout(refreshFrames, 2 * min);
 }
