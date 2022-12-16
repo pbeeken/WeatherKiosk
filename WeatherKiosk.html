@@ -3,7 +3,8 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="refresh" content="1800" />
+        <!-- <meta http-equiv="refresh" content="1800" /> -->
+        <link rel="icon" type="image/x-icon" href="/resources/favicon.ico">
         <link rel="preconnect" href="https://fonts.googleapis.com"/>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
         <link href="https://fonts.googleapis.com/css2?family=Trade+Winds&display=swap" rel="stylesheet"/>
@@ -39,7 +40,8 @@
             </div>
         </div>
     </body>
-    <script src="WeatherKiosk.js"></script>
+    <script src="coreScript.js"></script>
+    <script src="timers.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             runClock(document.timeline.currentTime);

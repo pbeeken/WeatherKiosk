@@ -1,0 +1,6 @@
+{
+    "python.pythonPath": "c:\\Users\\paul\\.pyenv\\pyenv-win\\versions\\3.8.2\\python.exe",
+    "python.analysis.typeCheckingMode": "basic"
+
+    //"python.condaPath": "",
+}

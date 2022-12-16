@@ -5,9 +5,9 @@ import logging
 import os
 import sys
 if sys.platform == 'win32':
-  pathToResources = 'resources\\' # Windows Testing
+    pathToResources = 'resources\\' # Windows Testing
 else:
-  pathToResources = "/home/pi/WeatherKiosk/resources/"
+    pathToResources = "/home/pi/WeatherKiosk/resources/"
 
 
 """
@@ -24,7 +24,7 @@ class MarineHTMLParser(HTMLParser):
 
   def __init__(self):
     """
-      init the parser elements
+        init the parser elements
     """
     super(MarineHTMLParser, self).__init__()
     self.inPreString = False
