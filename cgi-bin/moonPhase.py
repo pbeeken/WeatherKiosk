@@ -7,12 +7,21 @@ import cgi
 import json
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+import logging
+
+if os.name == 'nt':
+    pathToResources = 'resources\\' # Windows Testing
+else:
+    pathToResources = "/home/pi/WeatherKiosk/resources/"
 
 ##
 # make a cartoon of a moon with beta % lit
 # param beta is %lit.  -1<0 (waning) to 0 (new moon) to 0<1 (waxing)
 ##
 def makeMoonLune(beta):
+  logging.debug(f"\tgenerating lune: {beta}")
+
   t = np.linspace(0.0, 1.0, 100)
 
   def circFunc(t):
@@ -46,47 +55,59 @@ def makeMoonLune(beta):
 
 
 ###
-# Entrypoint for cgi
+# Entrypoint for the call. expected optional parameters for cgi-call are:
+# fracillum=##
+# stage=Waxing | Waning | Full | New | Last
+# filename=
+# coords=-###.###,+###.###
 ###
-if __name__ == '__main__':
-  #   first fetch the strings passed to us with the fields outlined
-  fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
-  # fs = { 'fracillum':   "23%", 'stage': "Waxing", 'filename': "moon_today.svg" }
+if __name__ == '__main__':                                                               #01234567890123
+    logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\tmoonPhase     \t%(message)s', level=logging.INFO)
 
-  # phase and fracillum is passed from javascript
-  stage = ""
-  fracillum = 0
-  filename = "resources/moon.svg"
-  result = {'rc': 400, 'filename': filename, 'fracillum': 0.0, 'stage': "", 'error':""}
+    fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
+    # e.g. fs = { 'fracillum':   "23%", 'stage': "Waxing", 'filename': "moon_today.svg" }
+    logging.info(f"\tfield storage: {fs}")
 
-  if "fracillum" in fs:
-    fracillum = fs['fracillum'].value
-    fracillum = int(fracillum)/100.  # drop the '%' and convert to fraction
+    # phase and fracillum is passed from javascript
+    stage = ""
+    fracillum = 0.5
+    filename = pathToResources + "moon.svg"
+    result = {'rc': 400, 'filename': filename, 'fracillum': fracillum, 'stage': stage, 'error':""}
 
-  if "stage" in fs:
-    stage = fs['stage'].value
-    result['stage'] = stage
+    if "fracillum" in fs:
+        fracillum = fs['fracillum'].value
+        fracillum = int(fracillum)/100.  # drop the '%' and convert to fraction
+        result['fracillium'] = fracillum
+        logging.debug(f"\tfracillum updated: {fracillum}")
 
-  if "filename" in fs:
-    filename = fs['filename'].value
-    result['filename'] = filename.replace("%2F","/")
+    if "stage" in fs:
+        stage = fs['stage'].value
+        result['stage'] = stage
+        logging.debug(f"\tstage updated: {stage}")
 
+    if "filename" in fs:
+        filename = fs['filename'].value
+        filename = filename.replace("%2F","/")
+        result['filename'] = filename
+        logging.debug(f"\tfilename updated: {filename}")
 
-  if stage.find("Waning")>=0 or stage.find("Last")>=0:
-    fracillum = -fracillum
-  else: # Waxing, First, New, Full
-    fracillum = fracillum
+    if stage.find("Waning")>=0 or stage.find("Last")>=0:
+        fracillum = -fracillum
+    else: # Waxing, First, New, Full
+        fracillum = fracillum
 
-  result['fracillum'] = fracillum
+    try:
+        makeMoonLune(fracillum)
+        plt.savefig(filename, transparent=True)
+        result['rc'] = 200
 
-  try:
-    makeMoonLune(fracillum)
-    plt.savefig(filename, transparent=True)
-    result['rc'] = 200
+    except Exception as ex:
+        result['rc'] = 400
+        result['error'] = f"*{ex}*"
 
-  except Exception as ex:
-    result['rc'] = 400
-    result['error'] = f"*{ex}*"
+    logging.debug(f"\t json: {result}")
+    # Return the content.
+    print("Content-Type: application/json\n")
+    print(json.dumps(result))
 
-  print("Content-Type: application/json\n")
-  print(json.dumps(result))
+    # We're done here.

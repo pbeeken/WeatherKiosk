@@ -11,11 +11,11 @@ TIDECNT=$(cat resources/env) || 1
 export TIDECNT=$(( (TIDECNT+1) % 2 ))
 
 #update the main graph
-python bin/TidesGraph.py
+python bin/tidesGraph.py
 #update the graphic
-python bin/TidesGraphic.py
+python bin/tidesGraphic.py
 #update the table
-python bin/TidesTable.py
+python bin/tidesTable.py
 
 # save the state
 echo "$TIDECNT" > resources/env

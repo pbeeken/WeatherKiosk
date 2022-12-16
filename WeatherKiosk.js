@@ -74,7 +74,7 @@ let moonImage = {
  */
 async function fetchUSNavalDailyData(theDate, when) {
     const datestr = theDate.toLocaleDateString();
-    let url = `http://localhost:8000/cgi-bin/sunFetch.py?date=${datestr}`;
+    let url = `http://localhost:8000/cgi-bin/usNavObsData.py?date=${datestr}`;
 
     try {
         const response = await fetch(url);
@@ -167,9 +167,7 @@ function updateSunRiseSunset() {
 
         if (now > todaySunset)
             // 20 min after sunset (see above) switch to tomorrow's datum
-            document.getElementById(
-                'suncondition'
-            ).innerHTML = `Tomorrow's Sunrise will be at ${theSunTomor[1].time.replace(
+            document.getElementById('suncondition').innerHTML = `Tomorrow's Sunrise will be at ${theSunTomor[1].time.replace(
                 / {2}[DS]T/,
                 ''
             )}, Sunset at ${theSunTomor[3].time.replace(/ {2}[DS]T/, '')}`;

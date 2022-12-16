@@ -39,14 +39,12 @@ import matplotlib.pyplot as plt
 # to a misunderstanding of how important that times be 'aware'.
 from datetime import tzinfo, timedelta, datetime, date
 from pytz import timezone  # should already be part of pandas but it doesn't hurt to do it again.
-import time
+import logging
+import cgi
 import os
 
 ###
-# With each call we flip the units so we toggle back and
-# general unit choice
-#   alternate calls switch back and forth between metric and imperial (we have an international audience)
-gTideUnit = 'Tide [ft]' # 'Tide [m]'  default replaced in main
+# cgi call from browser chooses units
 
 # Global constants we use throughout.
 EST = timezone('America/New_York')
@@ -76,103 +74,102 @@ else:
 # import common library
 from tidedata import fetchDailyTides
 
-###
-# makeTideGraph
-# The business end that makes the fancy graphic that includes a moing line that shows out current time
-# against a graph of the tide height.
-#
-def makeTideGraph(detailDF, extremaDF):
+#@markdown Make the fancy image with next tide
+def makeTideGraphic(extremaDF, detailDF=None):
+    # make up for image import deprecation
+    # import PIL
+    # import urllib.request
     """
-    makeTideGraph
     Make tide ala NOAA from two sets of pandas DataFrames:
     detailDF -- Detailed predicted water levels for complete graph
     extremeDF -- The extrema (highs and lows)
     """
-    global gTideUnit # unit switch flag
+    global gTideUnit
+    lbl = {'H': 'HIGH', 'L': 'LOW'}
 
-    graphFile = pathToResources + "tideGraph.png"
-
-    import matplotlib.transforms
-    import matplotlib.dates as mdates
-
-    today = datetime.now(tz=EST).date()
-
-    # Set up the plot and plot the data
-    # px = 1/plt.rcParams['figure.dpi']  # pixel in inches (doesn't work if bbox is 'tight')
-    fig, ax = plt.subplots(figsize=(2*11.5/3, 4))
-
-    ax.plot(detailDF['DateTime'], detailDF[gTideUnit], color="blue", alpha=0.8)
-
-    # Markers at extrema with square marks
-    ax.scatter(extremaDF['DateTime'], extremaDF[gTideUnit], color="blue", marker="s")
-    for index, row in extremaDF.iterrows():
-        xy = (row['DateTime'], row[gTideUnit])
-        u = gTideUnit.split("[")[1].split("]")[0]   # row['Units']
-        ax.annotate(f'{xy[1]:5.1f} {u[:2]}', xy=xy, xytext=(8,0), textcoords='offset points', color='blue')
-
-    # Set the axis labels
-    # ax.set_xlabel("Date and Time", fontsize=14, fontstyle='italic', color='SlateGray')
-    ax.set_ylabel(f"Tide Level [{u}]", fontsize=14, fontstyle='italic', color='SlateGray')
-    # ~put an alternate axis in meters~ Alternate between meters and feet in 5min intervals
-
-    # Put a vetical bar that marks right now.
     now = datetime.now(tz=EST)
-    (ymin, ymax) = ax.get_ylim()
-    ax.annotate(f"Current Time   {now.time().strftime('%I:%M %p')}", xy=(now, (ymin+ymax)/2), xytext=(-15,-60), textcoords='offset points', color='green', rotation=90.0, alpha=0.6 )
-    ax.vlines(now, ymin=0.1, ymax=0.9, transform=ax.get_xaxis_transform(), colors="green", linestyles='dashed', linewidth=4, alpha=0.7)
 
-    #Fix the time axis
-    ax.xaxis.set_major_locator(mdates.DayLocator(tz=EST))
-    ax.xaxis.set_minor_locator(mdates.HourLocator(interval=4, tz=EST))
+    # imageURL = "https://docs.google.com/drawings/d/e/2PACX-1vRPpyCKk834LQUUwoEWDiopLKIcRscn3AoUPynXzNe6jPRLXWt9TBS90Wwm_MjxVoqezD09hbx_0Sw8/pub?w=225&h=159"
+    # imageRef = PIL.Image.open(urllib.request.urlopen(imageURL))
+    imageRef = pathToResources + "TideBackground.png" # fetch locally (way faster on a pi)
+    imageOverLay = plt.imread(imageRef)
+    # px = 1/plt.rcParams['figure.dpi']  # pixel in inches doesn't quite work when bbox='tight'
+    plt.figure(figsize=(3, 3))
 
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%a, %b %d', tz=EST))
-    ax.xaxis.set_minor_formatter(mdates.DateFormatter('%H:%M', tz=EST))
+    implot = plt.imshow(imageOverLay)
+    implot.axes.get_xaxis().set_visible(False)
+    implot.axes.get_yaxis().set_visible(False)
 
-    dx = 0.; dy = -10/72.
-    offset = matplotlib.transforms.ScaledTranslation(dx, dy, fig.dpi_scale_trans)
-    # Create offset transform by 5 points in x direction
-    for label in ax.xaxis.get_majorticklabels():
-        label.set(horizontalalignment='center', color="darkred", fontweight='bold')
-        label.set_transform(label.get_transform() + offset)
+    hgt = 125 #158
+    wdt = 222 #225
+    lvl = 110
 
-    for label in ax.xaxis.get_minorticklabels():
-        label.set(horizontalalignment='center', color="darkred", fontsize=6.5)
+    upcoming = extremaDF[extremaDF['DateTime']>datetime.now(tz=EST)]
+    nxtTide = upcoming.iloc[0]
+    plt.text(wdt/2, 50, nxtTide['DateTime'].strftime("%I:%M %p"), fontsize=30.0, ha='center' )
+    plt.text(wdt/2, 90, lbl[nxtTide['Type']], fontweight='heavy', color='blue', fontsize=24.0, ha='center')
 
-    ax.grid(True, which='major', linewidth=2, axis='both', alpha=0.7)
-    ax.grid(True, which='minor', linestyle="--", axis='both', alpha = 0.5)
 
-    # fig.show()
-    fig.savefig(graphFile, bbox_inches='tight', transparent=True)
-    plt.close(fig)
+    if nxtTide['Type'] == 'H':
+        len = -50
+    else:
+        len = 50
+    plt.arrow(wdt/6, 90-len/2, 0, len, width=6., color="cyan",
+                length_includes_head=True, alpha=0.6, fill=False, linewidth=2.0)
+
+    # Somehwat kludgy since we know the range is between -1 and 10ft
+    try:
+        current = detailDF[detailDF['DateTime']>datetime.now(tz=EST)]
+        nxtTide = current.iloc[0]
+        level = nxtTide[gTideUnit]
+    except:
+        level = nxtTide[gTideUnit]
+
+    if gTideUnit == 'Tide [ft]':
+        scaledTideHeight = hgt - lvl*(level + 2)/10.
+    else:
+        scaledTideHeight = hgt - lvl*(level + 0.5)/3.0
+
+    plt.title("Next Tide At...")
+    plt.axis('off')
+    t=np.linspace(0,wdt,50)
+    y=scaledTideHeight + np.cos(t/5) * 3
+    plt.fill_between(t,y, color="SkyBlue", alpha=0.50)
+
+    #plt.show()
+    plt.savefig(pathToResources + "tideGraphic.png", bbox_inches='tight', transparent=True)
+    plt.close()
 
 # Should run this every 5 minutes to keep the screen up to date.
 def refresh():
     # Get the data this method tries to fetch from local store first
     (ryePlayDetailDF, ryePlayExtremDF) = fetchDailyTides(tideStation)
 
-    # make the pseudo NOAA tide graph
-    makeTideGraph(ryePlayDetailDF, ryePlayExtremDF)
-
+    # make the pseudo 'next tide' graphic
+    makeTideGraphic(ryePlayExtremDF, ryePlayDetailDF)
 
 """
-We want to run this command peridoically to update the clock
-If we run it within python we run the risk of memory leaks so
-I will run it as a periodic bash shell (we only have to run once every 5min or so)
+    Entrypoint for the call. expected optional parameters for cgi-call are:
+    units=metric | imperial
+    It is expected that the web page runs this as a cgi request every 5 min or so.
 """
-if __name__ == '__main__':
-    import os
+if __name__ == '__main__':                                                               #01234567890123
+    logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\tTideGraphic   \t%(message)s', level=logging.INFO)
 
-    print("Building tide graph...")
-
+    #   first fetch the strings passed to us with the fields outlined
+    fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
+    logging.info(f"\tfield storage: {fs}")
     idx = 0
-    try:
-        idx = int( os.getenv('TIDECNT') )
-    except:
-        pass
+    if "units" in fs:
+        logging.debug(f"\tunits updated: {fs['units'].value}")
+        if fs['units'].value == 'metric':
+            idx = 1
+        elif fs['units'].value == 'imperial':
+            idx = 0
 
     gTideUnit = ('Tide [ft]', 'Tide [m]')[idx]
-    print(f"\t...using {gTideUnit}")
+    logging.info(f"\t...using {gTideUnit}")
 
     refresh()
 
-    print("\t...I'm outta here!")
+    logging.info("\t...I'm outta here!")

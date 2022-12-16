@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
+# Launch the following simple server
 # python -m http.server --bind localhost --cgi 8000
-# python -mwebbrowser http://localhost:8000/cgi-bin/moonData.py
+
 import json
 import cgi
+import ssl
 import logging
 
 # import urllib library
@@ -26,56 +28,60 @@ def isDST(theDate):
     lateDate  = datetime(theDate.year, 10, 6, 2, tzinfo=EST)
 
     if theDate > earlyDate and theDate <= lateDate:
-        return -4
-    return -5
-
+        return "true"
+    return "false"
 
 ###
 #  Fetch the data from the data from the USNO server
 ###
-def fetchOneDayData(theDate,latlong):
-
-    datestr = theDate.strftime("%Y-%m-%d")
-    tz = isDST(theDate)
+def fetchOneDayData(theDate, latlong="40.93,-73.76", timezone="-5"):
+    date = theDate.strftime("%Y-%m-%d")
+    dst = isDST(theDate)
     id = "HHYC_WK"
 
-    url = f"https://aa.usno.navy.mil/api/rstt/oneday?date={datestr}&coords={latlong}&tz={tz}"
+    url = f"https://aa.usno.navy.mil/api/rstt/oneday?id={id}&date={date}&coords={latlong}&tz={timezone}&dst={dst}"
     logging.debug(f"\turl sent: {url}")
 
     # store the response of URL
+    ssl._create_default_https_context = ssl._create_unverified_context  # A logging tool for debugging.
     response = urlopen(url)
     logging.debug(f"\tresponse status: {response.status}")
 
-    # storing the JSON response
-    # from url in data
-    data_json = json.loads(response.read())
-
-    return data_json
+    # storing the JSON response from url in data
+    return json.loads(response.read())
 
 ###
 # Entrypoint for the call. expected optional parameters for cgi-call are:
 # date=mm/dd/yyyy
 # coords=-###.###,+###.###
+# tz=-5
 ###
-if __name__ == '__main__':                                                               #01234567890123
-    logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\tmoonData      \t%(message)s', level=logging.INFO)
+if __name__ == '__main__':
+    logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\tusNavObsData\t%(message)s', level=logging.DEBUG)
 
+    #   first fetch the strings passed to us with the fields outlined
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
     logging.info(f"\tfield storage: {fs}")
 
     # default values
     theDate = datetime.now(tz=EST)
-    coord = "0.0,0.0"
+    coord = "40.93,-73.76"  # default location
+    tz = "-5" # default timezone
 
     if "date" in fs:
-        theDate = datetime.strptime(fs['date'].value, "%m/%d/%Y").replace(tzinfo=EST)
+        passedDate = fs['date'].value
+        theDate = datetime.strptime(passedDate, "%m/%d/%Y").replace(tzinfo=EST)
         logging.debug(f"\tdate updated: {theDate}")
 
     if "coords" in fs:
         coord = fs['coords'].value
         logging.debug(f"\tcoord updated: {coord}")
 
-    result = fetchOneDayData(theDate,coord)
+    if "tz" in fs:
+        tz = fs['tz'].value
+        logging.debug(f"\ttz updated: {tz}")
+
+    result = fetchOneDayData(theDate, latlong=coord, timezone=tz)
     logging.debug(f"\t json: {result}")
 
     # Return the content.

@@ -8,18 +8,13 @@ import numpy as np
 # import matplotlib.pyplot as plt
 
 ###
-# Time libraries we are very dependant on 'aware' times. Most bugs have been traced back 
+# Time libraries we are very dependant on 'aware' times. Most bugs have been traced back
 # to a misunderstanding of how important that times be 'aware'.
 from datetime import tzinfo, timedelta, datetime, date
 from pytz import timezone  # should already be part of pandas but it doesn't hurt to do it again.
-import time
+import logging
 
-# ###
-# # With each call we flip the units so we toggle back and 
-# # general unit choice
-# #   alternate calls switch back and forth between metric and imperial (we have an international audience)
-# gTideUnit = 'Tide [ft]' # 'Tide [m]'
-# # Global constants we use throughout.
+# Global constants we use throughout.
 EST = timezone('America/New_York')
 
 # # values for REST call
@@ -41,7 +36,7 @@ EST = timezone('America/New_York')
 
 ###
 # fetchTideData
-# Get raw data from the NOAA tide database/calculator. Tide information is generated based on a harmonic analysis of 
+# Get raw data from the NOAA tide database/calculator. Tide information is generated based on a harmonic analysis of
 # many years of data. The parameters change every 20 years or so so I could just fetch the numbers but NOAA is cagey
 # about how to input the time (what epoch constitutes 0 for example) So I pull the data based on our location.  What
 # I do to spare the server is to cache the result so I only pull the data once per day.  This way my 'tide' clock can
@@ -134,11 +129,11 @@ def fetchDailyTides(fromTideStation):
 
     # First look for existing data, if not found: create, if found: load and test for age
     try:
-        print("\t...try to read saved data")
+        logging.info("\tLIB:fetchDailyTides...try to read saved data")
         tideDetailDF = pd.read_pickle(detailTidesFile, compression='infer')
         tideExtremDF = pd.read_pickle(extremTidesFile, compression='infer')
     except FileNotFoundError:
-        print("\t...file doesn't exist, creating")
+        logging.info("\tLIB:fetchDailyTides...file doesn't exist, creating")
         # Get the data
         tideDetailDF = fetchTideData(fromTideStation, yesterday.date(), tomorrow.date())
         tideDetailDF.to_pickle(detailTidesFile, compression='infer')
@@ -161,7 +156,7 @@ def fetchDailyTides(fromTideStation):
     selExt = tideExtremDF['DateTime']<tomorrow
 
     tideDetailDF = tideDetailDF[selDet]
-    tideExtremDF = tideExtremDF[selExt]  
-    print(f"\t...start: {tideDetailDF['DateTime'].iloc[0]} end:{tideDetailDF['DateTime'].iloc[-1]}")
+    tideExtremDF = tideExtremDF[selExt]
+    logging.info(f"\tLIB:fetchDailyTides...start: {tideDetailDF['DateTime'].iloc[0]} end:{tideDetailDF['DateTime'].iloc[-1]}")
 
     return (tideDetailDF, tideExtremDF)

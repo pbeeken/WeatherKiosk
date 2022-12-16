@@ -1,11 +1,18 @@
 import numpy as np
 from html.parser import HTMLParser
+import logging
 
-pathToResources = "/home/pi/WeatherKiosk/resources/"
+import os
+import sys
+if sys.platform == 'win32':
+  pathToResources = 'resources\\' # Windows Testing
+else:
+  pathToResources = "/home/pi/WeatherKiosk/resources/"
+
 
 """
 MarineHTMLParser
-    custom extension of HTMLParser to extract informaion from 
+    custom extension of HTMLParser to extract informaion from
     NOAA/NWS Marine Forecasts
 """
 class MarineHTMLParser(HTMLParser):
@@ -46,7 +53,7 @@ class MarineHTMLParser(HTMLParser):
     """
       this is the business end, there are a series of data elements
       (I play the cards I'm dealt) the first is a REGION while the second
-      is a SYNOPSIS slug, the third is the OVERVIEW. Subsequent data 
+      is a SYNOPSIS slug, the third is the OVERVIEW. Subsequent data
       pieces are a sequence of TIME and ADVISORY sequences which seem to
       number around 11.
     """
@@ -63,11 +70,12 @@ class MarineHTMLParser(HTMLParser):
 
 
 """
-We want to run this command peridoically to update the clock. I run it within python 
-we run the risk of memory leaks so I will run it as a periodic bash shell (we only 
-have to run once every 2hrs or so)
+We want to run this command peridoically to update the clock. I run it within python
+we run the risk of memory leaks so I will run it from a fork from the kisok
 """
-if __name__ == '__main__':
+if __name__ == '__main__':                                                               #01234567890123
+    logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\tForecast      \t%(message)s', level=logging.INFO)
+    logging.info("Build wind graph...")
 
     forecastFile = "forecastGrid.html"
     templateFile = "_" + forecastFile
@@ -85,16 +93,12 @@ if __name__ == '__main__':
     """
     The first record is special, it contains general information about the region
     """
-    # print(parser.forecasts[0]['REGION']) # Off. designation for covered area
-    # print('-')
-    # print(parser.forecasts[0]['TIME01']) # Short version of location
-    # print('-')
-    # print(parser.forecasts[0]['ADVISORY01']) # Reason for following forecasts
-    # print('-----------')
-    # print()
+    logging.info(parser.forecasts[0]['REGION']) # Official designation for covered area
+    logging.info(parser.forecasts[0]['TIME01']) # Short version of location
+    logging.info(parser.forecasts[0]['ADVISORY01']) # Reason for following forecasts
 
     """
-    The subsequent records follow the pattern of REGION and a sequence of 
+    The subsequent records follow the pattern of REGION and a sequence of
     Times and Advisories
     """
 #    for j in range(len(parser.forecasts)):
@@ -113,8 +117,8 @@ if __name__ == '__main__':
         '''
     forecastBox = []
     for i in range(np.min([6, len(parser.forecasts)-1]) ):
-        # print(parser.forecasts[6][f"TIME{i+1:02d}"]) # Short version of location
-        # print('==')
+        logging.info(parser.forecasts[6][f"TIME{i+1:02d}"]) # Short version of location
+
         tmeidx = f"TIME{i+1:02d}"
         advidx = f"ADVISORY{i+1:02d}"
         forecastBox.append(f'''
@@ -135,6 +139,6 @@ if __name__ == '__main__':
     templateHtml = templateHtml.replace('<!--Special Warning-->', specialWarning)
 
 
-    # copy the html table into the text and write out a new file 
-    with open(pathToResources + "../" + forecastFile, "w") as htmlFile:
-        htmlFile.write( templateHtml )
+    # copy the html table into the text and write out a new file
+    with open(pathToResources + f"..{os.sep}" + forecastFile, "w") as htmlFile:
+        htmlFile.write(templateHtml)

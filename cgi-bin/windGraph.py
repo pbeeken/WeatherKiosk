@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime, date, time, timedelta
 from pytz import timezone  # should already be part of pandas but it doesn't hurt to do it again.
+import logging
 
 EST = timezone('America/New_York')
 UTC = timezone('UTC')
@@ -12,8 +13,11 @@ UTC = timezone('UTC')
 import matplotlib.transforms
 import matplotlib.dates as mdates
 
-pathToResources = "/home/pi/WeatherKiosk/resources/"
-#pathToResources = 'resources\\' # Windows Testing
+import os
+if os.name == 'nt':
+    pathToResources = 'resources\\' # Windows Testing
+else:
+    pathToResources = "/home/pi/WeatherKiosk/resources/"
 
 # Getting Weather Data from execution rocks (station 44022)  Only needs to run every 15 minutes.
 
@@ -21,11 +25,12 @@ def fetchWindData(source):
   now = datetime.now(tz=EST)
 
   windDF = pd.read_csv(source, delim_whitespace=True, header=[0,1], na_values='MM', nrows=450 )
-  print(f"\t...got {len(windDF)} data values")
+  logging.info(f"\t...got {len(windDF)} data values")
 
   windDF['DateTime'] = windDF[['#YY','MM','DD','hh','mm']].apply(lambda dt: datetime(dt[0], dt[1], dt[2], dt[3], dt[4], tzinfo=UTC).astimezone(EST), axis=1)
   windDF['Time'] = windDF['DateTime'].apply(lambda t: t.time())
   windDF['Date'] = windDF['DateTime'].apply(lambda d: d.date())
+
   # We need to average the components rather than the angles when resamping.
   windDF['WdirSin'] = np.sin(np.radians(windDF['WDIR']))
   windDF['WdirCos'] = np.cos(np.radians(windDF['WDIR']))
@@ -99,7 +104,8 @@ def makeWindGraph(windDF, whereFrom=""):
   old = datetime.now(tz=EST)-tme
   oldmin = np.int32(old.total_seconds()%60)
   oldhrs = np.int32(old.total_seconds()/3600)
-  # print(f"***{tme}, {oldhrs}:{oldmin} old, {np.round(wspd,1)} mph, {np.round(mxsp,1)} mph, {wdir:4.0f}°T, {temp}°C")
+  logging.debug(f"{tme}, {oldhrs}:{oldmin} old, {wspd} mph, {mxsp} mph, {wdir:4.0f}°T, {temp}°C")
+
   plt.text(0.99, 0.90, f"Last readings spd:{wspd}, max:{mxsp}, dir:{windDirection(wdir)}",
         horizontalalignment='right', verticalalignment='center',
         transform=ax.transAxes, color='blue', alpha=0.6 )
@@ -132,8 +138,9 @@ real_KPH_TimeDataFile = "https://www.ndbc.noaa.gov/data/realtime2/KPTN6.txt"
 real_WLI_TimeDataFile = "https://www.ndbc.noaa.gov/data/realtime2/44040.txt"
 
 
-if __name__ == '__main__':
-    print("Build wind graph...")
+if __name__ == '__main__':                                                               #01234567890123
+    logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\tWindGraph     \t%(message)s', level=logging.INFO)
+    logging.info("Build wind graph...")
 
     now = datetime.now().astimezone(EST)
     d = timedelta(days = 2)
@@ -142,28 +149,27 @@ if __name__ == '__main__':
     try:
       source = "Execution Rocks"
       # raise NameError('Skip')
-      print(f"\t...source: {source}")
+      logging.info(f"\t...source: {source}")
       theDF = fetchWindData(real_EXR_TimeDataFile)
       smpl = theDF['DateTime'] > (now - d)
       makeWindGraph( theDF[smpl].resample('1H', on='DateTime').mean(), source )
     except:
-      print("\t... failed")
+      logging.info("\t... failed")
       # if that fails then try western LI buoy
       try:
         source = "Western LI"
         # raise NameError('Skip')
-        print(f"\t...source: {source}")
+        logging.info(f"\t...source: {source}")
         theDF = fetchWindData(real_WLI_TimeDataFile)
         smpl = theDF['DateTime'] > (now - d)
         makeWindGraph( theDF[smpl].resample('1H', on='DateTime').mean(), source )
       except:
-        print("\t... failed")
+        logging.info("\t... failed")
         # if that fails then settle on Kings Point (never fails)
         source = "Kings Point LI"
-        print(f"\t...source: {source}")
+        logging.info(f"\t...source: {source}")
         theDF = fetchWindData(real_KPH_TimeDataFile)
         smpl = theDF['DateTime'] > (now - d)
         makeWindGraph( theDF[smpl].resample('1H', on='DateTime').mean(), source )
 
-    # print(theDF.rank)
-    print("\t...I'm outta here!")
+    logging.info("\t...I'm outta here!")
