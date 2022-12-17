@@ -88,13 +88,6 @@ function updateResources(what) {
         // tide table
         document.getElementById('forecast').src = 'resources/tmp/forecastGrid.html?' + now.getMilliseconds();
     }
-
-    // TODO: Shouldn't need to asynchronously update as this is done upon fetch.
-    // if (what === 'timed') {
-    //     // auto updte in five minutes
-    //     setTimeout(updateResources, 5 * min);
-    //     console.log('rerunning updateResources in 5 minutes.');
-    // }
 }
 
 /** buildLunarData
@@ -250,7 +243,7 @@ async function fetchResources(what, units) {
     }
 
     if (what === 'tidegraphic' || what === 'all') {
-        let url = `http://localhost:8000/cgi-bin/tidesGraphic.py?units=${units}`;
+        let url = `http://localhost:8000/cgi-bin/tidesGraphic.py?time=12`;
         await fetch(url)
             .then((response) => response.text())
             .then((text) => {
@@ -303,7 +296,9 @@ async function fetchResources(what, units) {
 
     if (what === 'all') {
         // rinse and repeat
-        setTimeout(()=>{fetchResources('all')}, 10 * min); // do it again in 10 minutes
+        setTimeout(() => {
+            fetchResources('all');
+        }, 10 * min); // do it again in 10 minutes
     }
 }
 

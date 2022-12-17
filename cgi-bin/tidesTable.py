@@ -50,22 +50,22 @@ import os
 EST = timezone('America/New_York')
 
 # values for REST call
-measureUnits = ("english", "metric")
-stationsNearUs = {  'NewRochelleNY':  "8518490",
-                    'RyePlaylandNY':  "8518091",
-                    'CosCobCT':       "8469549",
-                    'ThrogsNeckBrNY': "8518526",
-                    'KingsPointNY':   "8516945",
-                    'BatteryNY':      "8518750",
-                    'BridgeportCT':   "8467150",
-                    'NewHavenCT':     "8465705",
-                    "NewboldPA":      "8548989",  # Way up the Chesapeake River
-                    'TurkeyPointNY':  "8518962",  # Way up the Hudson River
+measureUnits = ('english', 'metric')
+stationsNearUs = {  'NewRochelleNY':  '8518490',
+                    'RyePlaylandNY':  '8518091',
+                    'CosCobCT':       '8469549',
+                    'ThrogsNeckBrNY': '8518526',
+                    'KingsPointNY':   '8516945',
+                    'BatteryNY':      '8518750',
+                    'BridgeportCT':   '8467150',
+                    'NewHavenCT':     '8465705',
+                    'NewboldPA':      '8548989',  # Way up the Chesapeake River
+                    'TurkeyPointNY':  '8518962',  # Way up the Hudson River
                     }
 
 tideStation = stationsNearUs['RyePlaylandNY']  # Closest one to us with reliable data
 
-pathToResources = "resources/"
+pathToResources = 'resources/'
 
 ###
 # import common library
@@ -82,8 +82,8 @@ def makeTideTable(extremaDF):
 
     now = datetime.now(tz=EST)
 
-    tideFile = "tideTable.html"
-    templateFile = "_" + tideFile
+    tideFile = 'tideTable.html'
+    templateFile = '_' + tideFile
 
     # pick the units based on gTideUnit
 
@@ -91,25 +91,25 @@ def makeTideTable(extremaDF):
     futureTides = extremaDF[sel]
 
     htmlText = futureTides[:4].to_html(
-#                            columns=['DateTime', 'Time', 'Type', gTideUnit],
+#                           columns=['DateTime', 'Time', 'Type', gTideUnit],
                             columns=['DateTime', 'Type', gTideUnit],
                             index=False,
                             border=0,
                             formatters={
                                 gTideUnit: lambda x:f"{x:6.1f}",
                                 'Type': lambda l: lbl[l],
-                                'DateTime': lambda dt: dt.strftime("%a %I:%M %p")
+                                'DateTime': lambda dt: dt.strftime('%a %I:%M %p')
                                 },
-#                            table_id = "tideTable"
+#                           table_id = 'tideTable'
                             )
 
     #open the template file
-    with open(pathToResources + templateFile, "r") as template:
+    with open(pathToResources + templateFile, 'r') as template:
         templateHTML = template.readlines()
  #   templateFile.close()
 
-    # copy the html table into the text and write out a new file   "../" +
-    with open(pathToResources + "tmp/" +  tideFile, "w") as html:
+    # copy the html table into the text and write out a new file   '../' +
+    with open(pathToResources + 'tmp/' +  tideFile, 'w') as html:
         html.write( ("".join(templateHTML)).replace('<!--Table Place-->', htmlText) )
 
 # Should run this every 5 minutes to keep the screen up to date.
@@ -127,14 +127,14 @@ If we run it within python we run the risk of memory leaks so
 I will run it as a periodic bash shell (we only have to run once every 5min or so)
 """
 if __name__ == '__main__':                                                               #01234567890123
-    prog = "TidesTable   "
+    prog = 'TidesTable   '
     logging.basicConfig(filename='WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
 
     #   first fetch the strings passed to us with the fields outlined
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
     logging.info(f"\tfield storage: {fs}")
     idx = 0
-    if "units" in fs:
+    if 'units' in fs:
         logging.debug(f"\tunits updated: {fs['units'].value}")
         if (fs['units'].value == 'metric') or (fs['units'].value == '1'):
             idx = 1
@@ -146,7 +146,7 @@ if __name__ == '__main__':                                                      
 
     refresh()
 
-    logging.info("\t...I'm outta here!")
+    logging.info('\t...done')
 
-    print("Content-Type: text/plain\n")
-    print("tidesTable done.")
+    print('Content-Type: text/plain\n')
+    print('tidesTable done.')

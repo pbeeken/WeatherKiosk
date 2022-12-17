@@ -53,22 +53,22 @@ gTideUnit = 'Tide [ft]' # 'Tide [m]'  default replaced in main
 EST = timezone('America/New_York')
 
 # values for REST call
-measureUnits = ("english", "metric")
-stationsNearUs = {  'NewRochelleNY':  "8518490",
-                    'RyePlaylandNY':  "8518091",
-                    'CosCobCT':       "8469549",
-                    'ThrogsNeckBrNY': "8518526",
-                    'KingsPointNY':   "8516945",
-                    'BatteryNY':      "8518750",
-                    'BridgeportCT':   "8467150",
-                    'NewHavenCT':     "8465705",
-                    "NewboldPA":      "8548989",  # Way up the Chesapeake River
-                    'TurkeyPointNY':  "8518962",  # Way up the Hudson River
+measureUnits = ('english', 'metric')
+stationsNearUs = {  'NewRochelleNY':  '8518490',
+                    'RyePlaylandNY':  '8518091',
+                    'CosCobCT':       '8469549',
+                    'ThrogsNeckBrNY': '8518526',
+                    'KingsPointNY':   '8516945',
+                    'BatteryNY':      '8518750',
+                    'BridgeportCT':   '8467150',
+                    'NewHavenCT':     '8465705',
+                    'NewboldPA':      '8548989',  # Way up the Chesapeake River
+                    'TurkeyPointNY':  '8518962',  # Way up the Hudson River
                     }
 
 tideStation = stationsNearUs['RyePlaylandNY']  # Closest one to us with reliable data
 
-pathToResources = "resources/"
+pathToResources = 'resources/'
 
 ###
 # import common library
@@ -88,7 +88,7 @@ def makeTideGraph(detailDF, extremaDF):
     """
     global gTideUnit # unit switch flag
 
-    graphFile = pathToResources + "tmp/"+ "tideGraph.png"
+    graphFile = pathToResources + 'tmp/' +  'tideGraph.png'
 
     import matplotlib.transforms
     import matplotlib.dates as mdates
@@ -99,17 +99,17 @@ def makeTideGraph(detailDF, extremaDF):
     # px = 1/plt.rcParams['figure.dpi']  # pixel in inches (doesn't work if bbox is 'tight')
     fig, ax = plt.subplots(figsize=(2*11.5/3, 4))
 
-    ax.plot(detailDF['DateTime'], detailDF[gTideUnit], color="blue", alpha=0.8)
+    ax.plot(detailDF['DateTime'], detailDF[gTideUnit], color='blue', alpha=0.8)
 
     # Markers at extrema with square marks
-    ax.scatter(extremaDF['DateTime'], extremaDF[gTideUnit], color="blue", marker="s")
+    ax.scatter(extremaDF['DateTime'], extremaDF[gTideUnit], color='blue', marker='s')
     for index, row in extremaDF.iterrows():
         xy = (row['DateTime'], row[gTideUnit])
-        u = gTideUnit.split("[")[1].split("]")[0]   # row['Units']
+        u = gTideUnit.split('[')[1].split(']')[0]   # row['Units']
         ax.annotate(f'{xy[1]:5.1f} {u[:2]}', xy=xy, xytext=(8,0), textcoords='offset points', color='blue')
 
     # Set the axis labels
-    # ax.set_xlabel("Date and Time", fontsize=14, fontstyle='italic', color='SlateGray')
+    # ax.set_xlabel('Date and Time', fontsize=14, fontstyle='italic', color='SlateGray')
     ax.set_ylabel(f"Tide Level [{u}]", fontsize=14, fontstyle='italic', color='SlateGray')
     # ~put an alternate axis in meters~ Alternate between meters and feet in 5min intervals
 
@@ -117,7 +117,7 @@ def makeTideGraph(detailDF, extremaDF):
     now = datetime.now(tz=EST)
     (ymin, ymax) = ax.get_ylim()
     ax.annotate(f"Current Time   {now.time().strftime('%I:%M %p')}", xy=(now, (ymin+ymax)/2), xytext=(-15,-60), textcoords='offset points', color='green', rotation=90.0, alpha=0.6 )
-    ax.vlines(now, ymin=0.1, ymax=0.9, transform=ax.get_xaxis_transform(), colors="green", linestyles='dashed', linewidth=4, alpha=0.7)
+    ax.vlines(now, ymin=0.1, ymax=0.9, transform=ax.get_xaxis_transform(), colors='green', linestyles='dashed', linewidth=4, alpha=0.7)
 
     #Fix the time axis
     ax.xaxis.set_major_locator(mdates.DayLocator(tz=EST))
@@ -130,14 +130,14 @@ def makeTideGraph(detailDF, extremaDF):
     offset = matplotlib.transforms.ScaledTranslation(dx, dy, fig.dpi_scale_trans)
     # Create offset transform by 5 points in x direction
     for label in ax.xaxis.get_majorticklabels():
-        label.set(horizontalalignment='center', color="darkred", fontweight='bold')
+        label.set(horizontalalignment='center', color='darkred', fontweight='bold')
         label.set_transform(label.get_transform() + offset)
 
     for label in ax.xaxis.get_minorticklabels():
-        label.set(horizontalalignment='center', color="darkred", fontsize=6.5)
+        label.set(horizontalalignment='center', color='darkred', fontsize=6.5)
 
     ax.grid(True, which='major', linewidth=2, axis='both', alpha=0.7)
-    ax.grid(True, which='minor', linestyle="--", axis='both', alpha = 0.5)
+    ax.grid(True, which='minor', linestyle='--', axis='both', alpha = 0.5)
 
     # fig.show()
     fig.savefig(graphFile, bbox_inches='tight', transparent=True)
@@ -158,14 +158,14 @@ def refresh():
     It is expected that the web page runs this as a cgi request every 15 min or so.
 """
 if __name__ == '__main__':
-    prog = "TideGraph    "
+    prog = 'TideGraph    '
     logging.basicConfig(filename='WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
 
     #   first fetch the strings passed to us with the fields outlined
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
     logging.info(f"\tfield storage: {fs}")
     idx = 0
-    if "units" in fs:
+    if 'units' in fs:
         logging.debug(f"\tunits updated: {fs['units'].value}")
         if (fs['units'].value == 'metric') or (fs['units'].value == '1'):
             idx = 1
@@ -177,5 +177,5 @@ if __name__ == '__main__':
 
     refresh()
 
-    print("Content-Type: text/plain\n")
-    print("tidesGraph done.")
+    print('Content-Type: text/plain\n')
+    print('tidesGraph done.')

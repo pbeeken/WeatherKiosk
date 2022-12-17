@@ -35,9 +35,9 @@ def isDST(theDate):
 ###
 def fetchMoonPhasesData(theDate, numPhases):
 
-    date = theDate.strftime("%Y-%m-%d")
+    date = theDate.strftime('%Y-%m-%d')
     tz = isDST(theDate)
-    id = "HHYC_WK"
+    id = 'HHYC_WK'
 
     url = f"https://aa.usno.navy.mil/api/moon/phases/date?id={id}&date={date}&nump={numPhases}"
     logging.debug(f"\turl sent: {url}")
@@ -55,8 +55,8 @@ def fetchMoonPhasesData(theDate, numPhases):
 # nphases=##
 ###
 if __name__ == '__main__':                                                               #01234567890123
-    	prog = "moonFetch       "
-	logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.DEBUG)
+    prog = 'moonFetch       '
+    logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.DEBUG)
 
     # first fetch the strings passed to us with the fields outlined
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
@@ -66,11 +66,11 @@ if __name__ == '__main__':                                                      
     theDate = datetime.now(tz=EST)
     nPhases = 8  # default numbers
 
-    if "date" in fs:
-        theDate = datetime.strptime(fs['date'].value, "%m/%d/%Y").replace(tzinfo=EST)
+    if 'date' in fs:
+        theDate = datetime.strptime(fs['date'].value, '%m/%d/%Y').replace(tzinfo=EST)
         logging.debug(f"\tdate updated: {theDate}")
 
-    if "nphases" in fs:
+    if 'nphases' in fs:
         nPhases = fs['nphases'].value
         logging.debug(f"\tnphases updated: {nPhases}")
 
@@ -78,7 +78,5 @@ if __name__ == '__main__':                                                      
     logging.debug(f"\t json: {result}")
 
     # Return the content.
-    print("Content-Type: application/json\n")
+    print('Content-Type: application/json\n')
     print(json.dumps(result))
-
-    # We're done here.

@@ -19,17 +19,17 @@ import logging
 EST = timezone('America/New_York')
 
 # # values for REST call
-# measureUnits = ("english", "metric")
-# stationsNearUs = {  'NewRochelleNY':  "8518490",
-#                     'RyePlaylandNY':  "8518091",
-#                     'CosCobCT':       "8469549",
-#                     'ThrogsNeckBrNY': "8518526",
-#                     'KingsPointNY':   "8516945",
-#                     'BatteryNY':      "8518750",
-#                     'BridgeportCT':   "8467150",
-#                     'NewHavenCT':     "8465705",
-#                     "NewboldPA":      "8548989",  # Way up the Chesapeake River
-#                     'TurkeyPointNY':  "8518962",  # Way up the Hudson River
+# measureUnits = ('english', 'metric')
+# stationsNearUs = {  'NewRochelleNY':  '8518490',
+#                     'RyePlaylandNY':  '8518091',
+#                     'CosCobCT':       '8469549',
+#                     'ThrogsNeckBrNY': '8518526',
+#                     'KingsPointNY':   '8516945',
+#                     'BatteryNY':      '8518750',
+#                     'BridgeportCT':   '8467150',
+#                     'NewHavenCT':     '8465705',
+#                     'NewboldPA':      '8548989',  # Way up the Chesapeake River
+#                     'TurkeyPointNY':  '8518962',  # Way up the Hudson River
 #                     }
 
 # tideStation = stationsNearUs['RyePlaylandNY']  # Closest one to us with reliable data
@@ -43,7 +43,7 @@ EST = timezone('America/New_York')
 # I do to spare the server is to cache the result so I only pull the data once per day.  This way my 'tide' clock can
 # update the current pointer once per 5 minutes without hammering on the server.  This is just the inet fetch part.
 #
-def fetchTideData(station, begDate, endDate, datum="MLLW", interval=15, timezone="LST_LDT", units="english", clock="24hour"):
+def fetchTideData(station, begDate, endDate, datum='MLLW', interval=15, timezone='LST_LDT', units='english', clock='24hour'):
   """
   fetchTideData
   Fetch tide from NOAA Site using REST -> pandas DataFrame with tide levels
@@ -52,11 +52,11 @@ def fetchTideData(station, begDate, endDate, datum="MLLW", interval=15, timezone
     begDate -- start date (only fetches using day)
     endDate -- end date
 
-    units -- "english" | "metric" # units
-    interval -- "hilo" | "h" | 30 | 15 | 6 | 1 # hi and lo, hourly, min intervals
-    datum -- "MLLW" | "STND" | "MHHW" | "MHW" | "MTL" | "MLW" | "MLLW" | "NAVD" # height references
-    tzone -- "LST_LDT" | "LST" | "GMT" # Local with dst, local or GMT
-    clock -- "24hour" | "12hour" # clock style
+    units -- 'english' | 'metric' # units
+    interval -- 'hilo' | 'h' | 30 | 15 | 6 | 1 # hi and lo, hourly, min intervals
+    datum -- 'MLLW' | 'STND' | 'MHHW' | 'MHW' | 'MTL' | 'MLW' | 'MLLW' | 'NAVD' # height references
+    tzone -- 'LST_LDT' | 'LST' | 'GMT' # Local with dst, local or GMT
+    clock -- '24hour' | '12hour' # clock style
 
     This routine checks a local cache cache so that we don't have to fetch that doesn't change
     that much over a 24 hour period.
@@ -79,7 +79,7 @@ def fetchTideData(station, begDate, endDate, datum="MLLW", interval=15, timezone
 
   # convert string dates to proper date times and other conveniences for future expansion
   #TODO: Consider only fetching GMT but passing tz object as local timezone
-  tideDF['DateTime'] = tideDF['Date Time'].apply(lambda x:datetime.strptime(x, "%Y-%m-%d %H:%M").replace(tzinfo=EST))
+  tideDF['DateTime'] = tideDF['Date Time'].apply(lambda x:datetime.strptime(x, '%Y-%m-%d %H:%M').replace(tzinfo=EST))
 
   # Provide a column with delta hours for calculations (used mostly for debugging)
   minTime = tideDF['DateTime'].min()
@@ -130,11 +130,11 @@ def fetchDailyTides(fromTideStation):
 
     # First look for existing data, if not found: create, if found: load and test for age
     try:
-        logging.info("\tLIB:fetchDailyTides...try to read saved data")
+        logging.info('\tLIB:fetchDailyTides...try to read saved data')
         tideDetailDF = pd.read_pickle(detailTidesFile, compression='infer')
         tideExtremDF = pd.read_pickle(extremTidesFile, compression='infer')
     except FileNotFoundError:
-        logging.info("\tLIB:fetchDailyTides...file doesn't exist, creating")
+        logging.info('\tLIB:fetchDailyTides...file doesnt exist, creating')
         # Get the data
         tideDetailDF = fetchTideData(fromTideStation, yesterday.date(), tomorrow.date())
         tideDetailDF.to_pickle(detailTidesFile, compression='infer')

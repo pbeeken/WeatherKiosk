@@ -28,16 +28,16 @@ def isDST(theDate):
     lateDate  = datetime(theDate.year, 10, 6, 2, tzinfo=EST)
 
     if theDate > earlyDate and theDate <= lateDate:
-        return "true"
-    return "false"
+        return 'true'
+    return 'false'
 
 ###
 #  Fetch the data from the data from the USNO server
 ###
-def fetchOneDayData(theDate, latlong="40.93,-73.76", timezone="-5"):
-    date = theDate.strftime("%Y-%m-%d")
+def fetchOneDayData(theDate, latlong='40.93,-73.76', timezone='-5'):
+    date = theDate.strftime('%Y-%m-%d')
     dst = isDST(theDate)
-    id = "HHYC_WK"
+    id = 'HHYC_WK'
 
     url = f"https://aa.usno.navy.mil/api/rstt/oneday?id={id}&date={date}&coords={latlong}&tz={timezone}&dst={dst}"
     logging.debug(f"\turl sent: {url}")
@@ -57,7 +57,7 @@ def fetchOneDayData(theDate, latlong="40.93,-73.76", timezone="-5"):
 # tz=-5
 ###
 if __name__ == '__main__':
-    prog = "usNavObsData "
+    prog = 'usNavObsData '
     logging.basicConfig(filename=f'WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.DEBUG)
 
     #   first fetch the strings passed to us with the fields outlined
@@ -66,19 +66,19 @@ if __name__ == '__main__':
 
     # default values
     theDate = datetime.now(tz=EST)
-    coord = "40.93,-73.76"  # default location
-    tz = "-5" # default timezone
+    coord = '40.93,-73.76'  # default location
+    tz = '-5' # default timezone
 
-    if "date" in fs:
+    if 'date' in fs:
         passedDate = fs['date'].value
-        theDate = datetime.strptime(passedDate, "%m/%d/%Y").replace(tzinfo=EST)
+        theDate = datetime.strptime(passedDate, '%m/%d/%Y').replace(tzinfo=EST)
         logging.debug(f"\tdate updated: {theDate}")
 
-    if "coords" in fs:
+    if 'coords' in fs:
         coord = fs['coords'].value
         logging.debug(f"\tcoord updated: {coord}")
 
-    if "tz" in fs:
+    if 'tz' in fs:
         tz = fs['tz'].value
         logging.debug(f"\ttz updated: {tz}")
 
@@ -86,7 +86,5 @@ if __name__ == '__main__':
     logging.debug(f"\t json: {result}")
 
     # Return the content.
-    print("Content-Type: application/json\n")
+    print('Content-Type: application/json\n')
     print(json.dumps(result))
-
-    # We're done here.

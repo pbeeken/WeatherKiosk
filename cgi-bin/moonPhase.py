@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import os
 import logging
 
-pathToResources = "resources/"
+pathToResources = 'resources/'
 
 ##
 # make a cartoon of a moon with beta % lit
@@ -36,17 +36,17 @@ def makeMoonLune(beta):
   plt.ylim(bottom=-1.0, top=1.0)
 
   (xc, yc) = circFunc(t)
-  plt.plot(xc, yc, "0.0")   # right half
-  plt.plot(-xc, yc, "0.0")  # left half
+  plt.plot(xc, yc, '0.0')   # right half
+  plt.plot(-xc, yc, '0.0')  # left half
 
   (xe, ye) = ellipFunc(t, beta)
-  plt.plot(xe, ye, "0.2")
+  plt.plot(xe, ye, '0.2')
   if beta<=0:
-    plt.fill_betweenx(yc, -xc, xe, facecolor="0.9")
-    plt.fill_betweenx(yc, xe, xc, facecolor="0.1")
+    plt.fill_betweenx(yc, -xc, xe, facecolor='0.9')
+    plt.fill_betweenx(yc, xe, xc, facecolor='0.1')
   else:
-    plt.fill_betweenx(yc, -xc, xe, facecolor="0.1")
-    plt.fill_betweenx(yc, xe, xc, facecolor="0.9")
+    plt.fill_betweenx(yc, -xc, xe, facecolor='0.1')
+    plt.fill_betweenx(yc, xe, xc, facecolor='0.9')
 
   plt.axis('off')
 
@@ -59,36 +59,36 @@ def makeMoonLune(beta):
 # coords=-###.###,+###.###
 ###
 if __name__ == '__main__':                                                               #01234567890123
-    prog = "moonPhase    "
-    logging.basicConfig(filename='WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
+    prog = 'moonPhase    '
+    logging.basicConfig(filename='WeatherKiosk.log', format=f"%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s", level=logging.INFO)
 
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
-    # e.g. fs = { 'fracillum':   "23%", 'stage': "Waxing", 'filename': "moon_today.svg" }
+    # e.g. fs = { 'fracillum':   '23%', 'stage': 'Waxing', 'filename': 'moon_today.svg' }
     logging.info(f"\tfield storage: {fs}")
 
     # phase and fracillum is passed from javascript
     stage = ""
     fracillum = 0.5
-    filename = pathToResources + "moon.svg"
+    filename = pathToResources + 'moon.svg'
     result = {'rc': 400, 'filename': filename, 'fracillum': fracillum, 'stage': stage, 'error':""}
 
-    if "fracillum" in fs:
+    if 'fracillum' in fs:
         fracillum = fs['fracillum'].value
         fracillum = int(fracillum)/100.  # drop the '%' and convert to fraction
         result['fracillium'] = fracillum
         logging.debug(f"\tfracillum updated: {fracillum}")
 
-    if "stage" in fs:
+    if 'stage' in fs:
         stage = fs['stage'].value
         result['stage'] = stage
         logging.debug(f"\tstage updated: {stage}")
 
-    if "filename" in fs:
+    if 'filename' in fs:
         filename = fs['filename'].value
-        result['filename'] = pathToResources  + "tmp/" + filename
+        result['filename'] = pathToResources  + 'tmp/' + filename
         logging.debug(f"\tfilename updated: {filename}")
 
-    if stage.find("Waning")>=0 or stage.find("Last")>=0:
+    if stage.find('Waning')>=0 or stage.find('Last')>=0:
         fracillum = -fracillum
     else: # Waxing, First, New, Full
         fracillum = fracillum
@@ -103,8 +103,7 @@ if __name__ == '__main__':                                                      
         result['error'] = f"*{ex}*"
 
     logging.debug(f"\t json: {result}")
-    # Return the content.
-    print("Content-Type: application/json\n")
-    print(json.dumps(result))
 
-    # We're done here.
+    # Return the content.
+    print('Content-Type: application/json\n')
+    print(json.dumps(result))

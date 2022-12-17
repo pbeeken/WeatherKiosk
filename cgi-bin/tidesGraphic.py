@@ -50,22 +50,22 @@ import os
 EST = timezone('America/New_York')
 
 # values for REST call
-measureUnits = ("english", "metric")
-stationsNearUs = {  'NewRochelleNY':  "8518490",
-                    'RyePlaylandNY':  "8518091",
-                    'CosCobCT':       "8469549",
-                    'ThrogsNeckBrNY': "8518526",
-                    'KingsPointNY':   "8516945",
-                    'BatteryNY':      "8518750",
-                    'BridgeportCT':   "8467150",
-                    'NewHavenCT':     "8465705",
-                    "NewboldPA":      "8548989",  # Way up the Chesapeake River
-                    'TurkeyPointNY':  "8518962",  # Way up the Hudson River
+measureUnits = ('english', 'metric')
+stationsNearUs = {  'NewRochelleNY':  '8518490',
+                    'RyePlaylandNY':  '8518091',
+                    'CosCobCT':       '8469549',
+                    'ThrogsNeckBrNY': '8518526',
+                    'KingsPointNY':   '8516945',
+                    'BatteryNY':      '8518750',
+                    'BridgeportCT':   '8467150',
+                    'NewHavenCT':     '8465705',
+                    'NewboldPA':      '8548989',  # Way up the Chesapeake River
+                    'TurkeyPointNY':  '8518962',  # Way up the Hudson River
                     }
 
 tideStation = stationsNearUs['RyePlaylandNY']  # Closest one to us with reliable data
 
-pathToResources = "resources/"
+pathToResources = 'resources/'
 
 ###
 # import common library
@@ -83,12 +83,13 @@ def makeTideGraphic(extremaDF, detailDF=None):
     """
     global gTideUnit
     lbl = {'H': 'HIGH', 'L': 'LOW'}
+    global gTime
 
     now = datetime.now(tz=EST)
 
-    # imageURL = "https://docs.google.com/drawings/d/e/2PACX-1vRPpyCKk834LQUUwoEWDiopLKIcRscn3AoUPynXzNe6jPRLXWt9TBS90Wwm_MjxVoqezD09hbx_0Sw8/pub?w=225&h=159"
+    # imageURL = 'https://docs.google.com/drawings/d/e/2PACX-1vRPpyCKk834LQUUwoEWDiopLKIcRscn3AoUPynXzNe6jPRLXWt9TBS90Wwm_MjxVoqezD09hbx_0Sw8/pub?w=225&h=159'
     # imageRef = PIL.Image.open(urllib.request.urlopen(imageURL))
-    imageRef = pathToResources + "TideBackground.png" # fetch locally (way faster on a pi)
+    imageRef = pathToResources + 'TideBackground.png' # fetch locally (way faster on a pi)
     imageOverLay = plt.imread(imageRef)
     # px = 1/plt.rcParams['figure.dpi']  # pixel in inches doesn't quite work when bbox='tight'
     plt.figure(figsize=(3, 3))
@@ -103,14 +104,17 @@ def makeTideGraphic(extremaDF, detailDF=None):
 
     upcoming = extremaDF[extremaDF['DateTime']>datetime.now(tz=EST)]
     nxtTide = upcoming.iloc[0]
-    plt.text(wdt/2, 40, nxtTide['DateTime'].strftime("%I:%M %p"), fontsize=26.0, ha='center' )
+    if gTime == '24':
+        plt.text(wdt/2, 40, nxtTide['DateTime'].strftime('%H:%M'), fontsize=26.0, ha='center' )
+    else:
+        plt.text(wdt/2, 40, nxtTide['DateTime'].strftime('%I:%M %p'), fontsize=26.0, ha='center' )
     plt.text(wdt/2, 80, lbl[nxtTide['Type']], fontweight='heavy', color='blue', fontsize=20.0, ha='center')
 
     if nxtTide['Type'] == 'H':
         len = -50
     else:
         len = 50
-    plt.arrow(wdt/6, 90-len/4, 0, len, width=6., color="cyan",
+    plt.arrow(wdt/6, 90-len/4, 0, len, width=6., color='cyan',
                 length_includes_head=True, alpha=0.6, fill=False, linewidth=2.0)
 
     # Somehwat kludgy since we know the range is between -1 and 10ft
@@ -126,18 +130,21 @@ def makeTideGraphic(extremaDF, detailDF=None):
     else:
         scaledTideHeight = hgt - lvl*(level + 0.5)/3.0
 
-    plt.title("Next Tide At...")
+    plt.title('Next Tide At...')
     plt.axis('off')
     t=np.linspace(0,wdt,50)
     y=scaledTideHeight + np.cos(t/5) * 3
-    plt.fill_between(t,y, color="SkyBlue", alpha=0.50)
+    plt.fill_between(t,y, color='SkyBlue', alpha=0.50)
 
     #plt.show()
-    plt.savefig(pathToResources  + "tmp/" + "tideGraphic.png", bbox_inches='tight', transparent=True)
+    plt.savefig(pathToResources  + 'tmp/' + 'tideGraphic.png', bbox_inches='tight', transparent=True)
     plt.close()
 
 # Should run this every 5 minutes to keep the screen up to date.
-def refresh():
+def refresh(time):
+    global gTime
+    gTime = time
+
     # Get the data this method tries to fetch from local store first
     (ryePlayDetailDF, ryePlayExtremDF) = fetchDailyTides(tideStation)
 
@@ -145,31 +152,27 @@ def refresh():
     makeTideGraphic(ryePlayExtremDF, ryePlayDetailDF)
 
 """
-    Entrypoint for the call. expected optional parameters for cgi-call are:
-    units=metric | imperial
-    It is expected that the web page runs this as a cgi request every 5 min or so.
+    Entrypoint for the call. The expected optional parameters for cgi-call:
+    {'24' | '12'} which delinate 24 hour or 12 (am/pm) for the time
+    It is expected that the web page runs this as a cgi request periodically.
 """
 if __name__ == '__main__':                                                               #01234567890123
-    prog = "TideGraphic  "
-    logging.basicConfig(filename='WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
+    prog = 'TideGraphic  '
+    logging.basicConfig(filename='WeatherKiosk.log', format=f"%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s", level=logging.INFO)
 
     #   first fetch the strings passed to us with the fields outlined
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
     logging.info(f"\tfield storage: {fs}")
-    idx = 0
-    if "units" in fs:
-        logging.debug(f"\tunits updated: {fs['units'].value}")
-        if fs['units'].value == 'metric':
-            idx = 1
-        elif fs['units'].value == 'imperial':
-            idx = 0
+    time = '12'
+    if 'time' in fs:
+        logging.debug(f"\tunits updated: {fs['time'].value}")
+        time = fs['time']
 
-    gTideUnit = ('Tide [ft]', 'Tide [m]')[idx]
-    logging.info(f"\t...using {gTideUnit}")
+    logging.info(f"\t...Time format {time}")
 
-    refresh()
+    refresh(time)
 
-    logging.info("\t...I'm outta here!")
+    logging.info('\t...done')
 
-    print("Content-Type: text/plain\n")
-    print("tidesGraphic done.")
+    print('Content-Type: text/plain\n')
+    print('tidesGraphic done.')

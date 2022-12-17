@@ -35,9 +35,9 @@ def isDST(theDate):
 ###
 def fetchOneDayData(theDate,latlong):
 
-    datestr = theDate.strftime("%Y-%m-%d")
+    datestr = theDate.strftime('%Y-%m-%d')
     tz = isDST(theDate)
-    id = "HHYC_WK"
+    id = 'HHYC_WK'
 
     url = f"https://aa.usno.navy.mil/api/rstt/oneday?date={datestr}&coords={latlong}&tz={tz}"
     logging.debug(f"\turl sent: {url}")
@@ -58,21 +58,21 @@ def fetchOneDayData(theDate,latlong):
 # coords=-###.###,+###.###
 ###
 if __name__ == '__main__':                                                               #01234567890123
-    	prog = "moonData        "
-	logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
+    prog = 'moonData        '
+    logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
 
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
     logging.info(f"\tfield storage: {fs}")
 
     # default values
     theDate = datetime.now(tz=EST)
-    coord = "0.0,0.0"
+    coord = '0.0,0.0'
 
-    if "date" in fs:
-        theDate = datetime.strptime(fs['date'].value, "%m/%d/%Y").replace(tzinfo=EST)
+    if 'date' in fs:
+        theDate = datetime.strptime(fs['date'].value, '%m/%d/%Y').replace(tzinfo=EST)
         logging.debug(f"\tdate updated: {theDate}")
 
-    if "coords" in fs:
+    if 'coords' in fs:
         coord = fs['coords'].value
         logging.debug(f"\tcoord updated: {coord}")
 
@@ -80,7 +80,5 @@ if __name__ == '__main__':                                                      
     logging.debug(f"\t json: {result}")
 
     # Return the content.
-    print("Content-Type: application/json\n")
+    print('Content-Type: application/json\n')
     print(json.dumps(result))
-
-    # We're done here.

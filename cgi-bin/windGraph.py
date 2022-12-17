@@ -13,11 +13,7 @@ UTC = timezone('UTC')
 import matplotlib.transforms
 import matplotlib.dates as mdates
 
-import os
-if os.name == 'nt':
-    pathToResources = 'resources\\' # Windows Testing
-else:
-    pathToResources = "/home/pi/WeatherKiosk/resources/"
+pathToResources = 'resources/'
 
 # Getting Weather Data from execution rocks (station 44022)  Only needs to run every 15 minutes.
 
@@ -40,9 +36,9 @@ def fetchWindData(source):
 
 def makeWindGraph(windDF, whereFrom=""):
   if len(windDF) < 16:
-    raise BaseException("Not enough points")
+    raise BaseException('Not enough points')
 
-  imageRef = pathToResources  + "tmp/" + "windGraph.png" # fetch locally (way faster on a pi)
+  imageRef = pathToResources  + 'tmp/' + 'windGraph.png' # fetch locally (way faster on a pi)
   fig, ax = plt.subplots(figsize=(8, 4))
 
   tme = windDF.index
@@ -63,8 +59,8 @@ def makeWindGraph(windDF, whereFrom=""):
   ax.quiver(tme[::2], yloc[::2], sines[::2], cosines[::2],
             angles='uv', color='DodgerBlue', alpha=0.6, pivot='middle')
   # Set the axis labels
-  # ax.set_xlabel("Date and Time", fontsize=10, fontstyle='italic', color='SlateGray')  #obvious don't need it.
-  ax.set_ylabel("Wind Speed [knots]", fontsize=12, fontstyle='italic', color='SlateGray')
+  # ax.set_xlabel('Date and Time', fontsize=10, fontstyle='italic', color='SlateGray')  #obvious don't need it.
+  ax.set_ylabel('Wind Speed [knots]', fontsize=12, fontstyle='italic', color='SlateGray')
 
   #Fix the time axis
   ax.xaxis.set_major_locator(mdates.DayLocator(tz=EST))
@@ -77,14 +73,14 @@ def makeWindGraph(windDF, whereFrom=""):
   offset = matplotlib.transforms.ScaledTranslation(dx, dy, fig.dpi_scale_trans)
   # Create offset transform by 5 points in x direction
   for label in ax.xaxis.get_majorticklabels():
-      label.set(horizontalalignment='center', color="darkred", fontweight='bold')
+      label.set(horizontalalignment='center', color='darkred', fontweight='bold')
       label.set_transform(label.get_transform() + offset)
 
   for label in ax.xaxis.get_minorticklabels():
-      label.set(horizontalalignment='center', color="darkred")
+      label.set(horizontalalignment='center', color='darkred')
 
   ax.grid(True, which='major', linewidth=2, axis='both', alpha=0.7)
-  ax.grid(True, which='minor', linestyle="--", axis='both', alpha = 0.5)
+  ax.grid(True, which='minor', linestyle='--', axis='both', alpha = 0.5)
   ax.set_ylim(bottom=0.0)
 
   # where did this come from?
@@ -98,7 +94,7 @@ def makeWindGraph(windDF, whereFrom=""):
   wspd = np.round(2.23694 * windDF['WSPD'].to_numpy()[-1][0],1)
   mxsp = np.round(2.23694 * windDF['GST'].to_numpy()[-1][0],1)
   if mxsp != mxsp:
-    mxsp = "-"
+    mxsp = '-'
   temp = windDF['ATMP'].to_numpy()[-1][0]
   wdir = windDF['WDIR'].to_numpy()[-1][0]
   old = datetime.now(tz=EST)-tme
@@ -131,49 +127,49 @@ def windDirection(ang):
       return tag
 
 # Exscution Rocks weather buoy
-real_EXR_TimeDataFile = "https://www.ndbc.noaa.gov/data/realtime2/44022.txt"
+real_EXR_TimeDataFile = 'https://www.ndbc.noaa.gov/data/realtime2/44022.txt'
 # Kings Point
-real_KPH_TimeDataFile = "https://www.ndbc.noaa.gov/data/realtime2/KPTN6.txt"
+real_KPH_TimeDataFile = 'https://www.ndbc.noaa.gov/data/realtime2/KPTN6.txt'
 # Western Long Island Sound
-real_WLI_TimeDataFile = "https://www.ndbc.noaa.gov/data/realtime2/44040.txt"
+real_WLI_TimeDataFile = 'https://www.ndbc.noaa.gov/data/realtime2/44040.txt'
 
 
-if __name__ == '__main__':                                                               #01234567890123
-    prog = "WindGraph    "
+if __name__ == '__main__':
+    prog = 'WindGraph    '
     logging.basicConfig(filename='WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
-    logging.info("Build wind graph...")
+    logging.info('Build wind graph...')
 
     now = datetime.now().astimezone(EST)
     d = timedelta(days = 2)
 
     # try to get execution rocks
     try:
-      source = "Execution Rocks"
+      source = 'Execution Rocks'
       # raise NameError('Skip')
       logging.info(f"\t...source: {source}")
       theDF = fetchWindData(real_EXR_TimeDataFile)
       smpl = theDF['DateTime'] > (now - d)
       makeWindGraph( theDF[smpl].resample('1H', on='DateTime').mean(), source )
     except:
-      logging.info("\t... failed")
+      logging.info('\t... failed')
       # if that fails then try western LI buoy
       try:
-        source = "Western LI"
+        source = 'Western LI'
         # raise NameError('Skip')
         logging.info(f"\t...source: {source}")
         theDF = fetchWindData(real_WLI_TimeDataFile)
         smpl = theDF['DateTime'] > (now - d)
         makeWindGraph( theDF[smpl].resample('1H', on='DateTime').mean(), source )
       except:
-        logging.info("\t... failed")
+        logging.info('\t... failed')
         # if that fails then settle on Kings Point (never fails)
-        source = "Kings Point LI"
+        source = 'Kings Point LI'
         logging.info(f"\t...source: {source}")
         theDF = fetchWindData(real_KPH_TimeDataFile)
         smpl = theDF['DateTime'] > (now - d)
         makeWindGraph( theDF[smpl].resample('1H', on='DateTime').mean(), source )
 
-    logging.info("\t...I'm outta here!")
+    logging.info('\t...done')
 
-    print("Content-Type: text/plain\n")
-    print("windGraph done.")
+    print('Content-Type: text/plain\n')
+    print('windGraph done.')
