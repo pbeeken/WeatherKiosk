@@ -13,7 +13,7 @@ body {
 
 .import {
     position: relative;
-    width: 100%;
+    width: 113%;
     height: 100%;
     border-width: 0px;
 }
@@ -183,8 +183,15 @@ div.header > .logo {
     position: fixed;
     z-index: -20;
     top:    86px;
-    left:  710px;
+    left:  723px;
     right: 780px;
+}
+
+img#tidegraphic {
+    position: relative;
+    display: inline-block;
+    left: 58%;
+    transform: translate(-50%);
 }
 
 .phase {

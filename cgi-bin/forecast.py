@@ -71,8 +71,8 @@ We want to run this command peridoically to update the clock. I run it within py
 we run the risk of memory leaks so I will run it from a fork from the kisok
 """
 if __name__ == '__main__':                                                               #01234567890123
-    	prog = "Forecast        "
-	logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
+    prog = "Forecast     "
+    logging.basicConfig(filename='WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
     logging.info("Build wind graph...")
 
     forecastFile = "forecastGrid.html"

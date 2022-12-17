@@ -89,12 +89,12 @@ function updateResources(what) {
         document.getElementById('forecast').src = 'resources/tmp/forecastGrid.html?' + now.getMilliseconds();
     }
 
-    // TODO: Shouldn't need to asynchronously update.
-    if (what === 'timed') {
-        // auto updte in five minutes
-        setTimeout(updateResources, 5 * min);
-        console.log('rerunning updateResources in 5 minutes.');
-    }
+    // TODO: Shouldn't need to asynchronously update as this is done upon fetch.
+    // if (what === 'timed') {
+    //     // auto updte in five minutes
+    //     setTimeout(updateResources, 5 * min);
+    //     console.log('rerunning updateResources in 5 minutes.');
+    // }
 }
 
 /** buildLunarData
@@ -225,7 +225,7 @@ async function fetchMoonImage(when) {
 
 /** fetchResources
  * uses a cgi-calls to rebuild the various images, tables and media
- * @param {'all' | 'tidegraph' | 'tidegraphic' | 'windgraph' | 'tidetable' | 'forecast'} 'timed' is reserved for background
+ * @param {'all' | 'tidegraph' | 'tidegraphic' | 'windgraph' | 'tidetable' | 'forecast'}
  * @param {'metric' | 'imperial' | null} if provided overrides automatic toggle.
  * trick for relaunching functions with parameters:
  *      // given a function fp(a, b)
@@ -236,7 +236,7 @@ async function fetchResources(what, units) {
     if (!what) what = 'all';
     if (!units) units = lastUnit++ % 2 > 0 ? 'metric' : 'imperial';
 
-    if (what === 'tidegraph' || what === 'all' || what === 'timed') {
+    if (what === 'tidegraph' || what === 'all') {
         let url = `http://localhost:8000/cgi-bin/tidesGraph.py?units=${units}`;
         await fetch(url)
             .then((response) => response.text())
@@ -249,7 +249,7 @@ async function fetchResources(what, units) {
             });
     }
 
-    if (what === 'tidegraphic' || what === 'all' || what === 'timed') {
+    if (what === 'tidegraphic' || what === 'all') {
         let url = `http://localhost:8000/cgi-bin/tidesGraphic.py?units=${units}`;
         await fetch(url)
             .then((response) => response.text())
@@ -262,7 +262,7 @@ async function fetchResources(what, units) {
             });
     }
 
-    if (what === 'tidetable' || what === 'all' || what === 'timed') {
+    if (what === 'tidetable' || what === 'all') {
         let url = `http://localhost:8000/cgi-bin/tidesTable.py?units=${units}`;
         await fetch(url)
             .then((response) => response.text())
@@ -275,7 +275,7 @@ async function fetchResources(what, units) {
             });
     }
 
-    if (what === 'windgraph' || what === 'all' || what === 'timed') {
+    if (what === 'windgraph' || what === 'all') {
         let url = `http://localhost:8000/cgi-bin/windGraph.py`;
         await fetch(url)
             .then((response) => response.text())
@@ -288,7 +288,7 @@ async function fetchResources(what, units) {
             });
     }
 
-    if (what === 'forecast' || what === 'all' || what === 'timed') {
+    if (what === 'forecast' || what === 'all') {
         let url = `http://localhost:8000/cgi-bin/forecast.py`;
         await fetch(url)
             .then((response) => response.text())
@@ -301,18 +301,19 @@ async function fetchResources(what, units) {
             });
     }
 
-    if (what === 'timed') {
-        setTimeout(fetchResources, 15 * min); // do it again in 15 minutes
+    if (what === 'all') {
+        // rinse and repeat
+        setTimeout(()=>{fetchResources('all')}, 10 * min); // do it again in 10 minutes
     }
 }
 
-/** updateRadarView
+/** updateRadar
  * update the NOAA NWS gif for current radar in KOKX
  * Initial image set in html should be...
  *    "https://radar.weather.gov/ridge/standard/KOKX_loop.gif"
  * TODO: Include in updateResources
  */
-function updateRadarView() {
+function updateRadar() {
     try {
         let now = Date.now();
         let origImg = document.getElementById('radar').src;
@@ -320,11 +321,11 @@ function updateRadarView() {
         document.getElementById('radar').src = origImg + '?' + now; // trick to force an image refresh with the same URL
     } catch (err) {
         // whatever has gone wrong just try again in a couple of seconds
-        setTimeout(updateRadarView, 20 * sec); // rerun in a second or so
+        setTimeout(updateRadar, 20 * sec); // rerun in a second or so
         return;
     }
 
-    setTimeout(updateRadarView, 7 * min); // rerun in 7 minutes
+    setTimeout(updateRadar, 7 * min); // rerun in 7 minutes
 }
 
 /** buildAstroData
@@ -370,7 +371,7 @@ function buildWeatherPage() {
     fetchResources(); // refresh all our various resources
     setTimeout(buildLunarData, 3 * sec); // hold off a bit and launch to
     setTimeout(updateSunRiseSunset, 5 * sec); // first run
-    setTimeout(updateRadarView, 1 * min); // first run in a minutes
+    setTimeout(updateRadar, 1 * min); // first run in a minutes
     setTimeout(updateResources, 2 * min); // first run in 2 minutes
 }
 

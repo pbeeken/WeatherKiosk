@@ -98,20 +98,19 @@ def makeTideGraphic(extremaDF, detailDF=None):
     implot.axes.get_yaxis().set_visible(False)
 
     hgt = 125 #158
-    wdt = 222 #225
+    wdt = 178 #225
     lvl = 110
 
     upcoming = extremaDF[extremaDF['DateTime']>datetime.now(tz=EST)]
     nxtTide = upcoming.iloc[0]
-    plt.text(wdt/2, 50, nxtTide['DateTime'].strftime("%I:%M %p"), fontsize=30.0, ha='center' )
-    plt.text(wdt/2, 90, lbl[nxtTide['Type']], fontweight='heavy', color='blue', fontsize=24.0, ha='center')
-
+    plt.text(wdt/2, 40, nxtTide['DateTime'].strftime("%I:%M %p"), fontsize=26.0, ha='center' )
+    plt.text(wdt/2, 80, lbl[nxtTide['Type']], fontweight='heavy', color='blue', fontsize=20.0, ha='center')
 
     if nxtTide['Type'] == 'H':
         len = -50
     else:
         len = 50
-    plt.arrow(wdt/6, 90-len/2, 0, len, width=6., color="cyan",
+    plt.arrow(wdt/6, 90-len/4, 0, len, width=6., color="cyan",
                 length_includes_head=True, alpha=0.6, fill=False, linewidth=2.0)
 
     # Somehwat kludgy since we know the range is between -1 and 10ft
