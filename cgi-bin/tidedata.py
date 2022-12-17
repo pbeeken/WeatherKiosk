@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 # matplotlib is the tool that will create the graphs
 # import matplotlib.pyplot as plt
+import os
 
 ###
 # Time libraries we are very dependant on 'aware' times. Most bugs have been traced back
@@ -116,8 +117,8 @@ def fetchDailyTides(fromTideStation):
     fromTideStation -- NOAA tide station code
     """
     # Local store
-    detailTidesFile = 'resources/DetailTides.zip'  # 15 minute intervals (for smooth graph)
-    extremTidesFile = 'resources/ExtremTides.zip'  # Just the hi and low values for extrema
+    detailTidesFile = 'resources/tmp/DetailTides.zip'  # 15 minute intervals (for smooth graph)
+    extremTidesFile = 'resources/tmp/ExtremTides.zip'  # Just the hi and low values for extrema
 
     # Fetch this data once per day.  And run all the subsequent graphics from the local store.
     now       = datetime.now(tz=EST)

@@ -46,29 +46,45 @@ function runClock(start) {
 }
 
 /**
- * updateForecast
- * Use javascript to update forecast table
+ * updateResources
+ * update the graphs, tables and other media is less disruptive than refreshing the whole screen.
+ * A different script updates the resources on a different schedule.
+ * @param {'all' | 'tidegraph' | 'tidegraphic' | 'windgraph' | 'tidetable' | 'forecast'} 'timed' is reserved for background
  */
-function updateForecast() {
+function updateResources(what) {
     const now = new Date();
-    // works for iframes as well.
-    document.getElementById('forecast').src = 'forecastGrid.html?' + now.getMilliseconds();
-    setTimeout(updateForecast, 15 * min); // reasonable update for updates
-}
+    if (!what) what = 'timed';
 
-/**
- * updateGraphs
- * Using javascript to update graphs is less disruptive than refreshing the whole screen
- */
-function updateGraphs() {
-    const now = new Date();
     // Note the trick to get the browser to refresh the images
-    document.getElementById('tidegraph').src = 'resources/tideGraph.png?' + now.getMilliseconds();
-    document.getElementById('tidegraphic').src = 'resources/tideGraphic.png?' + now.getMilliseconds();
-    document.getElementById('windgraph').src = 'resources/windGraph.png?' + now.getMilliseconds();
-    document.getElementById('tidetable').src = document.getElementById('tidetable').src;
+    if (what === 'tidegraph' || what === 'all' || what === 'timed') {
+        // clock graph
+        document.getElementById('tidegraph').src = 'resources/tmp/tideGraph.png?' + now.getMilliseconds();
+    }
 
-    setTimeout(updateGraphs, 5 * min); // five minutes
+    if (what === 'tidegraphic' || what === 'all' || what === 'timed') {
+        // tide graphic: 'cartoon of depth'
+        document.getElementById('tidegraphic').src = 'resources/tmp/tideGraphic.png?' + now.getMilliseconds();
+    }
+
+    if (what === 'windgraph' || what === 'all' || what === 'timed') {
+        // wind graph
+        document.getElementById('windgraph').src = 'resources/tmp/windGraph.png?' + now.getMilliseconds();
+    }
+
+    if (what === 'tidetable' || what === 'all' || what === 'timed') {
+        // tide table
+        document.getElementById('tidetable').src = 'resources/tmp/tideTable.html?' + now.getMilliseconds();
+    }
+
+    if (what === 'forecast' || what === 'all' || what === 'timed') {
+        // tide table
+        document.getElementById('forecast').src = 'resources/tmp/forecastGrid.html?' + now.getMilliseconds();
+    }
+
+    if (what === 'timed') {
+        // auto updte in five minutes
+        setTimeout(updateResources, 5 * min);
+    }
 }
 
 /**
@@ -94,12 +110,13 @@ function loadLunarData() {
         return; // do nothing the lunar data is loaded.
     }
 
-    document.getElementById('moonYD').getElementsByClassName('phase')[0].src = moonImage.yesterday.filename;
-    document.getElementById('moonTD').getElementsByClassName('phase')[0].src = moonImage.today.filename;
-    document.getElementById('moonTM').getElementsByClassName('phase')[0].src = moonImage.tomorrow.filename;
-
-    // Reassert for update NOTE: Shouldn't need this but for once per day.
-    // setTimeout(loadLunarData, 10 * min);
+    let now = new Date();
+    document.getElementById('yesterday').getElementsByClassName('phase')[0].src =
+        moonImage.yesterday.filename + '?' + now.getMilliseconds();
+    document.getElementById('today').getElementsByClassName('phase')[0].src =
+        moonImage.today.filename + '?' + now.getMilliseconds();
+    document.getElementById('tomorrow').getElementsByClassName('phase')[0].src =
+        moonImage.tomorrow.filename + '?' + now.getMilliseconds();
 }
 
 /**
@@ -164,15 +181,16 @@ async function fetchUSNavalDailyData(theDate, when) {
     const datestr = theDate.toLocaleDateString();
     let url = `http://localhost:8000/cgi-bin/usNavObsData.py?date=${datestr}`;
 
-    try {
-        const response = await fetch(url);
-        const sunFetch = await response.json();
-        sunFetch.properties.data.requestedDate = theDate;
-        astroData[when] = sunFetch.properties.data;
-    } catch (error) {
-        console.error(`Failed to fetch ${url}`, error);
-        astroData[when] = { error, response: null };
-    }
+    await fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+            data.properties.data.requestedDate = theDate;
+            astroData[when] = data.properties.data;
+        })
+        .catch((error) => {
+            console.error(`Failed to fetch ${url}`, error);
+            astroData[when] = { error, response: null };
+        });
 }
 
 /**
@@ -183,77 +201,97 @@ async function fetchUSNavalDailyData(theDate, when) {
 async function fetchMoonImage(when) {
     const stage = astroData[when].curphase.split(' ')[0];
     const fracillum = astroData[when].fracillum.slice(0, -1); // Strip the % off.
-    let url = `http://localhost:8000/cgi-bin/moonPhase.py?fracillum=${fracillum}&stage=${stage}&filename=resources%2Fmoon_${when}.svg`;
+    let url = `http://localhost:8000/cgi-bin/moonPhase.py?fracillum=${fracillum}&stage=${stage}&filename=moon_${when}.svg`;
 
-    try {
-        const response = await fetch(url);
-        const moonFetch = await response.json();
-        moonImage[when] = moonFetch;
-    } catch (error) {
-        console.error(`Failed to fetch ${url}`, error);
-        moonImage[when] = { error, response: null };
-    }
+    await fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+            moonImage[when] = data;
+        })
+        .catch((error) => {
+            console.error(`Failed to fetch ${url}`, error);
+            moonImage[when] = { error, response: null };
+        });
 }
 
 /**
- * updateTideGraphics uses a cgi-call to update the tide images
- * @param {'metric' | 'imperial'}
+ * fetchResources uses a cgi-calls to rebuild the various images, tables and media
+ * @param {'all' | 'tidegraph' | 'tidegraphic' | 'windgraph' | 'tidetable' | 'forecast'} 'timed' is reserved for background
+ * @param {'metric' | 'imperial' | '1' | '0' | null} if provided overrides automatic toggle.
  */
 let lastUnit = 0;
-async function updateGraphics(units) {
-    if (!units) units = lastUnit++;
+async function fetchResources(what, units) {
+    if (!what) what = 'timed';
+    if (!units) units = lastUnit++ % 2;
 
-    let url = `http://localhost:8000/cgi-bin/tidesGraph.py?units=${units}`;
-    await fetch(url)
-        .then((resp) => {
-            //updateGraphs();
-            console.log(resp.text());
-        })
-        .catch((error) => {
-            console.error(`Failed to fetch ${url}`, error);
-        });
+    if (what === 'tidegraph' || what === 'all' || what === 'timed') {
+        let url = `http://localhost:8000/cgi-bin/tidesGraph.py?units=${units}`;
+        await fetch(url)
+            .then((response) => response.text())
+            .then((text) => {
+                console.log(text);
+                updateResources('tidegraph');
+            })
+            .catch((error) => {
+                console.error(`Failed to fetch ${url}`, error);
+            });
+    }
 
-    url = `http://localhost:8000/cgi-bin/tidesGraphic.py?units=${units}`;
-    await fetch(url)
-        .then((resp) => {
-            //updateGraphs();
-            console.log(resp.text());
-        })
-        .catch((error) => {
-            console.error(`Failed to fetch ${url}`, error);
-        });
+    if (what === 'tidegraphic' || what === 'all' || what === 'timed') {
+        let url = `http://localhost:8000/cgi-bin/tidesGraphic.py?units=${units}`;
+        await fetch(url)
+            .then((response) => response.text())
+            .then((text) => {
+                console.log(text);
+                updateResources('tidegraphic');
+            })
+            .catch((error) => {
+                console.error(`Failed to fetch ${url}`, error);
+            });
+    }
 
-    url = `http://localhost:8000/cgi-bin/tidesTable.py?units=${units}`;
-    await fetch(url)
-        .then((resp) => {
-            //updateGraphs();
-            console.log(resp.text());
-        })
-        .catch((error) => {
-            console.error(`Failed to fetch ${url}`, error);
-        });
+    if (what === 'tidetable' || what === 'all' || what === 'timed') {
+        let url = `http://localhost:8000/cgi-bin/tidesTable.py?units=${units}`;
+        await fetch(url)
+            .then((response) => response.text())
+            .then((text) => {
+                console.log(text);
+                updateResources('tidetable');
+            })
+            .catch((error) => {
+                console.error(`Failed to fetch ${url}`, error);
+            });
+    }
 
-    url = `http://localhost:8000/cgi-bin/windGraph.py?units=${units}`;
-    await fetch(url)
-        .then((resp) => {
-            //updateGraphs();
-            console.log(resp.text());
-        })
-        .catch((error) => {
-            console.error(`Failed to fetch ${url}`, error);
-        });
+    if (what === 'windgraph' || what === 'all' || what === 'timed') {
+        let url = `http://localhost:8000/cgi-bin/windGraph.py`;
+        await fetch(url)
+            .then((response) => response.text())
+            .then((text) => {
+                console.log(text);
+                updateResources('windgraph');
+            })
+            .catch((error) => {
+                console.error(`Failed to fetch ${url}`, error);
+            });
+    }
 
-    url = `http://localhost:8000/cgi-bin/forecast.py?units=${units}`;
-    await fetch(url)
-        .then((resp) => {
-            //updateGraphs();
-            console.log(resp.text());
-        })
-        .catch((error) => {
-            console.error(`Failed to fetch ${url}`, error);
-        });
+    if (what === 'forecast' || what === 'all' || what === 'timed') {
+        let url = `http://localhost:8000/cgi-bin/forecast.py`;
+        await fetch(url)
+            .then((response) => response.text())
+            .then((text) => {
+                console.log(text);
+                updateResources('forecast');
+            })
+            .catch((error) => {
+                console.error(`Failed to fetch ${url}`, error);
+            });
+    }
 
-    setTimeout(updateGraphs, 15 * min); // do it again in 15 minutes
+    if (what === 'timed') {
+        setTimeout(fetchResources, 15 * min); // do it again in 15 minutes
+    }
 }
 
 /**
@@ -273,7 +311,7 @@ function updateRadarView() {
         return;
     }
 
-    setTimeout(updateRadarView, 5 * min); // rerun in 10 minutes
+    setTimeout(updateRadarView, 8 * min); // rerun in 10 minutes
 }
 
 /**
@@ -316,35 +354,26 @@ function loadAstroData(testDate) {
 function buildWeatherPage() {
     /** Get and post the sunrise and sunset data */
     loadAstroData(); // Basic astronomical information all the other routines need.
-    updateGraphics();
+    fetchResources(); // refresh all our various resources
     setTimeout(loadLunarData, 3 * sec); // hold off a bit and launch to
     setTimeout(updateSunRiseSunset, 5 * sec); // first run
     setTimeout(updateRadarView, 1 * min); // first run in 2 minutes
-    setTimeout(updateGraphs, 2 * min); // first run in 2 minutes
+    setTimeout(updateResources, 2 * min); // first run in 2 minutes
 }
-
-// /**
-//  * Schedule the updates needed for a webpage
-//  */
-// function postDataSchedule() {
-//     /** Get and post the sunrise and sunset data */
-//     loadAstroData();
-//     setTimeout(updateSunRiseSunset, 10 * sec); // first run
-// }
 
 /**
  * Test if the network is up or down.
  **/
-async function networkUpDown() {
-    let url = `http://localhost:8000/cgi-bin/networkStatus.sh`;
-
-    try {
-        const response = await fetch(url);
-        const data = await response.text();
-        console.log(data.split(' '));
-    } catch (error) {
-        console.error('Cannot check the network status', error);
-    }
+async function networkStatus() {
+    let url = `http://localhost:8000/cgi-bin/networkStatus.py`;
+    await fetch(url)
+        .then((response) => response.text())
+        .then((text) => {
+            console.log(text);
+        })
+        .catch((error) => {
+            console.error(`Failed to fetch ${url}`, error);
+        });
 }
 
 // let dayBoatSheet = '';

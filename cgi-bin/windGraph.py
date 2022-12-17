@@ -42,7 +42,7 @@ def makeWindGraph(windDF, whereFrom=""):
   if len(windDF) < 16:
     raise BaseException("Not enough points")
 
-  imageRef = pathToResources + "windGraph.png" # fetch locally (way faster on a pi)
+  imageRef = pathToResources  + "tmp/" + "windGraph.png" # fetch locally (way faster on a pi)
   fig, ax = plt.subplots(figsize=(8, 4))
 
   tme = windDF.index

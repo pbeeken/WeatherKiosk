@@ -4,11 +4,8 @@ import logging
 
 import os
 import sys
-if sys.platform == 'win32':
-    pathToResources = 'resources\\' # Windows Testing
-else:
-    pathToResources = "/home/pi/WeatherKiosk/resources/"
 
+pathToResources = "resources/"
 
 """
 MarineHTMLParser
@@ -140,7 +137,7 @@ if __name__ == '__main__':                                                      
 
 
     # copy the html table into the text and write out a new file
-    with open(pathToResources + f"..{os.sep}" + forecastFile, "w") as htmlFile:
+    with open(pathToResources + "tmp/" + forecastFile, "w") as htmlFile:
         htmlFile.write(templateHtml)
 
 

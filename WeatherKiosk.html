@@ -17,25 +17,31 @@
                 <img class="logo" src="resources/HHYC_Flag.png"alt="HHYC Logo">
                 <span class="title">Horseshoe Harbor Yacht Club Tides, Wind &amp; Weather</span>
             </div>
-            <div id="moonYD">
-                <img class="phase" src="resources/moon_yesterday.svg"/>
-            </div>
-            <div id="moonTD">
-                <img class="phase" src="resources/moon_today.svg"/>
-            </div>
-            <div id="moonTM">
-                <img class="phase" src="resources/moon_tomorrow.svg"/>
-            </div>
-            <div class="wrapper">
-                <div class="box1"><img id="tidegraph" src="resources/tideGraph.png" alt="Tide Graph" width="100%"/></div>
-                <div class="boxR"><img id="radar" src="https://radar.weather.gov/ridge/standard/KOKX_loop.gif" alt="NOAA Radar" width="100%"></div>
-                <div class="box2"><img id="tidegraphic" style="position: relative; display: inline-block; left: 50%; transform: translate(-50%);" src="resources/tideGraphic.png" alt="Tide Graphic"/></div>
-                <div class="box3"><iframe id="tidetable" class="import" src="tideTable.html"></iframe></div>
-                <div class="box4"><img id="windgraph" src="resources/windGraph.png" alt="Tide Graph" width="99%"/></div>
-                <div class="box5"><iframe class="import" id="forecast" src="forecastGrid.html"></iframe></div>
+            <div class="weatherScreen">
+                <div id="yesterday">
+                    <img class="phase" src="resources/tmp/moon_yesterday.svg"/>
+                </div>
+                <div id="today">
+                    <img class="phase" src="resources/tmp/moon_today.svg"/>
+                </div>
+                <div id="tomorrow">
+                    <img class="phase" src="resources/tmp/moon_tomorrow.svg"/>
+                </div>
+                <div id="radarbox">
+                    <img id="radar" src="https://radar.weather.gov/ridge/standard/KOKX_loop.gif" alt="NOAA Radar" width="100%">
+                </div>
+                <div class="wrapper">
+                    <div class="box1"><img id="tidegraph" src="resources/tmp/tideGraph.png" alt="Tide Graph" width="100%"/></div>
+                    <div class="boxR"><!--img id="radar" src="https://radar.weather.gov/ridge/standard/KOKX_loop.gif" alt="NOAA Radar" width="100%"--></div>
+                    <div class="box2"><img id="tidegraphic" style="position: relative; display: inline-block; left: 50%; transform: translate(-50%);" src="resources/tmp/tideGraphic.png" alt="Tide Graphic"/></div>
+                    <div class="box3"><iframe id="tidetable" class="import" src="resources/tmp/tideTable.html"></iframe></div>
+                    <div class="box4"><img id="windgraph" src="resources/tmp/windGraph.png" alt="Tide Graph" width="99%"/></div>
+                    <div class="box5"><iframe class="import" id="forecast" src="resources/tmp/forecastGrid.html"></iframe></div>
+                </div>
             </div>
             <div class="footer">
                 <p id="clock">Waiting...</p>
+                <p id="status">ooo</p>
                 <p id="suncondition">Sunrise and sunset</p>
             </div>
         </div>

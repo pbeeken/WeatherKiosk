@@ -65,10 +65,7 @@ stationsNearUs = {  'NewRochelleNY':  "8518490",
 
 tideStation = stationsNearUs['RyePlaylandNY']  # Closest one to us with reliable data
 
-if os.name == 'nt':
-    pathToResources = 'resources\\' # Windows Testing
-else:
-    pathToResources = "/home/pi/WeatherKiosk/resources/"
+pathToResources = "resources/"
 
 ###
 # import common library
@@ -137,7 +134,7 @@ def makeTideGraphic(extremaDF, detailDF=None):
     plt.fill_between(t,y, color="SkyBlue", alpha=0.50)
 
     #plt.show()
-    plt.savefig(pathToResources + "tideGraphic.png", bbox_inches='tight', transparent=True)
+    plt.savefig(pathToResources  + "tmp/" + "tideGraphic.png", bbox_inches='tight', transparent=True)
     plt.close()
 
 # Should run this every 5 minutes to keep the screen up to date.

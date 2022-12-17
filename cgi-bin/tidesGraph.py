@@ -68,10 +68,7 @@ stationsNearUs = {  'NewRochelleNY':  "8518490",
 
 tideStation = stationsNearUs['RyePlaylandNY']  # Closest one to us with reliable data
 
-if os.name == 'nt':
-    pathToResources = 'resources\\' # Windows Testing
-else:
-    pathToResources = "/home/pi/WeatherKiosk/resources/"
+pathToResources = "resources/"
 
 ###
 # import common library
@@ -91,7 +88,7 @@ def makeTideGraph(detailDF, extremaDF):
     """
     global gTideUnit # unit switch flag
 
-    graphFile = pathToResources + "tideGraph.png"
+    graphFile = pathToResources + "tmp/"+ "tideGraph.png"
 
     import matplotlib.transforms
     import matplotlib.dates as mdates
@@ -169,13 +166,9 @@ if __name__ == '__main__':                                                      
     idx = 0
     if "units" in fs:
         logging.debug(f"\tunits updated: {fs['units'].value}")
-        if fs['units'].value == 'metric':
+        if (fs['units'].value == 'metric') or (fs['units'].value == '1'):
             idx = 1
-        elif fs['units'].value == 'imperial':
-            idx = 0
-        elif fs['units'].value == '1':
-            idx = 1
-        elif fs['units'].value == '0':
+        elif (fs['units'].value == 'imperial') or (fs['units'].value == '0'):
             idx = 0
 
     gTideUnit = ('Tide [ft]', 'Tide [m]')[idx]

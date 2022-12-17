@@ -10,10 +10,7 @@ import matplotlib.pyplot as plt
 import os
 import logging
 
-if os.name == 'nt':
-    pathToResources = 'resources\\' # Windows Testing
-else:
-    pathToResources = "/home/pi/WeatherKiosk/resources/"
+pathToResources = "resources/"
 
 ##
 # make a cartoon of a moon with beta % lit
@@ -87,8 +84,7 @@ if __name__ == '__main__':                                                      
 
     if "filename" in fs:
         filename = fs['filename'].value
-        filename = filename.replace("%2F","/")
-        result['filename'] = filename
+        result['filename'] = pathToResources  + "tmp/" + filename
         logging.debug(f"\tfilename updated: {filename}")
 
     if stage.find("Waning")>=0 or stage.find("Last")>=0:
@@ -98,7 +94,7 @@ if __name__ == '__main__':                                                      
 
     try:
         makeMoonLune(fracillum)
-        plt.savefig(filename, transparent=True)
+        plt.savefig(result['filename'], transparent=True)
         result['rc'] = 200
 
     except Exception as ex:

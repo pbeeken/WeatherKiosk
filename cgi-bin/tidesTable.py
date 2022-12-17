@@ -65,10 +65,7 @@ stationsNearUs = {  'NewRochelleNY':  "8518490",
 
 tideStation = stationsNearUs['RyePlaylandNY']  # Closest one to us with reliable data
 
-if os.name == 'nt':
-    pathToResources = 'resources\\' # Windows Testing
-else:
-    pathToResources = "/home/pi/WeatherKiosk/resources/"
+pathToResources = "resources/"
 
 ###
 # import common library
@@ -111,8 +108,8 @@ def makeTideTable(extremaDF):
         templateHTML = template.readlines()
  #   templateFile.close()
 
-    # copy the html table into the text and write out a new file
-    with open(pathToResources + "../" + tideFile, "w") as html:
+    # copy the html table into the text and write out a new file   "../" +
+    with open(pathToResources + "tmp/" +  tideFile, "w") as html:
         html.write( ("".join(templateHTML)).replace('<!--Table Place-->', htmlText) )
 
 # Should run this every 5 minutes to keep the screen up to date.
@@ -138,9 +135,9 @@ if __name__ == '__main__':                                                      
     idx = 0
     if "units" in fs:
         logging.debug(f"\tunits updated: {fs['units'].value}")
-        if fs['units'].value == 'metric':
+        if (fs['units'].value == 'metric') or (fs['units'].value == '1'):
             idx = 1
-        elif fs['units'].value == 'imperial':
+        elif (fs['units'].value == 'imperial') or (fs['units'].value == '0'):
             idx = 0
 
     gTideUnit = ('Tide [ft]', 'Tide [m]')[idx]
