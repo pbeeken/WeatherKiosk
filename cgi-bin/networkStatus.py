@@ -41,7 +41,8 @@ def isUpAlt(host="8.8.8.8", port=53, timeout=2):
         return False
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\tnetworkStatus \t%(message)s', level=logging.INFO)
+    	prog = "networkStatus   "
+	logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
 
     if isUpAlt():
         status = "&#11014; UP"

@@ -64,7 +64,7 @@ div.header > .logo {
         background-image: url("resources/tideGraph.png");
         background-repeat: no-repeat;
         background-position: center; */
-    /* background-color: aqua; */
+    /* background-color: rgba(255, 255, 255, 0.5); */
     height: 390px;
 }
 
@@ -72,7 +72,7 @@ div.header > .logo {
     grid-column-start: 3;
     grid-row-start: 1;
     grid-row-end: 3;
-    /* background-color: aqua; */
+    /* background-color: rgba(255, 255, 255, 0.5); */
     padding-top: 6px;
 }
 
@@ -80,27 +80,27 @@ div.header > .logo {
     grid-column-start: 4;
     grid-row-start: 1;
     /* vertical-align: middle; */
-    /* background-color: lightsalmon; */
+    /* background-color: rgba(255, 255, 255, 0.5); */
 }
 
 .box3 {
     grid-column-start: 4;
     grid-row-start: 2;
-    /* background-color: green; */
+    /* background-color: rgba(255, 255, 255, 0.5); */
 }
 
 .box4 {
     grid-column-start: 1;
     grid-column-end: 3;
     grid-row-start: 4;
-    /* background-color: lightblue; */
+    /* background-color: rgba(255, 255, 255, 0.5); */
 }
 
 .box5 {
     grid-column-start: 3;
     grid-column-end: 5;
     grid-row-start: 4;
-    /* background-color: slateblue; */
+    /* background-color: rgba(255, 255, 255, 0.5); */
     height: 380px
 }
 
@@ -183,8 +183,8 @@ div.header > .logo {
     position: fixed;
     z-index: -20;
     top:    86px;
-    left:  698px;
-    right: 800px;
+    left:  710px;
+    right: 780px;
 }
 
 .phase {

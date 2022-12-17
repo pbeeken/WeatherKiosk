@@ -139,7 +139,8 @@ real_WLI_TimeDataFile = "https://www.ndbc.noaa.gov/data/realtime2/44040.txt"
 
 
 if __name__ == '__main__':                                                               #01234567890123
-    logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\tWindGraph     \t%(message)s', level=logging.INFO)
+    prog = "WindGraph    "
+    logging.basicConfig(filename='WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
     logging.info("Build wind graph...")
 
     now = datetime.now().astimezone(EST)

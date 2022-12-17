@@ -57,7 +57,8 @@ def fetchOneDayData(theDate, latlong="40.93,-73.76", timezone="-5"):
 # tz=-5
 ###
 if __name__ == '__main__':
-    logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\tusNavObsData\t%(message)s', level=logging.DEBUG)
+    prog = "usNavObsData "
+    logging.basicConfig(filename=f'WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.DEBUG)
 
     #   first fetch the strings passed to us with the fields outlined
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!

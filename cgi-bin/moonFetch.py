@@ -55,7 +55,8 @@ def fetchMoonPhasesData(theDate, numPhases):
 # nphases=##
 ###
 if __name__ == '__main__':                                                               #01234567890123
-    logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\tmoonFetch     \t%(message)s', level=logging.DEBUG)
+    	prog = "moonFetch       "
+	logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.DEBUG)
 
     # first fetch the strings passed to us with the fields outlined
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!

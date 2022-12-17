@@ -151,7 +151,8 @@ def refresh():
     It is expected that the web page runs this as a cgi request every 5 min or so.
 """
 if __name__ == '__main__':                                                               #01234567890123
-    logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\tTideGraphic   \t%(message)s', level=logging.INFO)
+    prog = "TideGraphic  "
+    logging.basicConfig(filename='WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
 
     #   first fetch the strings passed to us with the fields outlined
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!

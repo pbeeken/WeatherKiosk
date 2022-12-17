@@ -127,7 +127,8 @@ If we run it within python we run the risk of memory leaks so
 I will run it as a periodic bash shell (we only have to run once every 5min or so)
 """
 if __name__ == '__main__':                                                               #01234567890123
-    logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\tTideTable     \t%(message)s', level=logging.INFO)
+    prog = "TidesTable   "
+    logging.basicConfig(filename='WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
 
     #   first fetch the strings passed to us with the fields outlined
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!

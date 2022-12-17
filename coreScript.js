@@ -4,7 +4,7 @@
 const sec = 1000;
 const min = 60 * sec;
 
-/**
+/** astroData
  * Each of the three entries below carry the following information returned from USNO:
  * { closestphase: { day: 1, month: 2, phase: 'New Moon', time: '00:46', year: 2022 },
  *   curphase: 'Waxing Crescent',  day: 4, day_of_week: 'Friday',  fracillum: '15%', isdst: false, label: null, month: 2,
@@ -21,6 +21,13 @@ let astroData = {
     tomorrow: undefined,
 };
 
+/** moonImage
+ * Similar to astroData, this object contains the lunar information including images of the 'lune'
+ * cartoon that represents the degree of illumination of the moon. This is a great visual we all
+ * experience which illustrates where the moon is in relation to the sun. As any es student will tell
+ * you the magnitude of the tides is influenced by this relationship.
+ * {rc: 200, filename: 'resources/tmp/moon_today.svg', fracillum: 0.5, stage: 'Waning', error: ''}
+ */
 let moonImage = {
     // holds the moon image data for...
     yesterday: undefined,
@@ -28,8 +35,7 @@ let moonImage = {
     tomorrow: undefined,
 };
 
-/**
- * runClock
+/** runClock
  * This is a self re-asserting timer that displays a running clock in the 'clock'
  * box as the web page is active. This fancyness should be unnecessary as we move to
  * a one page kiosk with mulitple divs
@@ -45,11 +51,13 @@ function runClock(start) {
     clockRunner();
 }
 
-/**
- * updateResources
+/** updateResources
  * update the graphs, tables and other media is less disruptive than refreshing the whole screen.
  * A different script updates the resources on a different schedule.
- * @param {'all' | 'tidegraph' | 'tidegraphic' | 'windgraph' | 'tidetable' | 'forecast'} 'timed' is reserved for background
+ * @param {'all' | 'tidegraph' | 'tidegraphic' | 'windgraph' | 'tidetable' | 'forecast' | 'timed'}
+ * TODO: We shouldn't need to periodically rerun this method i.e. 'timed' is reserved for background updating
+ *       when the resources are 'fetched' asynchronously.  We no longer do this so resources are updated when
+ *       the promise is fufilled.
  */
 function updateResources(what) {
     const now = new Date();
@@ -81,23 +89,24 @@ function updateResources(what) {
         document.getElementById('forecast').src = 'resources/tmp/forecastGrid.html?' + now.getMilliseconds();
     }
 
+    // TODO: Shouldn't need to asynchronously update.
     if (what === 'timed') {
         // auto updte in five minutes
         setTimeout(updateResources, 5 * min);
+        console.log('rerunning updateResources in 5 minutes.');
     }
 }
 
-/**
- * loadLunarData
+/** buildLunarData
  * fetch the lunar data slug. It also builds and works out the svg 'lune'
  * needed for displaying the moon based on the fracillum.
  * N.B.: if global `astroData` hasn't been populated, it will start the load and reschedule
  */
-function loadLunarData() {
+function buildLunarData() {
     // Make sure the astroData object is loaded
     if (!astroData || !astroData.yesterday || !astroData.today || !astroData.tomorrow) {
-        loadAstroData();
-        setTimeout(loadLunarData, 4 * sec);
+        buildAstroData();
+        setTimeout(buildLunarData, 4 * sec);
         return; // do nothing because astroData hasn't been fully populated
     }
 
@@ -106,7 +115,7 @@ function loadLunarData() {
         fetchMoonImage('today');
         fetchMoonImage('tomorrow');
         fetchMoonImage('yesterday');
-        setTimeout(loadLunarData, 10 * sec);
+        setTimeout(buildLunarData, 10 * sec);
         return; // do nothing the lunar data is loaded.
     }
 
@@ -119,17 +128,17 @@ function loadLunarData() {
         moonImage.tomorrow.filename + '?' + now.getMilliseconds();
 }
 
-/**
+/** updateSunRiseSunset
  * update the sunrise sunset slug in the footer. It displays the current day's data
  * until after sunset when is switches to the next day.
  * N.B.: if global `astroData` hasn't been populated, it will start the load and reschedule
  */
 function updateSunRiseSunset() {
     // We need these items to be populated so we exit quietly in case they are not.
-    if (!astroData || !astroData.yesterday || !astroData.today || !astroData.tomorrow) {
-        loadAstroData();
-        setTimeout(updateSunRiseSunset, 3 * sec); // rerun in a second or so
-        return; // do nothing because astroData hasn't been fully populated
+    if (!astroData || !astroData.today.sundata || !astroData.tomorrow.sundata) {
+        buildAstroData();
+        setTimeout(updateSunRiseSunset, 3 * sec); // rerun in a few seconds or so
+        return; // do nothing, yet, because astroData hasn't been fully populated
     }
 
     try {
@@ -140,40 +149,40 @@ function updateSunRiseSunset() {
 
         document.getElementById('suncondition').innerHTML = `${theSunToday.time} ${theSunTomor.time}`;
 
-        // TODO: When the DST parameter is used USNO server tacks on ' DT' or ' ST' to the time. Do I keep it?  Not always there.
+        // DONE: When the DST parameter is used USNO server tacks on ' DT' or ' ST' to the time. Do I keep it?  Not always there.
         //       I am stripping it. This tool is only used during DST so having the designator clutters the display
         let setTime = theSunToday[3].time.replace(/ {2}[DS]T/, '').split(':'); // sometimes it is there and sometimes not, this takes care of both
 
         let todaySunset = new Date(now.getFullYear(), now.getMonth(), now.getDate(), setTime[0], setTime[1]);
-        // console.log(`${setTime}`)
-        // console.log(`${todaySunset} ${now} rel ${now>todaySunset}`)
 
-        if (now > todaySunset)
-            // 20 min after sunset (see above) switch to tomorrow's datum
+        if (now > todaySunset) {
+            // after sunset (see above) switch to tomorrow's datum
             document.getElementById('suncondition').innerHTML = `Tomorrow's Sunrise will be at ${theSunTomor[1].time.replace(
                 / {2}[DS]T/,
                 ''
             )}, Sunset at ${theSunTomor[3].time.replace(/ {2}[DS]T/, '')}`;
-        else
+        } else {
+            // present today's condition
             document.getElementById('suncondition').innerHTML = `Today's Sunrise is ${theSunToday[1].time.replace(
                 / {2}[DS]T/,
                 ''
             )}, Sunset at ${theSunToday[3].time.replace(/ {2}[DS]T/, '')}`;
+        }
     } catch (err) {
         // whatever has gone wrong just try again in a couple of seconds
-        setTimeout(updateSunRiseSunset, 1 * sec); // rerun in a second or so
+        setTimeout(updateSunRiseSunset, 3 * sec); // rerun in a few seconds or so
         return;
     }
 
-    setTimeout(updateSunRiseSunset, 10 * min); // rerun in 10 minutes
+    setTimeout(updateSunRiseSunset, 13 * min); // rerun every 12 minutes so we catch the change at sunset
 }
 
-/**
- * fetchUSNavalObsData
+/** fetchUSNavalObsData
  * As the name sez, gets the data from the US Naval Observatory, the
  * definitive reference for all daily information. We us an external
  * function through our server because of CORS restrictions within a
- * browser.
+ * browser. THIS IS THE BUSINESS END of updating **astroData**, the
+ * central database for astronomical data.
  * @param {Date} theDate
  * @param {'yesterday' | 'today' | 'tomorrow'} when
  */
@@ -193,8 +202,8 @@ async function fetchUSNavalDailyData(theDate, when) {
         });
 }
 
-/**
- * fetchMoonImage calls the cgi script to build the lunar svg images.
+/** fetchMoonImage
+ * calls the cgi script to build the lunar svg images.
  * N.B. assumes astroData is fully loaded.
  * @param {'yesterday' | 'today' | 'tomorrow'} when
  */
@@ -214,15 +223,18 @@ async function fetchMoonImage(when) {
         });
 }
 
-/**
- * fetchResources uses a cgi-calls to rebuild the various images, tables and media
+/** fetchResources
+ * uses a cgi-calls to rebuild the various images, tables and media
  * @param {'all' | 'tidegraph' | 'tidegraphic' | 'windgraph' | 'tidetable' | 'forecast'} 'timed' is reserved for background
- * @param {'metric' | 'imperial' | '1' | '0' | null} if provided overrides automatic toggle.
+ * @param {'metric' | 'imperial' | null} if provided overrides automatic toggle.
+ * trick for relaunching functions with parameters:
+ *      // given a function fp(a, b)
+ *      setTimeout(() => {fp(1, 'one'); fp(2, 'two');}, s*sec);
  */
 let lastUnit = 0;
 async function fetchResources(what, units) {
-    if (!what) what = 'timed';
-    if (!units) units = lastUnit++ % 2;
+    if (!what) what = 'all';
+    if (!units) units = lastUnit++ % 2 > 0 ? 'metric' : 'imperial';
 
     if (what === 'tidegraph' || what === 'all' || what === 'timed') {
         let url = `http://localhost:8000/cgi-bin/tidesGraph.py?units=${units}`;
@@ -294,10 +306,11 @@ async function fetchResources(what, units) {
     }
 }
 
-/**
+/** updateRadarView
  * update the NOAA NWS gif for current radar in KOKX
  * Initial image set in html should be...
  *    "https://radar.weather.gov/ridge/standard/KOKX_loop.gif"
+ * TODO: Include in updateResources
  */
 function updateRadarView() {
     try {
@@ -311,17 +324,17 @@ function updateRadarView() {
         return;
     }
 
-    setTimeout(updateRadarView, 8 * min); // rerun in 10 minutes
+    setTimeout(updateRadarView, 7 * min); // rerun in 7 minutes
 }
 
-/**
- * will load the global astroData parameter with the moon and solar data needed for various
- * display routines. This only needs to be done once per day. Since we restart the machine
+/** buildAstroData
+ * will load the global astroData parameter with the moon and solar data needed
+ * for various display routines. This only needs to be done once per day. Since we restart the machine
  * every morning we run this when the kiosk is loaded. We only run if astroData is empty. This
  * costs nothing if we simpy run it at the head of any function that needs astroData to run.
  * @param {Date} testDate is an optional parameter to override the default of 'today'
  */
-function loadAstroData(testDate) {
+function buildAstroData(testDate) {
     let day = testDate;
     if (!testDate) day = new Date();
 
@@ -347,17 +360,17 @@ function loadAstroData(testDate) {
 /**
  * This is the main entrypoint for populating all the content on this
  * page. I sets in motion all of the actions that need to be loaded to
- * complete the up to date content. Many of the routines will automatically
- * relaunch themselves if dependancies are not in place.  Otherwise they set
- * their own schedules for re-launching.
+ * complete the up to date content. Some routines will automatically
+ * relaunch themselves if dependancies are not in place.  Otherwise
+ * they set their own schedules for re-launching if needed.
  */
 function buildWeatherPage() {
     /** Get and post the sunrise and sunset data */
-    loadAstroData(); // Basic astronomical information all the other routines need.
+    buildAstroData(); // Basic astronomical information all the other routines need.
     fetchResources(); // refresh all our various resources
-    setTimeout(loadLunarData, 3 * sec); // hold off a bit and launch to
+    setTimeout(buildLunarData, 3 * sec); // hold off a bit and launch to
     setTimeout(updateSunRiseSunset, 5 * sec); // first run
-    setTimeout(updateRadarView, 1 * min); // first run in 2 minutes
+    setTimeout(updateRadarView, 1 * min); // first run in a minutes
     setTimeout(updateResources, 2 * min); // first run in 2 minutes
 }
 
@@ -376,9 +389,6 @@ async function networkStatus() {
         });
 }
 
-// let dayBoatSheet = '';
-// let ideal18Sheet = '';
-
 /** For Reservation Sheets Only
  * This is one of many attempts to fix the cache problem of retrieving the Google Sheets
  * page. I have tried to force updating according to recommendations in Stack Exchange to
@@ -386,7 +396,8 @@ async function networkStatus() {
  * PROBLEM MAY BE SOLVED. Instead of 'publishing' a sheet, make it public (which it is anyway) and
  * access the content as you would through any browser. It seems to work. No updating necessary.
  */
-function refreshFrames() {
+/**
+// function refreshFrames() {
     // const change = '&cachekiller=' + Math.floor(Date.time()/1000); // we need to force the cache to update by passing a bogus tag.
 
     //save the source of the iframe minus the unique identifier
@@ -412,11 +423,12 @@ function refreshFrames() {
     // document.getElementById('ideal18').append(idFrame);
 
     // METHOD 3: simply add an empty string.
-    document.getElementById('dayboat').src += ''; // cache killer not needed
-    document.getElementById('ideal18').src += '';
+    // document.getElementById('dayboat').src += ''; // cache killer not needed
+    // document.getElementById('ideal18').src += '';
     //    document.location.reload();
 
-    console.log('refresh frames NT');
+    // console.log('refresh frames NT');
 
     //setTimeout(refreshFrames, 2 * min);
-}
+// }
+ */

@@ -157,8 +157,9 @@ def refresh():
     units=metric | imperial | 1 | 0
     It is expected that the web page runs this as a cgi request every 15 min or so.
 """
-if __name__ == '__main__':                                                               #01234567890123
-    logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\tTideGraph     \t%(message)s', level=logging.INFO)
+if __name__ == '__main__':
+    prog = "TideGraph    "
+    logging.basicConfig(filename='WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
 
     #   first fetch the strings passed to us with the fields outlined
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!

@@ -58,7 +58,8 @@ def fetchOneDayData(theDate,latlong):
 # coords=-###.###,+###.###
 ###
 if __name__ == '__main__':                                                               #01234567890123
-    logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\tmoonData      \t%(message)s', level=logging.INFO)
+    	prog = "moonData        "
+	logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
 
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
     logging.info(f"\tfield storage: {fs}")
