@@ -82,10 +82,11 @@ def makeTideGraphic(extremaDF, detailDF=None):
     extremeDF -- The extrema (highs and lows)
     """
     global gTideUnit
-    lbl = {'H': 'HIGH', 'L': 'LOW'}
+    gTideUnit = 'Tide [ft]' ## doesnt matter as we just us it to scale to top
     global gTime
 
-    now = datetime.now(tz=EST)
+    lbl = {'H': 'HIGH', 'L': 'LOW'}
+    #now = datetime.now(tz=EST)
 
     # imageURL = 'https://docs.google.com/drawings/d/e/2PACX-1vRPpyCKk834LQUUwoEWDiopLKIcRscn3AoUPynXzNe6jPRLXWt9TBS90Wwm_MjxVoqezD09hbx_0Sw8/pub?w=225&h=159'
     # imageRef = PIL.Image.open(urllib.request.urlopen(imageURL))
@@ -153,7 +154,7 @@ def refresh(time):
 
 """
     Entrypoint for the call. The expected optional parameters for cgi-call:
-    {'24' | '12'} which delinate 24 hour or 12 (am/pm) for the time
+    {'24hour' | '12hour'} which delinate 24 hour or 12 (am/pm) for the time
     It is expected that the web page runs this as a cgi request periodically.
 """
 if __name__ == '__main__':                                                               #01234567890123
@@ -163,12 +164,11 @@ if __name__ == '__main__':                                                      
     #   first fetch the strings passed to us with the fields outlined
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
     logging.info(f"\tfield storage: {fs}")
-    time = '12'
-    if 'time' in fs:
-        logging.debug(f"\tunits updated: {fs['time'].value}")
-        time = fs['time']
+    time = '12hour'
+    if 'clock' in fs:
+        time = fs['clock']
 
-    logging.info(f"\t...Time format {time}")
+    logging.info(f"\t...clock format {time}")
 
     refresh(time)
 

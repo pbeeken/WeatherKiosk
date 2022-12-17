@@ -219,15 +219,18 @@ async function fetchMoonImage(when) {
 /** fetchResources
  * uses a cgi-calls to rebuild the various images, tables and media
  * @param {'all' | 'tidegraph' | 'tidegraphic' | 'windgraph' | 'tidetable' | 'forecast'}
- * @param {'metric' | 'imperial' | null} if provided overrides automatic toggle.
+ * @param {'metric' | 'imperial' | null} if provided, overrides automatic toggle.
  * trick for relaunching functions with parameters:
  *      // given a function fp(a, b)
  *      setTimeout(() => {fp(1, 'one'); fp(2, 'two');}, s*sec);
+ * another tricky part: tide graph and tide table need to get the same units when running
+ *      looks funny if one is in metric and the other imperial. We only update the units
+ *      when 'tidegraph' is made. So tide table is connected to
  */
 let lastUnit = 0;
 async function fetchResources(what, units) {
     if (!what) what = 'all';
-    if (!units) units = lastUnit++ % 2 > 0 ? 'metric' : 'imperial';
+    if (!units) units = lastUnit % 2 > 0 ? 'metric' : 'imperial';
 
     if (what === 'tidegraph' || what === 'all') {
         let url = `http://localhost:8000/cgi-bin/tidesGraph.py?units=${units}`;
@@ -236,6 +239,11 @@ async function fetchResources(what, units) {
             .then((text) => {
                 console.log(text);
                 updateResources('tidegraph');
+                lastUnit++; // swap units.
+                setTimeout(() => {
+                    // rinse and repeat
+                    fetchResources('tidegraph');
+                }, 10 * min); // do it again in 10 minutes
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
@@ -243,12 +251,16 @@ async function fetchResources(what, units) {
     }
 
     if (what === 'tidegraphic' || what === 'all') {
-        let url = `http://localhost:8000/cgi-bin/tidesGraphic.py?time=12`;
+        let url = `http://localhost:8000/cgi-bin/tidesGraphic.py?clock=12hour`;
         await fetch(url)
             .then((response) => response.text())
             .then((text) => {
                 console.log(text);
                 updateResources('tidegraphic');
+                setTimeout(() => {
+                    // rinse and repeat
+                    fetchResources('tidegraphic');
+                }, 10 * min);
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
@@ -262,6 +274,10 @@ async function fetchResources(what, units) {
             .then((text) => {
                 console.log(text);
                 updateResources('tidetable');
+                setTimeout(() => {
+                    // rinse and repeat
+                    fetchResources('tidetable');
+                }, 10 * min);
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
@@ -275,6 +291,10 @@ async function fetchResources(what, units) {
             .then((text) => {
                 console.log(text);
                 updateResources('windgraph');
+                setTimeout(() => {
+                    // rinse and repeat
+                    fetchResources('windgraph');
+                }, 13 * min);
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
@@ -288,18 +308,17 @@ async function fetchResources(what, units) {
             .then((text) => {
                 console.log(text);
                 updateResources('forecast');
+                setTimeout(() => {
+                    // rinse and repeat
+                    fetchResources('forecast');
+                }, 15 * min);
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
             });
     }
 
-    if (what === 'all') {
-        // rinse and repeat
-        setTimeout(() => {
-            fetchResources('all');
-        }, 10 * min); // do it again in 10 minutes
-    }
+    // if (what === 'all') { /** All calls are handled individually now */}
 }
 
 /** updateRadar
@@ -316,7 +335,7 @@ function updateRadar() {
         document.getElementById('radar').src = origImg + '?' + now; // trick to force an image refresh with the same URL
     } catch (err) {
         // whatever has gone wrong just try again in a couple of seconds
-        setTimeout(updateRadar, 20 * sec); // rerun in a second or so
+        setTimeout(updateRadar, 15 * sec); // rerun in a second or so
         return;
     }
 
@@ -363,11 +382,20 @@ function buildAstroData(testDate) {
 function buildWeatherPage() {
     /** Get and post the sunrise and sunset data */
     buildAstroData(); // Basic astronomical information all the other routines need.
-    fetchResources(); // refresh all our various resources
-    setTimeout(buildLunarData, 3 * sec); // hold off a bit and launch to
-    setTimeout(updateSunRiseSunset, 5 * sec); // first run
-    setTimeout(updateRadar, 1 * min); // first run in a minutes
-    setTimeout(updateResources, 2 * min); // first run in 2 minutes
+    buildLunarData(); // hold off a bit and launch to
+    // Now we can get everything else
+    fetchResources('all'); // refresh all our various resources
+    updateSunRiseSunset(); // first run
+    // this can run a little later so we give the machine a break.
+    setTimeout(updateRadar, 30 * sec); // first run in a minutes
+}
+
+/**
+ * Useful tool for changing the title
+ * @param {string} the title after the boilerplate
+ */
+function changePageTitle(title) {
+    document.getElementsByClassName('title')[0].innerHTML = `Horseshoe Harbor Yacht Club ${title}`;
 }
 
 /**
