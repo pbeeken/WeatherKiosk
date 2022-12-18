@@ -54,7 +54,7 @@ function runClock(start) {
 /** updateResources
  * update the graphs, tables and other media is less disruptive than refreshing the whole screen.
  * A different script updates the resources on a different schedule.
- * @param {'all' | 'tidegraph' | 'tidegraphic' | 'windgraph' | 'tidetable' | 'forecast' | 'timed'}
+ * @param {'all' | 'tides' | 'tidegraphic' | 'windgraph' | 'forecast' | 'timed'}
  * TODO: We shouldn't need to periodically rerun this method i.e. 'timed' is reserved for background updating
  *       when the resources are 'fetched' asynchronously.  We no longer do this so resources are updated when
  *       the promise is fufilled.
@@ -64,9 +64,12 @@ function updateResources(what) {
     if (!what) what = 'timed';
 
     // Note the trick to get the browser to refresh the images
-    if (what === 'tidegraph' || what === 'all' || what === 'timed') {
+    if (what === 'tides' || what === 'all' || what === 'timed') {
+        // these guys work together.
         // clock graph
         document.getElementById('tidegraph').src = 'resources/tmp/tideGraph.png?' + now.getMilliseconds();
+        // tide table
+        document.getElementById('tidetable').src = 'resources/tmp/tideTable.html?' + now.getMilliseconds();
     }
 
     if (what === 'tidegraphic' || what === 'all' || what === 'timed') {
@@ -77,11 +80,6 @@ function updateResources(what) {
     if (what === 'windgraph' || what === 'all' || what === 'timed') {
         // wind graph
         document.getElementById('windgraph').src = 'resources/tmp/windGraph.png?' + now.getMilliseconds();
-    }
-
-    if (what === 'tidetable' || what === 'all' || what === 'timed') {
-        // tide table
-        document.getElementById('tidetable').src = 'resources/tmp/tideTable.html?' + now.getMilliseconds();
     }
 
     if (what === 'forecast' || what === 'all' || what === 'timed') {
@@ -99,7 +97,7 @@ function buildLunarData() {
     // Make sure the astroData object is loaded
     if (!astroData || !astroData.yesterday || !astroData.today || !astroData.tomorrow) {
         buildAstroData();
-        setTimeout(buildLunarData, 4 * sec);
+        setTimeout(buildLunarData, 4 * sec); // one offs
         return; // do nothing because astroData hasn't been fully populated
     }
 
@@ -108,7 +106,7 @@ function buildLunarData() {
         fetchMoonImage('today');
         fetchMoonImage('tomorrow');
         fetchMoonImage('yesterday');
-        setTimeout(buildLunarData, 10 * sec);
+        setTimeout(buildLunarData, 10 * sec); // one offs
         return; // do nothing the lunar data is loaded.
     }
 
@@ -167,7 +165,7 @@ function updateSunRiseSunset() {
         return;
     }
 
-    setTimeout(updateSunRiseSunset, 7 * min); // rerun every 12 minutes so we catch the change at sunset
+    postStatus('');
 }
 
 /** fetchUSNavalObsData
@@ -218,32 +216,37 @@ async function fetchMoonImage(when) {
 
 /** fetchResources
  * uses a cgi-calls to rebuild the various images, tables and media
- * @param {'all' | 'tidegraph' | 'tidegraphic' | 'windgraph' | 'tidetable' | 'forecast'}
+ * @param {'all' | 'tides' | 'tidegraphic' | 'windgraph' | 'forecast'}
  * @param {'metric' | 'imperial' | null} if provided, overrides automatic toggle.
  * trick for relaunching functions with parameters:
  *      // given a function fp(a, b)
  *      setTimeout(() => {fp(1, 'one'); fp(2, 'two');}, s*sec);
  * another tricky part: tide graph and tide table need to get the same units when running
- *      looks funny if one is in metric and the other imperial. We only update the units
- *      when 'tidegraph' is made. So tide table is connected to
+ *      looks funny if one is in metric and the other imperial. So we run them together.
  */
 let lastUnit = 0;
 async function fetchResources(what, units) {
     if (!what) what = 'all';
     if (!units) units = lastUnit % 2 > 0 ? 'metric' : 'imperial';
 
-    if (what === 'tidegraph' || what === 'all') {
+    if (what === 'tides' || what === 'all') {
         let url = `http://localhost:8000/cgi-bin/tidesGraph.py?units=${units}`;
         await fetch(url)
             .then((response) => response.text())
             .then((text) => {
                 console.log(text);
-                updateResources('tidegraph');
-                lastUnit++; // swap units.
-                setTimeout(() => {
-                    // rinse and repeat
-                    fetchResources('tidegraph');
-                }, 10 * min); // do it again in 10 minutes
+                updateResources('tides');
+                lastUnit++;
+            })
+            .catch((error) => {
+                console.error(`Failed to fetch ${url}`, error);
+            });
+        url = `http://localhost:8000/cgi-bin/tidesTable.py?units=${units}`;
+        await fetch(url)
+            .then((response) => response.text())
+            .then((text) => {
+                console.log(text);
+                updateResources('tides');
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
@@ -257,27 +260,6 @@ async function fetchResources(what, units) {
             .then((text) => {
                 console.log(text);
                 updateResources('tidegraphic');
-                setTimeout(() => {
-                    // rinse and repeat
-                    fetchResources('tidegraphic');
-                }, 10 * min);
-            })
-            .catch((error) => {
-                console.error(`Failed to fetch ${url}`, error);
-            });
-    }
-
-    if (what === 'tidetable' || what === 'all') {
-        let url = `http://localhost:8000/cgi-bin/tidesTable.py?units=${units}`;
-        await fetch(url)
-            .then((response) => response.text())
-            .then((text) => {
-                console.log(text);
-                updateResources('tidetable');
-                setTimeout(() => {
-                    // rinse and repeat
-                    fetchResources('tidetable');
-                }, 25 * min);
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
@@ -291,10 +273,6 @@ async function fetchResources(what, units) {
             .then((text) => {
                 console.log(text);
                 updateResources('windgraph');
-                setTimeout(() => {
-                    // rinse and repeat
-                    fetchResources('windgraph');
-                }, 13 * min);
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
@@ -308,17 +286,11 @@ async function fetchResources(what, units) {
             .then((text) => {
                 console.log(text);
                 updateResources('forecast');
-                setTimeout(() => {
-                    // rinse and repeat
-                    fetchResources('forecast');
-                }, 15 * min);
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
             });
     }
-
-    // if (what === 'all') { /** All calls are handled individually now */}
 }
 
 /** updateRadar
@@ -389,9 +361,43 @@ function buildWeatherKiosk() {
     postStatus('fetch visual resources lunar db');
     fetchResources('all'); // refresh all our various resources
     postStatus('fetch solar data db');
-    updateSunRiseSunset(); // first run
+
+    // t
+    setTimeout(updateSunRiseSunset, 25 * sec); // first run
     // this can run a little later so we give the machine a break.
     setTimeout(updateRadar, 30 * sec); // first run in 1/2 a minute
+
+    setTimeout(setTimers, 60 * sec);
+}
+
+function setTimers() {
+    // Tides Elements includes both table and graph
+    setInterval(() => {
+        fetchResources('tides');
+    }, 10 * min);
+
+    // Sunrise-Sunset
+    setInterval(() => {
+        updateSunRiseSunset();
+    }, 7 * min);
+
+    // Tide Graphic
+    setInterval(() => {
+        // rinse and repeat
+        fetchResources('tidegraphic');
+    }, 10 * min);
+
+    // windgraph
+    setInterval(() => {
+        // rinse and repeat
+        fetchResources('windgraph');
+    }, 13 * min);
+
+    // forecast
+    setInterval(() => {
+        // rinse and repeat
+        fetchResources('forecast');
+    }, 15 * min);
 }
 
 /**
