@@ -277,7 +277,7 @@ async function fetchResources(what, units) {
                 setTimeout(() => {
                     // rinse and repeat
                     fetchResources('tidetable');
-                }, 10 * min);
+                }, 25 * min);
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
@@ -325,7 +325,7 @@ async function fetchResources(what, units) {
  * update the NOAA NWS gif for current radar in KOKX
  * Initial image set in html should be...
  *    "https://radar.weather.gov/ridge/standard/KOKX_loop.gif"
- * TODO: Include in updateResources
+ * TODO: Include in updateResources eventually
  */
 function updateRadar() {
     try {
@@ -379,7 +379,7 @@ function buildAstroData(testDate) {
  * relaunch themselves if dependancies are not in place.  Otherwise
  * they set their own schedules for re-launching if needed.
  */
-function buildWeatherPage() {
+function buildWeatherKiosk() {
     /** Get and post the sunrise and sunset data */
     buildAstroData(); // Basic astronomical information all the other routines need.
     buildLunarData(); // hold off a bit and launch to

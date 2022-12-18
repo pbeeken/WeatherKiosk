@@ -115,7 +115,7 @@ def makeTideGraphic(extremaDF, detailDF=None):
         len = -50
     else:
         len = 50
-    plt.arrow(wdt/6, 90-len/4, 0, len, width=6., color='cyan',
+    plt.arrow(wdt/6, 65-len/4, 0, len, width=6., color='cyan',
                 length_includes_head=True, alpha=0.6, fill=False, linewidth=2.0)
 
     # Somehwat kludgy since we know the range is between -1 and 10ft
