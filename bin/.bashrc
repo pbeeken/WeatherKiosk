@@ -130,9 +130,9 @@ then
 
    cd WeatherKiosk/
 
-   # update tables and graphs
-   /bin/bash /home/pi/WeatherKiosk/bin/updateTides.sh
-   /bin/bash /home/pi/WeatherKiosk/bin/updateWinds.sh
+   # update tables and graphs now handled within the browser
+   # /bin/bash /home/pi/WeatherKiosk/bin/updateTides.sh
+   # /bin/bash /home/pi/WeatherKiosk/bin/updateWinds.sh
 
    #launch the server
    python -m http.server --cgi &
