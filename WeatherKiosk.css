@@ -183,8 +183,8 @@ div.header > .logo {
     position: fixed;
     z-index: -20;
     top:    86px;
-    left:  723px;
-    right: 780px;
+    left:  708px;
+    width: 431px;
 }
 
 img#tidegraphic {
