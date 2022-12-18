@@ -381,13 +381,17 @@ function buildAstroData(testDate) {
  */
 function buildWeatherKiosk() {
     /** Get and post the sunrise and sunset data */
+    postStatus('build astronomy db');
     buildAstroData(); // Basic astronomical information all the other routines need.
+    postStatus('build lunar db');
     buildLunarData(); // hold off a bit and launch to
     // Now we can get everything else
+    postStatus('fetch visual resources lunar db');
     fetchResources('all'); // refresh all our various resources
+    postStatus('fetch solar data db');
     updateSunRiseSunset(); // first run
     // this can run a little later so we give the machine a break.
-    setTimeout(updateRadar, 30 * sec); // first run in a minutes
+    setTimeout(updateRadar, 30 * sec); // first run in 1/2 a minute
 }
 
 /**
@@ -396,6 +400,10 @@ function buildWeatherKiosk() {
  */
 function changePageTitle(title) {
     document.getElementsByClassName('title')[0].innerHTML = `Horseshoe Harbor Yacht Club ${title}`;
+}
+
+function postStatus(info) {
+    document.getElementById('status').innerHTML = info;
 }
 
 /**
