@@ -1,3 +1,5 @@
+#!/bin/python
+
 import numpy as np
 from html.parser import HTMLParser
 import logging

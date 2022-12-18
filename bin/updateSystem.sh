@@ -26,6 +26,11 @@ if [ "$localHash" != "$remoteHash" ]; then
 
     cp $HOME/.xinitrc $HOME/.xinitrc_OLD
     cp $KIOSK/bin/.xinitrc $HOME
+
+    # Update executable tags on linux
+    chmod 755 $KIOSK/bin/*.sh
+    chmod 755 $KIOSK/cgi-bin/*.py
+
 else
 
     echo "up to date..."

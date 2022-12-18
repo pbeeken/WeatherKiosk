@@ -128,9 +128,9 @@ function buildLunarData() {
  */
 function updateSunRiseSunset() {
     // We need these items to be populated so we exit quietly in case they are not.
-    if (!astroData || !astroData.today.sundata || !astroData.tomorrow.sundata) {
+    if (!astroData || !astroData.today || !astroData.tomorrow || !astroData.today.sundata || !astroData.tomorrow.sundata) {
         buildAstroData();
-        setTimeout(updateSunRiseSunset, 3 * sec); // rerun in a few seconds or so
+        setTimeout(updateSunRiseSunset, 7 * sec); // rerun in a few seconds or so
         return; // do nothing, yet, because astroData hasn't been fully populated
     }
 
@@ -163,11 +163,11 @@ function updateSunRiseSunset() {
         }
     } catch (err) {
         // whatever has gone wrong just try again in a couple of seconds
-        setTimeout(updateSunRiseSunset, 3 * sec); // rerun in a few seconds or so
+        setTimeout(updateSunRiseSunset, 7 * sec); // rerun in a few seconds or so
         return;
     }
 
-    setTimeout(updateSunRiseSunset, 13 * min); // rerun every 12 minutes so we catch the change at sunset
+    setTimeout(updateSunRiseSunset, 7 * min); // rerun every 12 minutes so we catch the change at sunset
 }
 
 /** fetchUSNavalObsData
