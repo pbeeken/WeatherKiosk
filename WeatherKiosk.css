@@ -6,13 +6,7 @@ body {
     position: fixed;
     width: 1440px;
     height: 900px;
-}
-
-.import {
-    position: relative;
-    width: 113%;
-    height: 100%;
-    border-width: 0px;
+    /* background-color: rgba(255, 220, 255, 0.5); */
 }
 
 .header {
@@ -44,83 +38,84 @@ div.header > #logo {
 
 /* Weatherscreen div and contents */
 div#weatherScreen {
-    display: none;
+    display: block;
+}
+
+.import {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    border-width: 0px;
 }
 
 div#weatherScreen > .grid {
     position: absolute;
     top: 70px;
-    left: 10px;
-    right: 10px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    column-gap: 5px;
-    row-gap: 5px;
+    left: 0px;
+    right: 0px;
+    bottom: 26px;
+    /* background-color: rgba(220, 255, 255, 0.5); */
 }
 
 #tideGraphBox {
-    grid-column-start: 1;
-    grid-column-end: 3;
-    grid-row-start: 1;
-    grid-row-end: 3;
-    height: 390px;
-}
-
-#radarBox  {
-    /* A blank space for the radar image */
-    grid-column-start: 3;
-    grid-row-start: 1;
-    grid-row-end: 3;
-    /* background-color: rgba(255, 255, 255, 0.5); debugging */
-    padding-top: 6px;
+    position: fixed;
+    top: 95px;
+    left: 15px;
 }
 
 #tideCartoonBox {
-    grid-column-start: 4;
-    grid-row-start: 1;
-    /* vertical-align: middle; */
+    position: fixed;
+    top: 107px;
+    left: 700px;
     /* background-color: rgba(255, 255, 255, 0.5); debugging */
 }
 
 #tideTableBox {
-    grid-column-start: 4;
-    grid-row-start: 2;
+    position: fixed;
+    top: 300px;
+    left: -145px;
     /* background-color: rgba(255, 255, 255, 0.5); debugging */
 }
 
+#radarBox  {
+    position: fixed;
+    z-index: -10;
+    top: 86px;
+    left: 974px;
+    width: 448px;
+}
+
 #windGraphBox {
-    grid-column-start: 1;
-    grid-column-end: 3;
-    grid-row-start: 4;
-    /* background-color: rgba(255, 255, 255, 0.5); */
+    position: fixed;
+    top: 483px;
+    left: 6px;
 }
 
 #forecastBox {
-    grid-column-start: 3;
-    grid-column-end: 5;
-    grid-row-start: 4;
-    /* background-color: rgba(255, 255, 255, 0.5); */
-    height: 380px
+    position: fixed;
+    top: 499px;
+    left: 734px;
+    width: auto;
 }
 
 div#yesterday {
     position: fixed;
     z-index: -20;
-    top: 335px;
+    top: 280px;
     left: 105px;
 }
 
 div#today {
     position: fixed;
     z-index: -20;
-    top: 335px;
+    top: 280px;
     left: 312px;
 }
 
 div#tomorrow {
     position: fixed;
     z-index: -20;
-    top: 335px;
+    top: 280px;
     left: 517px;
 }
 
@@ -132,30 +127,16 @@ div#radarbox {
     width: 431px;
 }
 
-img#tidegraphic {
-    position: relative;
-    display: inline-block;
-    left: 58%;
-    transform: translate(-50%);
-}
-
 .phase {
     position: static;
     height: 60px;
-    opacity: 80%;
+    opacity: 90%;
 }
 /* end Weatherscreen div and contents */
 
 /* BoatResrvations div and contents */
 div#boatScreen {
-    display: block;
-}
-
-.import {
-    position: relative;
-    width: 100%;
-    height: 780px;
-    border-width: 0px;
+    display: none;
 }
 
 div#boatScreen > .grid {
@@ -203,7 +184,6 @@ div.footer > #clock {
     position: absolute;
     top: 50%;
     left: 90%;
-    /* -ms-transform: translate(-50%, -50%); */
     transform: translate(-60%, -50%);
 }
 
@@ -215,9 +195,8 @@ div.footer > #toast {
     font-size: small;
     margin: 0;
     position: absolute;
-    top: 50%;
-    left: 525px;
-    /* transform: translate(40%, -75%); */
+    top: 8px;
+    left: 520px;
 
 }
 

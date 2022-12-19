@@ -56,7 +56,7 @@ function runClock(start) {
 /** updateResources
  * update the graphs, tables and other media is less disruptive than refreshing the whole screen.
  * A different script updates the resources on a different schedule.
- * @param {'all' | 'tides' | 'tidegraphic' | 'windgraph' | 'forecast' | 'radar'}
+ * @param {'all' | 'tides' | 'tidecartoon' | 'windgraph' | 'forecast' | 'radar'}
 
  */
 function updateResources(what) {
@@ -71,9 +71,9 @@ function updateResources(what) {
         document.getElementById('tidetable').src = 'resources/tmp/tideTable.html' + randomSuffix();
     }
 
-    if (what === 'tidegraphic' || what === 'all') {
+    if (what === 'tidecartoon' || what === 'all') {
         // tide graphic: 'cartoon of depth'
-        document.getElementById('tidegraphic').src = 'resources/tmp/tideGraphic.png' + randomSuffix();
+        document.getElementById('tidecartoon').src = 'resources/tmp/tideCartoon.png' + randomSuffix();
     }
 
     if (what === 'windgraph' || what === 'all') {
@@ -93,21 +93,14 @@ function updateResources(what) {
             origImg = origImg.split('?')[0]; // get rid of random bit at the end.
             document.getElementById('radar').src = origImg + randomSuffix(); // force an image refresh with the same URL
         } catch (err) {
-            // whatever has gone wrong just try again in a couple of seconds
-            setTimeout(updateRadar, 15 * sec); // rerun in a second or so
+            // whatever has gone wrong just try again in a little later
+            setTimeout(() => {
+                updateResources('radar');
+            }, 31 * sec);
         }
     }
 }
 
-/** updateRadar
- * update the NOAA NWS gif for current radar in KOKX
- * Initial image set in html should be...
- *    "https://radar.weather.gov/ridge/standard/KOKX_loop.gif"
- * TODO: Include in updateResources eventually
- */
-function updateRadar() {
-    setTimeout(updateRadar, 7 * min); // rerun in 7 minutes
-}
 /** buildLunarData
  * fetch the lunar data slug. It also builds and works out the svg 'lune'
  * needed for displaying the moon based on the fracillum.
@@ -116,8 +109,7 @@ function updateRadar() {
 function buildLunarData() {
     // Make sure the astroData object is loaded
     if (!astroData.complete) {
-        buildAstroData();
-        setTimeout(buildLunarData, 4 * sec); // one offs
+        setTimeout(buildLunarData, 9 * sec); // one offs
         return; // do nothing because astroData hasn't been fully populated
     }
 
@@ -127,16 +119,15 @@ function buildLunarData() {
     fetchMoonImage('yesterday');
 }
 
-/** updateSunRiseSunset
+/** updateSunEphemeris
  * update the sunrise sunset slug in the footer. It displays the current day's data
  * until after sunset when is switches to the next day.
  * N.B.: if global `astroData` hasn't been populated, it will start the load and reschedule
  */
-function updateSunRiseSunset() {
+function updateSunEphemeris() {
     // We need these items to be populated so we exit quietly in case they are not.
     if (!astroData.complete) {
-        buildAstroData();
-        setTimeout(updateSunRiseSunset, 7 * sec); // rerun in a few seconds or so
+        setTimeout(updateSunEphemeris, 7 * sec); // rerun in a few seconds or so
         return; // do nothing, yet, because astroData hasn't been fully populated
     }
 
@@ -169,7 +160,7 @@ function updateSunRiseSunset() {
         }
     } catch (err) {
         // whatever has gone wrong just try again in a couple of seconds
-        setTimeout(updateSunRiseSunset, 7 * sec); // rerun in a few seconds or so
+        setTimeout(updateSunEphemeris, 7 * sec); // rerun in a few seconds or so
         return;
     }
 }
@@ -230,7 +221,7 @@ async function fetchMoonImage(when) {
 
 /** fetchResources
  * uses a cgi-calls to rebuild the various images, tables and media
- * @param {'all' | 'tides' | 'tidegraphic' | 'windgraph' | 'forecast'}
+ * @param {'all' | 'tides' | 'tidecartoon' | 'windgraph' | 'forecast'}
  * @param {'metric' | 'imperial' | null} if provided, overrides automatic toggle.
  * trick for relaunching functions with parameters:
  *      // given a function fp(a, b)
@@ -269,14 +260,14 @@ async function fetchResources(what, units) {
             });
     }
 
-    if (what === 'tidegraphic' || what === 'all') {
-        let url = `http://localhost:8000/cgi-bin/tidesGraphic.py?clock=12hour`;
+    if (what === 'tidecartoon' || what === 'all') {
+        let url = `http://localhost:8000/cgi-bin/tidesCartoon.py?clock=12hour`;
         toastStatus('↣tgraphic', 'add');
         await fetch(url)
             .then((response) => response.text())
             .then((text) => {
                 console.log(text);
-                updateResources('tidegraphic');
+                updateResources('tidecartoon');
                 toastStatus('↣tgraphic', 'rem');
             })
             .catch((error) => {
@@ -366,7 +357,7 @@ function buildWeatherKiosk() {
     fetchResources('all'); // refresh all our various resources
 
     // we updte the sunrise sunset after a while to make sure astroData is packed.
-    setTimeout(updateSunRiseSunset, 25 * sec); // first run
+    setTimeout(updateSunEphemeris, 25 * sec); // first run
 
     // this can run a little later so we give the machine a break.
     setTimeout(setTimers, 60 * sec);
@@ -380,13 +371,13 @@ function setTimers() {
 
     // Sunrise-Sunset
     setInterval(() => {
-        updateSunRiseSunset();
+        updateSunEphemeris();
     }, 7 * min);
 
     // Tide Graphic
     setInterval(() => {
         // rinse and repeat
-        fetchResources('tidegraphic');
+        fetchResources('tidecartoon');
     }, 10 * min);
 
     // windgraph
@@ -461,6 +452,30 @@ async function networkStatus() {
 function randomSuffix() {
     let now = new Date();
     return '?' + now.getMilliseconds();
+}
+
+/**
+ * cycleVisuals
+ * cycle between divs. We do this by setting the style.display value to 'none' to hide
+ * and to 'block' to show. We have 3 panels (weather, boatRes, and porchRes). On Friday,
+ * Saturday and Sunday we show all three.  The rest of the days we just show the weather
+ * and boat reservations.
+ */
+// TODO: Need to finish this.
+let panelList = [];
+function cyclePanels() {
+    let dow = new Date().getDay();
+
+    if (panelList.length === 0) {
+        panelList.push(document.getElementById('weatherScreen'));
+        panelList.push(document.getElementById('boatScreen'));
+    }
+
+    for (let j = 0; i < panelList.length; j++) {
+        if (panelList[j].style.display === 'none') {
+            let doc = document;
+        }
+    }
 }
 
 /** For Reservation Sheets Only
