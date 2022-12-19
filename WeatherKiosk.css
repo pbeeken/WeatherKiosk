@@ -41,13 +41,6 @@ div#weatherScreen {
     display: block;
 }
 
-.import {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    border-width: 0px;
-}
-
 div#weatherScreen > .grid {
     position: absolute;
     top: 70px;
@@ -73,8 +66,15 @@ div#weatherScreen > .grid {
 #tideTableBox {
     position: fixed;
     top: 317px;
-    left: -145px;
+    left: 673px;
     /* background-color: rgba(255, 255, 255, 0.5); debugging */
+}
+
+iframe#tidetable {
+    position: fixed;
+    width: fit-content;
+    height: fit-content;
+    border-width: 0px;
 }
 
 #radarBox  {
@@ -96,6 +96,13 @@ div#weatherScreen > .grid {
     top: 499px;
     left: 734px;
     width: auto;
+}
+
+iframe#forecast {
+    position: fixed;
+    width: 700px;
+    height: 380px;
+    border-width: 0px;
 }
 
 div#yesterday {
