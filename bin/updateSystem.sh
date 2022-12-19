@@ -17,7 +17,8 @@ remoteHash="`git rev-parse 'main@{upstream}'`"
 if [ "$localHash" != "$remoteHash" ]; then
 
     echo "updating..."
-    git pull
+    git reset --hard
+    git pull --rebase
 
     echo "copying scripts..."
     # Install scripts, saving old ones.
