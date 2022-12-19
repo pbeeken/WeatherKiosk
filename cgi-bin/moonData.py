@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
 
 # python -m http.server --bind localhost --cgi 8000
 # python -mwebbrowser http://localhost:8000/cgi-bin/moonData.py

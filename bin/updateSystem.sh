@@ -28,6 +28,7 @@ if [ "$localHash" != "$remoteHash" ]; then
     cp $KIOSK/bin/.xinitrc $HOME
 
     # Update executable tags on linux
+    echo "updating exec mode on scripts..."
     chmod 755 $KIOSK/bin/*.sh
     chmod 755 $KIOSK/cgi-bin/*.py
 

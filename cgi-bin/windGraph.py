@@ -1,4 +1,5 @@
-#@title test of gathering wind data.
+#!/usr/bin/python
+
 import pandas as pd
 import numpy as np
 

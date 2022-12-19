@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 """
 Essential libraries we need.  This is a library shared between 3 different generators.
 """

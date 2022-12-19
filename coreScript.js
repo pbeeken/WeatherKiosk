@@ -15,6 +15,7 @@ const min = 60 * sec;
  *   year: 2022 }
  */
 let astroData = {
+    complete: false,
     // holds the astronomical data for...
     yesterday: undefined,
     today: undefined,
@@ -29,6 +30,7 @@ let astroData = {
  * {rc: 200, filename: 'resources/tmp/moon_today.svg', fracillum: 0.5, stage: 'Waning', error: ''}
  */
 let moonImage = {
+    complete: false,
     // holds the moon image data for...
     yesterday: undefined,
     today: undefined,
@@ -54,40 +56,58 @@ function runClock(start) {
 /** updateResources
  * update the graphs, tables and other media is less disruptive than refreshing the whole screen.
  * A different script updates the resources on a different schedule.
- * @param {'all' | 'tides' | 'tidegraphic' | 'windgraph' | 'forecast' | 'timed'}
- * TODO: We shouldn't need to periodically rerun this method i.e. 'timed' is reserved for background updating
- *       when the resources are 'fetched' asynchronously.  We no longer do this so resources are updated when
- *       the promise is fufilled.
+ * @param {'all' | 'tides' | 'tidegraphic' | 'windgraph' | 'forecast' | 'radar'}
+
  */
 function updateResources(what) {
-    const now = new Date();
     if (!what) what = 'timed';
 
     // Note the trick to get the browser to refresh the images
-    if (what === 'tides' || what === 'all' || what === 'timed') {
+    if (what === 'tides' || what === 'all') {
         // these guys work together.
         // clock graph
-        document.getElementById('tidegraph').src = 'resources/tmp/tideGraph.png?' + now.getMilliseconds();
+        document.getElementById('tidegraph').src = 'resources/tmp/tideGraph.png' + randomSuffix();
         // tide table
-        document.getElementById('tidetable').src = 'resources/tmp/tideTable.html?' + now.getMilliseconds();
+        document.getElementById('tidetable').src = 'resources/tmp/tideTable.html' + randomSuffix();
     }
 
-    if (what === 'tidegraphic' || what === 'all' || what === 'timed') {
+    if (what === 'tidegraphic' || what === 'all') {
         // tide graphic: 'cartoon of depth'
-        document.getElementById('tidegraphic').src = 'resources/tmp/tideGraphic.png?' + now.getMilliseconds();
+        document.getElementById('tidegraphic').src = 'resources/tmp/tideGraphic.png' + randomSuffix();
     }
 
-    if (what === 'windgraph' || what === 'all' || what === 'timed') {
+    if (what === 'windgraph' || what === 'all') {
         // wind graph
-        document.getElementById('windgraph').src = 'resources/tmp/windGraph.png?' + now.getMilliseconds();
+        document.getElementById('windgraph').src = 'resources/tmp/windGraph.png' + randomSuffix();
     }
 
-    if (what === 'forecast' || what === 'all' || what === 'timed') {
+    if (what === 'forecast' || what === 'all') {
         // tide table
-        document.getElementById('forecast').src = 'resources/tmp/forecastGrid.html?' + now.getMilliseconds();
+        document.getElementById('forecast').src = 'resources/tmp/forecastGrid.html' + randomSuffix();
+    }
+
+    if (what === 'radar' || what === 'all') {
+        // animated gif from NOAA
+        try {
+            let origImg = document.getElementById('radar').src;
+            origImg = origImg.split('?')[0]; // get rid of random bit at the end.
+            document.getElementById('radar').src = origImg + randomSuffix(); // force an image refresh with the same URL
+        } catch (err) {
+            // whatever has gone wrong just try again in a couple of seconds
+            setTimeout(updateRadar, 15 * sec); // rerun in a second or so
+        }
     }
 }
 
+/** updateRadar
+ * update the NOAA NWS gif for current radar in KOKX
+ * Initial image set in html should be...
+ *    "https://radar.weather.gov/ridge/standard/KOKX_loop.gif"
+ * TODO: Include in updateResources eventually
+ */
+function updateRadar() {
+    setTimeout(updateRadar, 7 * min); // rerun in 7 minutes
+}
 /** buildLunarData
  * fetch the lunar data slug. It also builds and works out the svg 'lune'
  * needed for displaying the moon based on the fracillum.
@@ -95,28 +115,16 @@ function updateResources(what) {
  */
 function buildLunarData() {
     // Make sure the astroData object is loaded
-    if (!astroData || !astroData.yesterday || !astroData.today || !astroData.tomorrow) {
+    if (!astroData.complete) {
         buildAstroData();
         setTimeout(buildLunarData, 4 * sec); // one offs
         return; // do nothing because astroData hasn't been fully populated
     }
 
-    // Make sure the moonImages object are loaded
-    if (!moonImage || !moonImage.yesterday || !moonImage.today || !moonImage.tomorrow) {
-        fetchMoonImage('today');
-        fetchMoonImage('tomorrow');
-        fetchMoonImage('yesterday');
-        setTimeout(buildLunarData, 10 * sec); // one offs
-        return; // do nothing the lunar data is loaded.
-    }
-
-    let now = new Date();
-    document.getElementById('yesterday').getElementsByClassName('phase')[0].src =
-        moonImage.yesterday.filename + '?' + now.getMilliseconds();
-    document.getElementById('today').getElementsByClassName('phase')[0].src =
-        moonImage.today.filename + '?' + now.getMilliseconds();
-    document.getElementById('tomorrow').getElementsByClassName('phase')[0].src =
-        moonImage.tomorrow.filename + '?' + now.getMilliseconds();
+    // build and load the lunar images
+    fetchMoonImage('today');
+    fetchMoonImage('tomorrow');
+    fetchMoonImage('yesterday');
 }
 
 /** updateSunRiseSunset
@@ -126,7 +134,7 @@ function buildLunarData() {
  */
 function updateSunRiseSunset() {
     // We need these items to be populated so we exit quietly in case they are not.
-    if (!astroData || !astroData.today || !astroData.tomorrow || !astroData.today.sundata || !astroData.tomorrow.sundata) {
+    if (!astroData.complete) {
         buildAstroData();
         setTimeout(updateSunRiseSunset, 7 * sec); // rerun in a few seconds or so
         return; // do nothing, yet, because astroData hasn't been fully populated
@@ -164,8 +172,6 @@ function updateSunRiseSunset() {
         setTimeout(updateSunRiseSunset, 7 * sec); // rerun in a few seconds or so
         return;
     }
-
-    postStatus('');
 }
 
 /** fetchUSNavalObsData
@@ -180,12 +186,15 @@ function updateSunRiseSunset() {
 async function fetchUSNavalDailyData(theDate, when) {
     const datestr = theDate.toLocaleDateString();
     let url = `http://localhost:8000/cgi-bin/usNavObsData.py?date=${datestr}`;
+    toastStatus('↣astro', 'add');
 
     await fetch(url)
         .then((response) => response.json())
         .then((data) => {
             data.properties.data.requestedDate = theDate;
             astroData[when] = data.properties.data;
+            astroData.complete = astroData.yesterday && astroData.today && astroData.tomorrow ? true : false;
+            toastStatus('↣astro', 'rem');
         })
         .catch((error) => {
             console.error(`Failed to fetch ${url}`, error);
@@ -202,11 +211,15 @@ async function fetchMoonImage(when) {
     const stage = astroData[when].curphase.split(' ')[0];
     const fracillum = astroData[when].fracillum.slice(0, -1); // Strip the % off.
     let url = `http://localhost:8000/cgi-bin/moonPhase.py?fracillum=${fracillum}&stage=${stage}&filename=moon_${when}.svg`;
+    toastStatus('↣moon', 'add');
 
     await fetch(url)
         .then((response) => response.json())
         .then((data) => {
             moonImage[when] = data;
+            toastStatus('↣moon', 'rem');
+            document.getElementById(when).getElementsByClassName('phase')[0].src = moonImage[when].filename + randomSuffix();
+            moonImage.complete = moonImage.yesterday && moonImage.today && moonImage.tomorrow ? true : false;
         })
         .catch((error) => {
             console.error(`Failed to fetch ${url}`, error);
@@ -231,6 +244,7 @@ async function fetchResources(what, units) {
 
     if (what === 'tides' || what === 'all') {
         let url = `http://localhost:8000/cgi-bin/tidesGraph.py?units=${units}`;
+        toastStatus('↣tides', 'add');
         await fetch(url)
             .then((response) => response.text())
             .then((text) => {
@@ -247,6 +261,7 @@ async function fetchResources(what, units) {
             .then((text) => {
                 console.log(text);
                 updateResources('tides');
+                toastStatus('↣tides', 'rem');
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
@@ -255,11 +270,13 @@ async function fetchResources(what, units) {
 
     if (what === 'tidegraphic' || what === 'all') {
         let url = `http://localhost:8000/cgi-bin/tidesGraphic.py?clock=12hour`;
+        toastStatus('↣tgraphic', 'add');
         await fetch(url)
             .then((response) => response.text())
             .then((text) => {
                 console.log(text);
                 updateResources('tidegraphic');
+                toastStatus('↣tgraphic', 'rem');
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
@@ -268,11 +285,13 @@ async function fetchResources(what, units) {
 
     if (what === 'windgraph' || what === 'all') {
         let url = `http://localhost:8000/cgi-bin/windGraph.py`;
+        toastStatus('↣wind', 'add');
         await fetch(url)
             .then((response) => response.text())
             .then((text) => {
                 console.log(text);
                 updateResources('windgraph');
+                toastStatus('↣wind', 'rem');
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
@@ -281,37 +300,24 @@ async function fetchResources(what, units) {
 
     if (what === 'forecast' || what === 'all') {
         let url = `http://localhost:8000/cgi-bin/forecast.py`;
+        toastStatus('↣forecast', 'add');
         await fetch(url)
             .then((response) => response.text())
             .then((text) => {
                 console.log(text);
                 updateResources('forecast');
+                toastStatus('↣forecast', 'rem');
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
             });
     }
-}
 
-/** updateRadar
- * update the NOAA NWS gif for current radar in KOKX
- * Initial image set in html should be...
- *    "https://radar.weather.gov/ridge/standard/KOKX_loop.gif"
- * TODO: Include in updateResources eventually
- */
-function updateRadar() {
-    try {
-        let now = Date.now();
-        let origImg = document.getElementById('radar').src;
-        origImg = origImg.split('?')[0];
-        document.getElementById('radar').src = origImg + '?' + now; // trick to force an image refresh with the same URL
-    } catch (err) {
-        // whatever has gone wrong just try again in a couple of seconds
-        setTimeout(updateRadar, 15 * sec); // rerun in a second or so
-        return;
+    if (what === 'radar' || what === 'all') {
+        toastStatus('↣radar', 'add');
+        updateResources('radar');
+        toastStatus('↣radar', 'rem');
     }
-
-    setTimeout(updateRadar, 7 * min); // rerun in 7 minutes
 }
 
 /** buildAstroData
@@ -325,20 +331,20 @@ function buildAstroData(testDate) {
     let day = testDate;
     if (!testDate) day = new Date();
 
-    // load if needed
-    if (!astroData || !astroData.yesterday) {
+    // load only if needed
+    if (!astroData.complete || !astroData.yesterday) {
         day.setDate(day.getDate() - 1);
         fetchUSNavalDailyData(day, 'yesterday');
     }
 
-    // load if needed
-    if (!astroData || !astroData.today) {
+    // load only if needed
+    if (!astroData.complete || !astroData.today) {
         day.setDate(day.getDate() + 1);
         fetchUSNavalDailyData(day, 'today');
     }
 
-    // load if needed
-    if (!astroData || !astroData.tomorrow) {
+    // load only if needed
+    if (!astroData.complete || !astroData.tomorrow) {
         day.setDate(day.getDate() + 1);
         fetchUSNavalDailyData(day, 'tomorrow');
     }
@@ -353,20 +359,15 @@ function buildAstroData(testDate) {
  */
 function buildWeatherKiosk() {
     /** Get and post the sunrise and sunset data */
-    postStatus('build astronomy db');
     buildAstroData(); // Basic astronomical information all the other routines need.
-    postStatus('build lunar db');
     buildLunarData(); // hold off a bit and launch to
     // Now we can get everything else
-    postStatus('fetch visual resources lunar db');
     fetchResources('all'); // refresh all our various resources
-    postStatus('fetch solar data db');
 
-    // t
+    // we updte the sunrise sunset after a while to make sure astroData is packed.
     setTimeout(updateSunRiseSunset, 25 * sec); // first run
-    // this can run a little later so we give the machine a break.
-    setTimeout(updateRadar, 30 * sec); // first run in 1/2 a minute
 
+    // this can run a little later so we give the machine a break.
     setTimeout(setTimers, 60 * sec);
 }
 
@@ -398,6 +399,11 @@ function setTimers() {
         // rinse and repeat
         fetchResources('forecast');
     }, 15 * min);
+
+    setInterval(() => {
+        // rinse and repeat
+        fetchResources('radar');
+    }, 7 * min);
 }
 
 /**
@@ -408,8 +414,24 @@ function changePageTitle(title) {
     document.getElementsByClassName('title')[0].innerHTML = `Horseshoe Harbor Yacht Club ${title}`;
 }
 
-function postStatus(info) {
-    document.getElementById('status').innerHTML = info;
+/**
+ * post a message in the toast panel
+ * @param {string} info
+ * @param {string} what = undefined | 'add' | 'rem' | 'clr'
+ *    where undefined completely replaces the toast
+ */
+function toastStatus(info, what) {
+    let currentToast = document.getElementById('toast').innerHTML;
+
+    if (!what || what === 'clr') {
+        // completely replace the toast screen
+        currentToast = info;
+    } else if (what === 'add') {
+        currentToast = `${currentToast} ${info}`;
+    } else if (what === 'rem') {
+        currentToast = currentToast.replace(` ${info}`, '');
+    }
+    document.getElementById('toast').innerHTML = currentToast;
 }
 
 /**
@@ -417,14 +439,27 @@ function postStatus(info) {
  **/
 async function networkStatus() {
     let url = `http://localhost:8000/cgi-bin/networkStatus.py`;
+    toastStatus('↣net', 'rem');
     await fetch(url)
         .then((response) => response.text())
         .then((text) => {
             console.log(text);
+            toastStatus('↣net', 'rem');
         })
         .catch((error) => {
             console.error(`Failed to fetch ${url}`, error);
         });
+}
+
+/**
+ * randomSuffix
+ * Creates a random suffix to force an update of the visual resources.
+ * This trick works with images and iframes to force a reload of the resource.
+ * @returns {string} random url mod
+ */
+function randomSuffix() {
+    let now = new Date();
+    return '?' + now.getMilliseconds();
 }
 
 /** For Reservation Sheets Only

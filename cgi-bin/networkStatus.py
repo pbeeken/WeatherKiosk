@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/python
 """
   Former bash shell, python is more cross platform
   # set default address

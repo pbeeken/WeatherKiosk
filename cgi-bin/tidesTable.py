@@ -1,4 +1,5 @@
 #!/usr/bin/python
+
 """
 Tide Graph
 This is a python controller for the tide component of the Weahter Kiosk that will run on

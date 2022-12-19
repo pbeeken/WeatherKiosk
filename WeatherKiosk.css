@@ -127,17 +127,17 @@ div.header > .logo {
     transform: translate(-60%, -50%);
 }
 
-#status {
+#toast {
     z-index: 10;
     text-align: center;
     font-family: "Courier", monospace;
-    color: coral;
+    color: white;
     font-size: small;
     margin: 0;
     position: absolute;
     top: 50%;
-    left: 50%;
-    transform: translate(40%, -50%);
+    left: 525px;
+    /* transform: translate(40%, -75%); */
 
 }
 

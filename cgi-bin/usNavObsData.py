@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
 
 # Launch the following simple server
 # python -m http.server --bind localhost --cgi 8000

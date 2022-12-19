@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/python
 
 import numpy as np
 from html.parser import HTMLParser
@@ -145,4 +145,4 @@ if __name__ == '__main__':                                                      
 
 
     print("Content-Type: text/plain\n")
-    print("forcast done.")
+    print("forecast done.")
