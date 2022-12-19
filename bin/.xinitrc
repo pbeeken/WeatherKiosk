@@ -13,23 +13,23 @@ theDay=$(date +"%a")
 if [ $theDay = "Fri" ] || [ $theDay = "Sat" ] || [ $theDay = "Sun" ]
 then
 	# cd /home/pi/WeatherKiosk
-	chromium-browser \
+	#		http://localhost:8000/BoatReservations.html  \
+	#		http://localhost:8000/PorchReservations.html \	chromium-browser \
 		http://localhost:8000/WeatherKiosk.html \
-#		http://localhost:8000/BoatReservations.html  \
-#		http://localhost:8000/PorchReservations.html \
+
 		--window-size=1440,900 --window-position=0,0 --start-fullscreen \
-		--disk-cache-dir=/dev/null \
-	    --kiosk --start-fullscreen \
+		--disk-cache-dir=/dev/null  --start-fullscreen \
+	#    --kiosk \
 	#        --no-first-run --noerrdialogs \
 	#        --disable-infobars
 else
 	# cd /home/pi/WeatherKiosk
+	#		http://localhost:8000/BoatReservations.html  \
 	chromium-browser \
 		http://localhost:8000/WeatherKiosk.html \
-#		http://localhost:8000/BoatReservations.html  \
 		--window-size=1440,900 --window-position=0,0 --start-fullscreen \
-		--disk-cache-dir=/dev/null \
-	    --kiosk --start-fullscreen \
+		--disk-cache-dir=/dev/null --start-fullscreen \
+	#    --kiosk \
 	#        --no-first-run --noerrdialogs \
 	#        --disable-infobars
 fi
