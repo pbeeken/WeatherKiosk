@@ -75,7 +75,7 @@ we run the risk of memory leaks so I will run it from a fork from the kisok
 if __name__ == '__main__':                                                               #01234567890123
     prog = "Forecast     "
     logging.basicConfig(filename='WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
-    logging.info("Build wind graph...")
+    logging.info("Build marine forecast table...")
 
     forecastFile = "forecastGrid.html"
     templateFile = "_" + forecastFile

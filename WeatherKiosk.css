@@ -6,9 +6,6 @@ body {
     position: fixed;
     width: 1440px;
     height: 900px;
-    /* border-width: 2;
-    border-color: purple; */
-    /* background-color: crimson; */
 }
 
 .import {
@@ -27,7 +24,7 @@ body {
     background-color: Silver;
 }
 
-div.header > .title {
+div.header > #title {
     position: relative;
     z-index: 0;
     font-family: "Trade Winds", cursive;
@@ -35,7 +32,8 @@ div.header > .title {
     top: 8px;
     left: 95px;
 }
-div.header > .logo {
+
+div.header > #logo {
     position: absolute;
     z-index: 5;
     left: 4px;
@@ -44,7 +42,12 @@ div.header > .logo {
     top: 4px;
 }
 
-.wrapper {
+/* Weatherscreen div and contents */
+div#weatherScreen {
+    display: none;
+}
+
+div#weatherScreen > .grid {
     position: absolute;
     top: 70px;
     left: 10px;
@@ -55,48 +58,44 @@ div.header > .logo {
     row-gap: 5px;
 }
 
-.box1 {
+#tideGraphBox {
     grid-column-start: 1;
     grid-column-end: 3;
     grid-row-start: 1;
     grid-row-end: 3;
-    /* This isn't a good idea: https://stackoverflow.com/questions/492809/when-to-use-img-vs-css-background-image
-        background-image: url("resources/tideGraph.png");
-        background-repeat: no-repeat;
-        background-position: center; */
-    /* background-color: rgba(255, 255, 255, 0.5); */
     height: 390px;
 }
 
-.boxR  {
+#radarBox  {
+    /* A blank space for the radar image */
     grid-column-start: 3;
     grid-row-start: 1;
     grid-row-end: 3;
-    /* background-color: rgba(255, 255, 255, 0.5); */
+    /* background-color: rgba(255, 255, 255, 0.5); debugging */
     padding-top: 6px;
 }
 
-.box2 {
+#tideCartoonBox {
     grid-column-start: 4;
     grid-row-start: 1;
     /* vertical-align: middle; */
-    /* background-color: rgba(255, 255, 255, 0.5); */
+    /* background-color: rgba(255, 255, 255, 0.5); debugging */
 }
 
-.box3 {
+#tideTableBox {
     grid-column-start: 4;
     grid-row-start: 2;
-    /* background-color: rgba(255, 255, 255, 0.5); */
+    /* background-color: rgba(255, 255, 255, 0.5); debugging */
 }
 
-.box4 {
+#windGraphBox {
     grid-column-start: 1;
     grid-column-end: 3;
     grid-row-start: 4;
     /* background-color: rgba(255, 255, 255, 0.5); */
 }
 
-.box5 {
+#forecastBox {
     grid-column-start: 3;
     grid-column-end: 5;
     grid-row-start: 4;
@@ -104,82 +103,28 @@ div.header > .logo {
     height: 380px
 }
 
-.footer {
-    position: absolute; /* Means all measurements are absolute screen */
-    bottom: 15px;
-    left: 20px;
-    right: 20px;
-    height: 30px;
-    background-color: Silver;
-}
-
-#clock {
-    z-index: 10;
-    text-align: right;
-    font-family: "Trade Winds", cursive;
-    font-size: medium;
-    text-shadow: 1px 1px 3px rgb(116, 115, 115);
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 90%;
-    /* -ms-transform: translate(-50%, -50%); */
-    transform: translate(-60%, -50%);
-}
-
-#toast {
-    z-index: 10;
-    text-align: center;
-    font-family: "Courier", monospace;
-    color: white;
-    font-size: small;
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 525px;
-    /* transform: translate(40%, -75%); */
-
-}
-
-#suncondition {
-    text-align: left;
-    font-family: "Trade Winds", cursive;
-    font-size: medium;
-    text-shadow: 1px 1px 3px rgb(116, 115, 115);
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 18%;
-    transform: translate(-50%, -50%);
-}
-
-.circlemask {
-    /* -webkit-mask-image: radial-gradient(circle at center, black 60%, rgb(0 0 0 / 0%) 77%); */
-    mask-image: radial-gradient(circle at center, black 60%, rgb(0 0 0 / 0%) 77%);
-}
-
-#yesterday {
+div#yesterday {
     position: fixed;
     z-index: -20;
     top: 335px;
     left: 105px;
 }
 
-#today {
+div#today {
     position: fixed;
     z-index: -20;
     top: 335px;
     left: 312px;
 }
 
-#tomorrow {
+div#tomorrow {
     position: fixed;
     z-index: -20;
     top: 335px;
     left: 517px;
 }
 
-#radarbox {
+div#radarbox {
     position: fixed;
     z-index: -20;
     top:    86px;
@@ -198,4 +143,92 @@ img#tidegraphic {
     position: static;
     height: 60px;
     opacity: 80%;
+}
+/* end Weatherscreen div and contents */
+
+/* BoatResrvations div and contents */
+div#boatScreen {
+    display: block;
+}
+
+.import {
+    position: relative;
+    width: 100%;
+    height: 780px;
+    border-width: 0px;
+}
+
+div#boatScreen > .grid {
+    position: absolute;
+    top: 70px;
+    left: 20px;
+    right: 20px;
+    display: grid;
+    grid-template-columns: 2;
+    grid-template-rows: 1;
+    column-gap: 5px;
+    row-gap: 5px;
+}
+
+#dayBoatBox {
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 1;
+    background-color: rgb(217, 202, 228);
+}
+
+#ideal18Box {
+    grid-column-start: 2;
+    grid-row-start: 1;
+    background-color: rgb(186, 216, 216);
+}
+
+/* Footer for all */
+.footer {
+    position: absolute; /* Means all measurements are absolute screen */
+    bottom: 15px;
+    left: 20px;
+    right: 20px;
+    height: 30px;
+    background-color: Silver;
+}
+
+div.footer > #clock {
+    z-index: 10;
+    text-align: right;
+    font-family: "Trade Winds", cursive;
+    font-size: medium;
+    text-shadow: 1px 1px 3px rgb(116, 115, 115);
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 90%;
+    /* -ms-transform: translate(-50%, -50%); */
+    transform: translate(-60%, -50%);
+}
+
+div.footer > #toast {
+    z-index: 10;
+    text-align: center;
+    font-family: "Courier", monospace;
+    color: white;
+    font-size: small;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 525px;
+    /* transform: translate(40%, -75%); */
+
+}
+
+div.footer > #ephemeris {
+    text-align: left;
+    font-family: "Trade Winds", cursive;
+    font-size: medium;
+    text-shadow: 1px 1px 3px rgb(116, 115, 115);
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 18%;
+    transform: translate(-50%, -50%);
 }

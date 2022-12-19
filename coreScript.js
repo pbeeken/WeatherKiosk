@@ -146,7 +146,7 @@ function updateSunRiseSunset() {
         let theSunToday = astroData.today.sundata;
         let theSunTomor = astroData.tomorrow.sundata;
 
-        document.getElementById('suncondition').innerHTML = `${theSunToday.time} ${theSunTomor.time}`;
+        document.getElementById('ephemeris').innerHTML = `${theSunToday.time} ${theSunTomor.time}`;
 
         // DONE: When the DST parameter is used USNO server tacks on ' DT' or ' ST' to the time. Do I keep it?  Not always there.
         //       I am stripping it. This tool is only used during DST so having the designator clutters the display
@@ -156,13 +156,13 @@ function updateSunRiseSunset() {
 
         if (now > todaySunset) {
             // after sunset (see above) switch to tomorrow's datum
-            document.getElementById('suncondition').innerHTML = `Tomorrow's Sunrise will be at ${theSunTomor[1].time.replace(
+            document.getElementById('ephemeris').innerHTML = `Tomorrow's Sunrise will be at ${theSunTomor[1].time.replace(
                 / {2}[DS]T/,
                 ''
             )}, Sunset at ${theSunTomor[3].time.replace(/ {2}[DS]T/, '')}`;
         } else {
             // present today's condition
-            document.getElementById('suncondition').innerHTML = `Today's Sunrise is ${theSunToday[1].time.replace(
+            document.getElementById('ephemeris').innerHTML = `Today's Sunrise is ${theSunToday[1].time.replace(
                 / {2}[DS]T/,
                 ''
             )}, Sunset at ${theSunToday[3].time.replace(/ {2}[DS]T/, '')}`;
@@ -184,6 +184,7 @@ function updateSunRiseSunset() {
  * @param {'yesterday' | 'today' | 'tomorrow'} when
  */
 async function fetchUSNavalDailyData(theDate, when) {
+    if (astroData.complete) return; // if we are complete we are done.
     const datestr = theDate.toLocaleDateString();
     let url = `http://localhost:8000/cgi-bin/usNavObsData.py?date=${datestr}`;
     toastStatus('↣astro', 'add');

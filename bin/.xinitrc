@@ -8,6 +8,9 @@ xset s noblank
 cd /home/pi
 unclutter &
 
+# rotate the log files
+savelog -l -n -c 8 WeatherKiosk/WeatherKiosk.log
+
 theDay=$(date +"%a")
 
 if [ $theDay = "Fri" ] || [ $theDay = "Sat" ] || [ $theDay = "Sun" ]
