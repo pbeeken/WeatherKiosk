@@ -461,63 +461,22 @@ function randomSuffix() {
  * Saturday and Sunday we show all three.  The rest of the days we just show the weather
  * and boat reservations.
  */
-// TODO: Need to finish this.
 let panelList = [];
+let currentPanel = 0;
 function cyclePanels() {
     let dow = new Date().getDay();
 
     if (panelList.length === 0) {
         panelList.push(document.getElementById('weatherScreen'));
         panelList.push(document.getElementById('boatScreen'));
+        panelList.push(document.getElementById('porchScreen'));
     }
 
-    for (let j = 0; i < panelList.length; j++) {
-        if (panelList[j].style.display === 'none') {
-            let doc = document;
-        }
-    }
+    let nextPanel = (currentPanel + 1) % panelList.length;
+    panelList.forEach((e) => {
+        e.style.display = 'none';
+    });
+    panelList[nextPanel].style.display = 'block';
+
+    currentPanel = nextPanel;
 }
-
-/** For Reservation Sheets Only
- * This is one of many attempts to fix the cache problem of retrieving the Google Sheets
- * page. I have tried to force updating according to recommendations in Stack Exchange to
- * no avail. The problem seems to be some interplay between the browser and Google and intermediate caches
- * PROBLEM MAY BE SOLVED. Instead of 'publishing' a sheet, make it public (which it is anyway) and
- * access the content as you would through any browser. It seems to work. No updating necessary.
- */
-/**
-// function refreshFrames() {
-    // const change = '&cachekiller=' + Math.floor(Date.time()/1000); // we need to force the cache to update by passing a bogus tag.
-
-    //save the source of the iframe minus the unique identifier
-    // I already have this saved
-    // const dayBoatSrc = dayBoatSheet + change;
-    // console.log(dayBoatSrc.substring(dayBoatSrc.length - 20));
-    // const ideal18Src = ideal18Sheet + change;
-    // console.log(ideal18Src.substring(ideal18Src.length - 20));
-
-    // METHOD 1: simply update the source with the 'dummy' to fool the cache into reloading.
-    // document.getElementById('dayboat').src = dayBoatSrc;
-    // document.getElementById('ideal18').src = ideal18Src;
-
-    // METHOD 2: remove the iframe and rebuild. (Can't seem to get this to work right)
-    // document.getElementById('dayboat').remove();
-    // document.getElementById('ideal18').remove();
-
-    // const dbFrame = document.createElement('<iframe id="dayboat" class="import" src="' + dayBoatSrc + '">');
-    // const idFrame = document.createElement('<iframe id="ideal18" class="import" src="' + ideal18Src + '">');
-
-    // //re-add the iframe with the new source including random query string
-    // document.getElementById('dayboat').append(dbFrame);
-    // document.getElementById('ideal18').append(idFrame);
-
-    // METHOD 3: simply add an empty string.
-    // document.getElementById('dayboat').src += ''; // cache killer not needed
-    // document.getElementById('ideal18').src += '';
-    //    document.location.reload();
-
-    // console.log('refresh frames NT');
-
-    //setTimeout(refreshFrames, 2 * min);
-// }
- */
