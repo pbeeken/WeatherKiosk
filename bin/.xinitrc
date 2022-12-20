@@ -6,33 +6,33 @@ xset s noblank
 
 # start in $HOME
 cd /home/pi
+# tool to remove idle mouse from screen after a delay
 unclutter &
 
 # rotate the log files
 savelog -l -n -c 8 WeatherKiosk/WeatherKiosk.log
 
-theDay=$(date +"%a")
-
-if [ $theDay = "Fri" ] || [ $theDay = "Sat" ] || [ $theDay = "Sun" ]
-then
-	# cd /home/pi/WeatherKiosk
+#
+# theDay=$(date +"%a")
+#if [ $theDay = "Fri" ] || [ $theDay = "Sat" ] || [ $theDay = "Sun" ]
+#then
+cd /home/pi/WeatherKiosk
 	#		http://localhost:8000/BoatReservations.html  \
-	#		http://localhost:8000/PorchReservations.html \	chromium-browser \
-		http://localhost:8000/WeatherKiosk.html \
+	#		http://localhost:8000/PorchReservations.html \
+chromium-browser \
+	http://localhost:8000/WeatherKiosk.html \
 
-		--window-size=1440,900 --window-position=0,0 --start-fullscreen \
-		--disk-cache-dir=/dev/null  --start-fullscreen \
-	#    --kiosk \
+	--window-size=1440,900 --window-position=0,0 --start-fullscreen \
+	--disk-cache-dir=/dev/null  --start-fullscreen # --kiosk
 	#        --no-first-run --noerrdialogs \
 	#        --disable-infobars
-else
+#else
 	# cd /home/pi/WeatherKiosk
 	#		http://localhost:8000/BoatReservations.html  \
-	chromium-browser \
-		http://localhost:8000/WeatherKiosk.html \
-		--window-size=1440,900 --window-position=0,0 --start-fullscreen \
-		--disk-cache-dir=/dev/null --start-fullscreen \
-	#    --kiosk \
+	# chromium-browser \
+	# 	http://localhost:8000/WeatherKiosk.html \
+	# 	--window-size=1440,900 --window-position=0,0 --start-fullscreen \
+	# 	--disk-cache-dir=/dev/null --start-fullscreen # --kiosk
 	#        --no-first-run --noerrdialogs \
 	#        --disable-infobars
-fi
+# fi

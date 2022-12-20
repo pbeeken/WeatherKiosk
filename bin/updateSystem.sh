@@ -17,7 +17,10 @@ remoteHash="`git rev-parse 'main@{upstream}'`"
 if [ "$localHash" != "$remoteHash" ]; then
 
     echo "updating..."
+    # we don't care about any changes on the pi we discard them
+    # reset the pointer to ignore any changes (made accidentally?)
     git reset --hard
+    # pull and rebase the local.
     git pull --rebase
 
     echo "copying scripts..."
