@@ -92,20 +92,22 @@ def makeTideGraphic(extremaDF, detailDF=None):
     # imageURL = 'https://docs.google.com/drawings/d/e/2PACX-1vRPpyCKk834LQUUwoEWDiopLKIcRscn3AoUPynXzNe6jPRLXWt9TBS90Wwm_MjxVoqezD09hbx_0Sw8/pub?w=225&h=159'
     # imageRef = PIL.Image.open(urllib.request.urlopen(imageURL))
     imageRef = pathToResources + 'TideBackground.png' # fetch locally (way faster on a pi)
-    imageOverLay = plt.imread(imageRef)
+    imageOverlay = plt.imread(imageRef)
+    (hgt,wdt,cols) = imageOverlay.shape
     # px = 1/plt.rcParams['figure.dpi']  # pixel in inches doesn't quite work when bbox='tight'
     plt.figure(figsize=(3, 3))
 
-    implot = plt.imshow(imageOverLay)
+    implot = plt.imshow(imageOverlay)
     implot.axes.get_xaxis().set_visible(False)
     implot.axes.get_yaxis().set_visible(False)
 
-    hgt = 125 #158
-    wdt = 178 #225
-    lvl = 110
+    oceanFloor = 120  # ocean floor in pixel coordinates
 
     upcoming = extremaDF[extremaDF['DateTime']>datetime.now(tz=EST)]
     nxtTide = upcoming.iloc[0]
+
+    logging.debug(f"next Tide: '{nxtTide['DateTime'].strftime('%H:%M')}' '{nxtTide['DateTime'].strftime('%I:%M %p')}'")
+
     if gTime == '24':
         plt.text(wdt/2, 40, nxtTide['DateTime'].strftime('%H:%M'), fontsize=26.0, ha='center' )
     else:
@@ -119,24 +121,27 @@ def makeTideGraphic(extremaDF, detailDF=None):
     plt.arrow(wdt/6, 65-len/4, 0, len, width=6., color='cyan',
                 length_includes_head=True, alpha=0.6, fill=False, linewidth=2.0)
 
+    logging.debug(f"next Tide: '{nxtTide['Type']}' len: '{len}'")
+
     # Somehwat kludgy since we know the range is between -1 and 10ft
     try:
         current = detailDF[detailDF['DateTime']>datetime.now(tz=EST)]
         nxtTide = current.iloc[0]
-        level = nxtTide[gTideUnit]
-    except:
+    finally:
         level = nxtTide[gTideUnit]
 
+    logging.debug(f"next level: '{level}'")
+
     if gTideUnit == 'Tide [ft]':
-        scaledTideHeight = hgt - lvl*(level + 2)/10.
-    else:
-        scaledTideHeight = hgt - lvl*(level + 0.5)/3.0
+        scaledTideHeight = hgt - oceanFloor*(level + 2)/10.
+    else:  # metric
+        scaledTideHeight = hgt - oceanFloor*(level + 0.5)/3.0
 
     plt.title('Next Tide At...')
     plt.axis('off')
-    t=np.linspace(0,wdt,50)
-    y=scaledTideHeight + np.cos(t/5) * 3
-    plt.fill_between(t,y, color='SkyBlue', alpha=0.50)
+    t = np.linspace(0, wdt, 50)
+    y = scaledTideHeight + np.cos(t/5) * 3
+    plt.fill_between(t, y, color='SkyBlue', alpha=0.50)
 
     #plt.show()
     plt.savefig(pathToResources  + 'tmp/' + 'tideCartoon.png', bbox_inches='tight', transparent=True)
@@ -160,7 +165,7 @@ def refresh(time):
 """
 if __name__ == '__main__':                                                               #01234567890123
     prog = 'TideGraphic  '
-    logging.basicConfig(filename='WeatherKiosk.log', format=f"%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s", level=logging.INFO)
+    logging.basicConfig(filename='WeatherKiosk.log', format=f"%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s", level=logging.DEBUG)
 
     #   first fetch the strings passed to us with the fields outlined
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
