@@ -396,6 +396,8 @@ function setTimers() {
         // rinse and repeat
         fetchResources('radar');
     }, 7 * min);
+
+    setInterval(cyclePanels, 20 * sec);
 }
 
 /**
