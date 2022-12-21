@@ -403,7 +403,7 @@ function setTimers() {
     }, 5 * min);
 
     // debugging we manually cycle panels
-    //setInterval(cyclePanels, 20 * sec);
+    setInterval(cyclePanels, 20 * sec);
 }
 
 /**
