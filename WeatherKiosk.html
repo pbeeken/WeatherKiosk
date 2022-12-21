@@ -13,10 +13,10 @@
     <body>
         <div class="shell">
             <div class="header">
-                <img id="logo" src="resources/HHYC_Flag.png"alt="HHYC Logo">
+                <img id="logo" src="resources/HHYC_Flag.png" alt="HHYC Logo">
                 <span id="title">Horseshoe Harbor Yacht Club Tides, Wind &amp; Weather</span>
             </div>
-            <div id="weatherScreen" class="screen">
+            <div id="weatherScreen" class="screen" alt="Tides, Wind & Weather">
                 <div id="yesterday" class="moon">
                     <img class="phase" src="resources/tmp/moon_yesterday.svg"/>
                 </div>
@@ -48,27 +48,31 @@
                     </div>
                 </div>
             </div> <!--weatherScreen-->
-            <div id="boatScreen" class="screen">
+            <div id="boatScreen" class="screen" alt="Boat Reservations">
                 <div class="grid">
-                    <div id="dayBoatBox">
-                        <iframe id="dayboat" class="import" src="https://docs.google.com/spreadsheets/d/1k6OHQYob8kSKaYx2O-MzFIp2BcLPMhmdHSooHo2kVNE/htmlembed/sheet?gid=696214441&range=A1:D20"></iframe>
+                    <div id="dayBoatBox"> <!--&widget=false allows it to be scalable-->
+                        <iframe id="dayboat" class="import" src="https://docs.google.com/spreadsheets/d/160WBuHYjSbOFJxJuQVlx1yP7pYlFd1rCF0LWiPigAuw/htmlembed/sheet?gid=0&range=A1:D18&widget=false"></iframe>
                     </div>
                     <div id="ideal18Box">
-                        <iframe id="ideal18" class="import" src="https://docs.google.com/spreadsheets/d/18jK6-pON9MpE-3mitTFFPmDwpGOcbY2BmnY5HhR83TY/htmlembed/sheet?gid=696214441&range=A1:F20"></iframe>
+                        <iframe id="ideal18" class="import" src="https://docs.google.com/spreadsheets/d/1sU_Gr6Gm7R3N6UQg5ntF16FvoHPYpKFkyK8jUlndJHM/htmlembed/sheet?gid=0&range=A1:F18&widget=false"></iframe>
                     </div>
                 </div>
             </div><!--boatScreen-->
-            <div id="porchScreen" class="screen">
+            <div id="porchScreen" class="screen" alt="Porch Reservations">
                 <div class="grid">
                     <div id="day1Box">
-                        <iframe id="day1" class="import" src="https://docs.google.com/spreadsheets/d/1zD_hhh5cZ83T7NJ9qGi-vXQjcAGeEbskFNtP0swvwkM/htmlembed/sheet?gid=696214441&range=A1:F20"></iframe>
+                        <iframe id="day1" class="import" src="https://docs.google.com/spreadsheets/d/1GbMXSHZPnyOCj23iswpZLKU6qS9LjlBLstA0DuWigBc/htmlembed/sheet?gid=0&range=A1:D20&widget=false"></iframe>
                     </div>
-                </div>
+                    <div id="day2Box">
+                        <iframe id="day2" class="import" src="https://docs.google.com/spreadsheets/d/1GbMXSHZPnyOCj23iswpZLKU6qS9LjlBLstA0DuWigBc/htmlembed/sheet?gid=246313815&range=A1:D20&widget=false"></iframe>
+                    </div>
+                    </div>
             </div><!--porchScreen-->
             <div class="footer">
                 <p id="clock">Waiting...</p>
                 <p id="toast"></p>
                 <p id="ephemeris">Sunrise and sunset</p>
+                <p id="network">&#128992;</p>
             </div>
         </div>
     </body>

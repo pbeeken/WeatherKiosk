@@ -39,7 +39,7 @@ let moonImage = {
 
 /** runClock
  * This is a self re-asserting timer that displays a running clock in the 'clock'
- * box as the web page is active. This fancyness should be unnecessary as we move to
+ * box as the web page is active. This fancyness shouldn't be unnecessary as we move to
  * a one page kiosk with mulitple divs
  */
 function runClock(start) {
@@ -350,6 +350,7 @@ function buildAstroData(testDate) {
  * they set their own schedules for re-launching if needed.
  */
 function buildWeatherKiosk() {
+    networkStatus();
     /** Get and post the sunrise and sunset data */
     buildAstroData(); // Basic astronomical information all the other routines need.
     buildLunarData(); // hold off a bit and launch to
@@ -359,7 +360,7 @@ function buildWeatherKiosk() {
     // we updte the sunrise sunset after a while to make sure astroData is packed.
     setTimeout(updateSunEphemeris, 25 * sec); // first run
 
-    // this can run a little later so we give the machine a break.
+    // this can run a little later so we have a chance to see that the first, busiest, screen is set.
     setTimeout(setTimers, 60 * sec);
 }
 
@@ -397,7 +398,12 @@ function setTimers() {
         fetchResources('radar');
     }, 7 * min);
 
-    setInterval(cyclePanels, 20 * sec);
+    setInterval(() => {
+        networkStatus();
+    }, 5 * min);
+
+    // debugging we manually cycle panels
+    //setInterval(cyclePanels, 20 * sec);
 }
 
 /**
@@ -405,7 +411,7 @@ function setTimers() {
  * @param {string} the title after the boilerplate
  */
 function changePageTitle(title) {
-    document.getElementsByClassName('title')[0].innerHTML = `Horseshoe Harbor Yacht Club ${title}`;
+    document.getElementById('title').innerHTML = `Horseshoe Harbor Yacht Club ${title}`;
 }
 
 /**
@@ -433,15 +439,17 @@ function toastStatus(info, what) {
  **/
 async function networkStatus() {
     let url = `http://localhost:8000/cgi-bin/networkStatus.py`;
-    toastStatus('↣net', 'rem');
+    document.getElementById('network').innerHTML = '&#128992;'; // 🟠
     await fetch(url)
         .then((response) => response.text())
         .then((text) => {
             console.log(text);
-            toastStatus('↣net', 'rem');
+            text = text.trim().replace('networkStatus ', '');
+            document.getElementById('network').innerHTML = text;
         })
         .catch((error) => {
-            console.error(`Failed to fetch ${url}`, error);
+            console.log(`Failed to fetch ${url}`, error);
+            document.getElementById('network').innerHTML = '&#x2753; ERR'; // ❓
         });
 }
 
@@ -479,6 +487,6 @@ function cyclePanels() {
         e.style.display = 'none';
     });
     panelList[nextPanel].style.display = 'block';
-
+    changePageTitle(panelList[nextPanel].getAttribute('alt'));
     currentPanel = nextPanel;
 }

@@ -199,8 +199,8 @@ div#boatScreen > .grid {
     display: grid;
     grid-template-columns: 2;
     grid-template-rows: 1;
-    column-gap: 5px;
-    row-gap: 5px;
+    column-gap: 4px;
+    row-gap: 0px;
 }
 
 div#dayBoatBox {
@@ -244,8 +244,8 @@ div#porchScreen > .grid {
     display: grid;
     grid-template-columns: 2;
     grid-template-rows: 1;
-    column-gap: 5px;
-    row-gap: 5px;
+    column-gap: 4px;
+    row-gap: 0px;
 }
 
 div#day1Box {
@@ -256,7 +256,21 @@ div#day1Box {
 
 iframe#day1 {
     position: relative;
-    width: 100%;
+    width: 747px;
+    height: 780px;
+    border-width: 0px;
+    top: 3px;
+}
+
+div#day2Box {
+    grid-column-start: 2;
+    grid-row-start: 1;
+    /* background-color: rgb(217, 202, 228); */
+}
+
+iframe#day2 {
+    position: relative;
+    width: 747px;
     height: 780px;
     border-width: 0px;
     top: 3px;
@@ -285,6 +299,16 @@ div.footer > #clock {
     transform: translate(-60%, -50%);
 }
 
+div.footer > #network {
+    z-index: 10;
+    text-align: right;
+    font-size: medium;
+    position: absolute;
+    color: darkgrey;
+    top: -12px;
+    left: 1340px;
+}
+
 div.footer > #toast {
     z-index: 10;
     text-align: center;
@@ -297,6 +321,8 @@ div.footer > #toast {
     left: 520px;
 
 }
+
+
 
 div.footer > #ephemeris {
     text-align: left;
