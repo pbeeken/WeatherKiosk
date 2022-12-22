@@ -473,7 +473,7 @@ function toastStatus(info, what) {
  **/
 async function networkStatus() {
     let url = `http://localhost:8000/cgi-bin/networkStatus.py`;
-    document.getElementById('network').innerHTML = '&#128992;'; // 🟠
+    document.getElementById('network').innerHTML = '.🟠.'; // 🟠
     await fetch(url)
         .then((response) => response.text())
         .then((text) => {
