@@ -82,19 +82,16 @@ def makeTideGraphic(extremaDF, detailDF=None):
     detailDF -- Detailed predicted water levels for complete graph
     extremeDF -- The extrema (highs and lows)
     """
-    global gTideUnit
-    gTideUnit = 'Tide [ft]' ## doesnt matter as we just us it to scale to top
     global gTime
 
     lbl = {'H': 'HIGH', 'L': 'LOW'}
-    #now = datetime.now(tz=EST)
 
     # imageURL = 'https://docs.google.com/drawings/d/e/2PACX-1vRPpyCKk834LQUUwoEWDiopLKIcRscn3AoUPynXzNe6jPRLXWt9TBS90Wwm_MjxVoqezD09hbx_0Sw8/pub?w=225&h=159'
     # imageRef = PIL.Image.open(urllib.request.urlopen(imageURL))
     imageRef = pathToResources + 'TideBackground.png' # fetch locally (way faster on a pi)
     imageOverlay = plt.imread(imageRef)
     (hgt,wdt,cols) = imageOverlay.shape
-    # px = 1/plt.rcParams['figure.dpi']  # pixel in inches doesn't quite work when bbox='tight'
+
     plt.figure(figsize=(3, 3))
 
     implot = plt.imshow(imageOverlay)
@@ -128,20 +125,22 @@ def makeTideGraphic(extremaDF, detailDF=None):
         current = detailDF[detailDF['DateTime']>datetime.now(tz=EST)]
         nxtTide = current.iloc[0]
     finally:
-        level = nxtTide[gTideUnit]
+        level = nxtTide['Tide [ft]']
 
-    logging.debug(f"next level: '{level}'")
+    # arbitrary scaling so we fit tides in our area range from -1ft to +10ft
+    sclDepth = (level + 1.5) / 12.0
+    scaledTideHeight = int(hgt*sclDepth)
 
-    if gTideUnit == 'Tide [ft]':
-        scaledTideHeight = hgt - oceanFloor*(level + 2)/10.
-    else:  # metric
-        scaledTideHeight = hgt - oceanFloor*(level + 0.5)/3.0
+    logging.debug(f"time: {current.iloc[0]['DateTime'].strftime('%I:%M %p')}, hgt: {hgt}, level: {level:6.2f}, scaleDepth: {sclDepth:6.3f}, scaledHeight: {scaledTideHeight:6d}")
+
+    scaledTideHeight = hgt - oceanFloor*(level + 2)/10.
 
     plt.title('Next Tide At...')
     plt.axis('off')
+    oceanFloor = 20  # bottom in pixel coordinates
     t = np.linspace(0, wdt, 50)
-    y = scaledTideHeight + np.cos(t/5) * 3
-    plt.fill_between(t, y, color='SkyBlue', alpha=0.50)
+    y = (hgt-oceanFloor) - (scaledTideHeight + 2 * np.cos(t/4)**2)
+    plt.fill_between(t, hgt-oceanFloor, y, color='SkyBlue', alpha=0.50)
 
     #plt.show()
     plt.savefig(pathToResources  + 'tmp/' + 'tideCartoon.png', bbox_inches='tight', transparent=True)

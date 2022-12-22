@@ -515,7 +515,21 @@ function cyclePanels() {
     if (panelList.length === 0) {
         panelList.push(document.getElementById('weatherScreen'));
         panelList.push(document.getElementById('boatScreen'));
-        panelList.push(document.getElementById('porchScreen'));
+        // only on thursdays through sunday
+        if (dow === 4 || dow === 5 || dow === 6 || dow === 0) {
+            panelList.push(document.getElementById('porchScreen'));
+            //   There are two panels: today[day1Box] and tomorrow[day2Box]
+            // On Thursdays:  today is hidden,  tomorrow is visible  n.b. visibility doesn't affect spacing
+            // On Fridays:    today is visible, tomorrow is visible
+            // On Saturday:   today is visible, tomorrow is visible
+            // On Sunday:     today is visible, tomorrow is hidden
+            if (dow === 4) {
+                document.getElementById('day1Box').style.visibility = 'hidden';
+            }
+            if (dow === 0) {
+                document.getElementById('day2Box').style.visibility = 'hidden';
+            }
+        }
     }
 
     let nextPanel = (currentPanel + 1) % panelList.length;
@@ -526,3 +540,14 @@ function cyclePanels() {
     changePageTitle(panelList[nextPanel].getAttribute('alt'));
     currentPanel = nextPanel;
 }
+
+/**
+ * A highly specialized method that looks at the day of the week to
+ * modify the porch view.  There are two panels: today and tomorrow
+ * On Thursdays:  today is hidden,  tomorrow is visible
+ * On Fridays:    today is visible, tomorrow is visible
+ * On Saturday:   today is visible, tomorrow is visible
+ * On Sunday:     today is visible, tomorrow is hidden
+ * On any other day porch is never shown
+ */
+function hidePorches() {}
