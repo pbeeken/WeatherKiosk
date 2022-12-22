@@ -56,7 +56,7 @@ function runClock(start) {
 /** updateResources
  * update the graphs, tables and other media is less disruptive than refreshing the whole screen.
  * A different script updates the resources on a different schedule.
- * @param {'all' | 'tides' | 'tidecartoon' | 'windgraph' | 'forecast' | 'radar'}
+ * @param {'all' | 'tides' | 'tidecartoon' | 'windgraph' | 'forecast' | 'radar' | 'boats' | 'porch' }
 
  */
 function updateResources(what) {
@@ -98,6 +98,26 @@ function updateResources(what) {
                 updateResources('radar');
             }, 31 * sec);
         }
+    }
+
+    if (what === 'boats' || what === 'all') {
+        // update porch stuff.
+        let origSrc = document.getElementById('dayboat').src;
+        origSrc = origSrc.replace(/(.+)&.+/, '$1');
+        document.getElementById('dayboat').src = origSrc + randomSuffix('&');
+        origSrc = document.getElementById('ideal18').src;
+        origSrc = origSrc.replace(/(.+)&.+/, '$1');
+        document.getElementById('ideal18').src = origSrc + randomSuffix('&');
+    }
+
+    if (what === 'porch' || what === 'all') {
+        // update porch stuff.
+        let origSrc = document.getElementById('day1').src;
+        origSrc = origSrc.replace(/(.+)&.+/, '$1');
+        document.getElementById('day1').src = origSrc + randomSuffix('&');
+        origSrc = document.getElementById('day2').src;
+        origSrc = origSrc.replace(/(.+)&.+/, '$1');
+        document.getElementById('day2').src = origSrc + randomSuffix('&');
     }
 }
 
@@ -393,16 +413,30 @@ function setTimers() {
         fetchResources('forecast');
     }, 15 * min);
 
+    // animated radar gif
     setInterval(() => {
         // rinse and repeat
         fetchResources('radar');
     }, 7 * min);
 
+    // network status (useful to know if our connection has issues)
     setInterval(() => {
         networkStatus();
     }, 5 * min);
 
-    // debugging we manually cycle panels
+    // boat reservations
+    setInterval(() => {
+        // rinse and repeat
+        fetchResources('boats');
+    }, 6 * min);
+
+    // porch reservations
+    setInterval(() => {
+        // rinse and repeat
+        fetchResources('porch');
+    }, 7 * min);
+
+    // debugging we can manually cycle panels
     setInterval(cyclePanels, 20 * sec);
 }
 
@@ -457,11 +491,13 @@ async function networkStatus() {
  * randomSuffix
  * Creates a random suffix to force an update of the visual resources.
  * This trick works with images and iframes to force a reload of the resource.
+ * @param {string} [opt] a single character, usually to prefix the random value
  * @returns {string} random url mod
  */
-function randomSuffix() {
+function randomSuffix(prefix) {
+    if (!prefix) prefix = '?';
     let now = new Date();
-    return '?' + now.getMilliseconds();
+    return prefix + now.getMilliseconds();
 }
 
 /**

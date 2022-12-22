@@ -255,8 +255,8 @@ div#day1Box {
 }
 
 iframe#day1 {
-    position: relative;
-    width: 747px;
+    position: absolute;
+    width: 730px;
     height: 780px;
     border-width: 0px;
     top: 3px;
@@ -269,8 +269,8 @@ div#day2Box {
 }
 
 iframe#day2 {
-    position: relative;
-    width: 747px;
+    position: absolute;
+    width: 730px;
     height: 780px;
     border-width: 0px;
     top: 3px;
