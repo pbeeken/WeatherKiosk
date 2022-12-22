@@ -98,8 +98,6 @@ def makeTideGraphic(extremaDF, detailDF=None):
     implot.axes.get_xaxis().set_visible(False)
     implot.axes.get_yaxis().set_visible(False)
 
-    oceanFloor = 120  # ocean floor in pixel coordinates
-
     upcoming = extremaDF[extremaDF['DateTime']>datetime.now(tz=EST)]
     nxtTide = upcoming.iloc[0]
 
@@ -132,8 +130,6 @@ def makeTideGraphic(extremaDF, detailDF=None):
     scaledTideHeight = int(hgt*sclDepth)
 
     logging.debug(f"time: {current.iloc[0]['DateTime'].strftime('%I:%M %p')}, hgt: {hgt}, level: {level:6.2f}, scaleDepth: {sclDepth:6.3f}, scaledHeight: {scaledTideHeight:6d}")
-
-    scaledTideHeight = hgt - oceanFloor*(level + 2)/10.
 
     plt.title('Next Tide At...')
     plt.axis('off')
