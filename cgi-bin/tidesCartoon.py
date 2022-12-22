@@ -138,7 +138,7 @@ def makeTideGraphic(extremaDF, detailDF=None):
     plt.title('Next Tide At...')
     plt.axis('off')
     oceanFloor = 20  # bottom in pixel coordinates
-    t = np.linspace(0, wdt, 50)
+    t = np.linspace(0, wdt-1, 50)
     y = (hgt-oceanFloor) - (scaledTideHeight + 2 * np.cos(t/4)**2)
     plt.fill_between(t, hgt-oceanFloor, y, color='SkyBlue', alpha=0.50)
 
