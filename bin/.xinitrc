@@ -21,7 +21,7 @@ cd /home/pi/WeatherKiosk
 chromium-browser \
 	http://localhost:8000/WeatherKiosk.html \
 	--window-size=1440,900 --window-position=0,0 --start-fullscreen \
-	--disk-cache-dir=/dev/null  --start-fullscreen --kiosk \
-	--remote-debugging-port=9222
+	--disk-cache-dir=/dev/null  --start-fullscreen --kiosk
+	# --remote-debugging-port=9222 --remote-debugging-address=0.0.0.0
 	#        --no-first-run --noerrdialogs \
 	#        --disable-infobars
