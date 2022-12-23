@@ -210,6 +210,7 @@ async function fetchUSNavalDailyData(theDate, when) {
         })
         .catch((error) => {
             console.error(`Failed to fetch ${url}`, error);
+            networkStatus();
             astroData[when] = { error, response: null };
         });
 }
@@ -235,6 +236,7 @@ async function fetchMoonImage(when) {
         })
         .catch((error) => {
             console.error(`Failed to fetch ${url}`, error);
+            networkStatus();
             moonImage[when] = { error, response: null };
         });
 }
@@ -266,6 +268,7 @@ async function fetchResources(what, units) {
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
+                networkStatus();
             });
         url = `http://localhost:8000/cgi-bin/tidesTable.py?units=${units}`;
         await fetch(url)
@@ -277,6 +280,7 @@ async function fetchResources(what, units) {
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
+                networkStatus();
             });
     }
 
@@ -292,6 +296,7 @@ async function fetchResources(what, units) {
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
+                networkStatus();
             });
     }
 
@@ -307,6 +312,7 @@ async function fetchResources(what, units) {
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
+                networkStatus();
             });
     }
 
@@ -322,6 +328,7 @@ async function fetchResources(what, units) {
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
+                networkStatus();
             });
     }
 
@@ -422,19 +429,19 @@ function setTimers() {
     // network status (useful to know if our connection has issues)
     setInterval(() => {
         networkStatus();
-    }, 5 * min);
+    }, 15 * min);
 
     // boat reservations
     setInterval(() => {
         // rinse and repeat
         updateResources('boats');
-    }, 6 * min);
+    }, 4 * min);
 
     // porch reservations
     setInterval(() => {
         // rinse and repeat
         updateResources('porch');
-    }, 7 * min);
+    }, 5 * min);
 
     // debugging we can manually cycle panels
     setInterval(cyclePanels, 20 * sec);
