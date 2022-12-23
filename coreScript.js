@@ -427,13 +427,13 @@ function setTimers() {
     // boat reservations
     setInterval(() => {
         // rinse and repeat
-        fetchResources('boats');
+        updateResources('boats');
     }, 6 * min);
 
     // porch reservations
     setInterval(() => {
         // rinse and repeat
-        fetchResources('porch');
+        updateResources('porch');
     }, 7 * min);
 
     // debugging we can manually cycle panels
