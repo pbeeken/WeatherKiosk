@@ -32,8 +32,14 @@ def makeMoonLune(beta):
     return (dir * 2 * (np.abs(b)-1/2) * np.sin(np.pi * t), np.cos(np.pi * t)) # was b <- np.cos(np.pi * b)
 
   plt.axes().set_aspect('equal')
-  plt.xlim(left=-1.0, right=1.0)
-  plt.ylim(bottom=-1.0, top=1.0)
+
+  # Get full moon image
+  imageRef = pathToResources + 'FullMoon.png'
+  imageOverlay = plt.imread(imageRef)
+  (hgt,wdt,cols) = imageOverlay.shape
+
+  # plt.xlim(left=-1.0, right=1.0)
+  # plt.ylim(bottom=-1.0, top=1.0)
 
   (xc, yc) = circFunc(t)
   plt.plot(xc, yc, '0.0')   # right half
@@ -42,11 +48,14 @@ def makeMoonLune(beta):
   (xe, ye) = ellipFunc(t, beta)
   plt.plot(xe, ye, '0.2')
   if beta<=0:
-    plt.fill_betweenx(yc, -xc, xe, facecolor='0.9')
-    plt.fill_betweenx(yc, xe, xc, facecolor='0.1')
+    plt.fill_betweenx(yc, -xc, xe, facecolor='0.9', alpha=0.4)
+    plt.fill_betweenx(yc, xe, xc, facecolor='0.1', alpha=0.4)
   else:
-    plt.fill_betweenx(yc, -xc, xe, facecolor='0.1')
-    plt.fill_betweenx(yc, xe, xc, facecolor='0.9')
+    plt.fill_betweenx(yc, -xc, xe, facecolor='0.1', alpha=0.4)
+    plt.fill_betweenx(yc, xe, xc, facecolor='0.9', alpha=0.4)
+
+  # superimpose the moon image
+  implot = plt.imshow(imageOverlay, aspect='equal', alpha=0.9, extent=(-1., 1., -1., 1.))
 
   plt.axis('off')
 
