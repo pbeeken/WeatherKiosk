@@ -7,7 +7,7 @@ KIOSK="$HOME/WeatherKiosk"
 
 # Move to kiosk folder
 cd $KIOSK
-git fetch # update from upstream (nothing is overwritten)
+git fetch -a # update from upstream (nothing is overwritten)
 
 # fetch from git any updates
 localHash="`git rev-parse HEAD`"
@@ -19,9 +19,7 @@ if [ "$localHash" != "$remoteHash" ]; then
     echo "updating..."
     # we don't care about any changes on the pi we discard them
     # reset the pointer to ignore any changes (made accidentally?)
-    git reset --hard
-    # pull and rebase the local.
-    git pull --rebase
+    git reset --hard origin/main
 
     echo "copying scripts..."
     # Install scripts, saving old ones.
