@@ -45,9 +45,9 @@ if __name__ == '__main__':
     logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
 
     if isUpAlt():
-        status = '⇧ UP 🟢' # 🟢,&#x1F7E2; ⇧,&#x21E7;
+        status = '&#x21E7; UP' # 🟢,&#x1F7E2; ⇧,&#x21E7; Extended utf-8 doesn't display
     else:
-        status = '⇩ DN 🔴' # 🔴,&#x1F534; ⇩,&#x21E9;
+        status = '&#x21E9; DN' # 🔴,&#x1F534; ⇩,&#x21E9; Extended utf-8 doesn't display
     logging.info(f"status: {status}")
 
     print('Content-Type: text/plain\n')
