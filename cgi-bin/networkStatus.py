@@ -45,9 +45,9 @@ if __name__ == '__main__':
     logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
 
     if isUpAlt():
-        status = '&#x1F7E2; UP' # 🟢
+        status = '⇧ UP 🟢' # 🟢,&#x1F7E2; ⇧,&#x21E7;
     else:
-        status = '&#x1F534; DN' # 🔴
+        status = '⇩ DN 🔴' # 🔴,&#x1F534; ⇩,&#x21E9;
     logging.info(f"status: {status}")
 
     print('Content-Type: text/plain\n')
