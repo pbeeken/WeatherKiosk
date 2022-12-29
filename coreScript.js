@@ -480,12 +480,12 @@ function toastStatus(info, what) {
  **/
 async function networkStatus() {
     let url = `http://localhost:8000/cgi-bin/networkStatus.py`;
-    document.getElementById('network').innerHTML = '.🟠.'; // 🟠
+    document.getElementById('network').innerHTML = '.❓.'; // 🟠
     await fetch(url)
         .then((response) => response.text())
         .then((text) => {
             console.log(text);
-            text = text.trim().replace('networkStatus ', '');
+            //text = text.trim().replace('networkStatus ', '');
             document.getElementById('network').innerHTML = text;
         })
         .catch((error) => {
@@ -540,11 +540,16 @@ function cyclePanels() {
     }
 
     let nextPanel = (currentPanel + 1) % panelList.length;
-    panelList.forEach((e) => {
-        e.style.display = 'none';
-    });
+    // panelList.forEach((e) => {
+    //     e.style.display = 'none';
+    // });
     panelList[nextPanel].style.display = 'block';
     changePageTitle(panelList[nextPanel].getAttribute('alt'));
+    // In a short time hide the current panel after it is covered.
+    // setTimeout(() => {
+    //     let cp = currentPanel; // save a local copy.
+    //     panelList[cp].style.display = 'none';
+    // }, 2.9 * sec);
     currentPanel = nextPanel;
 }
 

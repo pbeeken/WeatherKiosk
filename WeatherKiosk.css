@@ -10,6 +10,7 @@ body {
 }
 
 .header {
+    z-index: 50;
     position: absolute;
     top: 10px;
     left: 20px;
@@ -19,8 +20,8 @@ body {
 }
 
 div.header > #title {
+    z-index: 55;
     position: relative;
-    z-index: 0;
     font-family: "Trade Winds", cursive;
     font-size: xx-large;
     top: 8px;
@@ -28,110 +29,116 @@ div.header > #title {
 }
 
 div.header > #logo {
+    z-index: 59;
     position: absolute;
-    z-index: 5;
     left: 4px;
     width: 82px;
     height: 74px;
     top: 4px;
 }
 
+/* Animation rules slide from left */
+@keyframes horzontalSlide {
+    from {left: -1440px; z-index: 40;} /* start off screen */
+    to {left: 0px; z-index: 30;}
+}
+
+/* defaults for any screen */
+.screen {
+    position: absolute;
+    z-index: 10;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 26px;
+    animation: horzontalSlide 3s normal;
+}
+
+
 /* Weatherscreen div and contents */
 div#weatherScreen {
     display: block;
 }
 
+/* place holder. weather screen uses explicit positioning */
 div#weatherScreen > .grid {
-    position: absolute;
-    top: 70px;
-    left: 0px;
-    right: 0px;
-    bottom: 26px;
-    /* background-color: rgba(220, 255, 255, 0.5); */
+    position: inherit;
 }
 
 #tideGraphBox {
-    position: fixed;
+    position: inherit;
     top: 95px;
     left: 15px;
+    /* background-color: rgba(255, 255, 255, 0.5); debugging */
 }
 
 #tideCartoonBox {
-    position: fixed;
+    position: inherit;
     top: 107px;
     left: 700px;
     /* background-color: rgba(255, 255, 255, 0.5); debugging */
 }
 
 #tideTableBox {
-    position: fixed;
-    top: 317px;
+    position: inherit;
+    top: 345px;
     left: 673px;
     /* background-color: rgba(255, 255, 255, 0.5); debugging */
 }
 
 iframe#tidetable {
-    position: fixed;
+    position: inherit;
     width: fit-content;
     height: fit-content;
     border-width: 0px;
 }
 
 #radarBox  {
-    position: fixed;
-    z-index: -10;
+    position: inherit;
     top: 86px;
     left: 974px;
     width: 448px;
 }
 
 #windGraphBox {
-    position: fixed;
+    position: inherit;
     top: 483px;
     left: 6px;
 }
 
 #forecastBox {
-    position: fixed;
+    position: inherit;
     top: 499px;
     left: 734px;
     width: auto;
 }
 
 iframe#forecast {
-    position: fixed;
+    position: inherit;
     width: 700px;
     height: 380px;
     border-width: 0px;
 }
 
 div#yesterday {
-    position: fixed;
+    position: inherit;
     z-index: -20;
     top: 280px;
     left: 105px;
 }
 
 div#today {
-    position: fixed;
+    position: inherit;
     z-index: -20;
     top: 280px;
     left: 312px;
 }
 
 div#tomorrow {
-    position: fixed;
+    position: inherit;
     z-index: -20;
     top: 280px;
     left: 517px;
-}
-
-div#radarbox {
-    position: fixed;
-    z-index: -20;
-    top:    86px;
-    left:  720px;
-    width: 431px;
 }
 
 .phase {
@@ -278,6 +285,7 @@ iframe#day2 {
 
 /* Footer for all */
 .footer {
+    z-index: 50;
     position: absolute; /* Means all measurements are absolute screen */
     bottom: 15px;
     left: 20px;
@@ -286,31 +294,42 @@ iframe#day2 {
     background-color: Silver;
 }
 
+div.footer > #ephemeris {
+    z-index: 53;
+    position: inherit;
+    text-align: left;
+    font-family: "Trade Winds", cursive;
+    font-size: medium;
+    text-shadow: 1px 1px 3px rgb(116, 115, 115);
+    margin: 0;
+    top: 4px;
+    left: 80px;
+}
+
 div.footer > #clock {
-    z-index: 10;
+    z-index: 53;
+    position: inherit;
     text-align: right;
     font-family: "Trade Winds", cursive;
     font-size: medium;
     text-shadow: 1px 1px 3px rgb(116, 115, 115);
     margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 90%;
-    transform: translate(-60%, -50%);
+    top: 4px;
+    right: 80px;
 }
 
 div.footer > #network {
-    z-index: 10;
+    z-index: 51;
+    position: inherit;
     text-align: right;
     font-size: medium;
-    position: absolute;
     color: darkgrey;
-    top: -12px;
-    left: 1340px;
+    top: -11px;
+    right: 5px;
 }
 
 div.footer > #toast {
-    z-index: 10;
+    z-index: 51;
     text-align: center;
     font-family: "Courier", monospace;
     color: white;
@@ -319,17 +338,20 @@ div.footer > #toast {
     position: absolute;
     top: 8px;
     left: 520px;
+    width: 480;
 
 }
 
-div.footer > #ephemeris {
-    text-align: left;
-    font-family: "Trade Winds", cursive;
-    font-size: medium;
-    text-shadow: 1px 1px 3px rgb(116, 115, 115);
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 18%;
-    transform: translate(-50%, -50%);
+
+
+/* Decorations */
+#dn {
+    color: red;
+    font-size: large;
+    /* font-weight: 800; */
+}
+#up {
+    color: green;
+    font-size: large;
+    /* font-weight: 800; */
 }
