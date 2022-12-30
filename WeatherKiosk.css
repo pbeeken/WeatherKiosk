@@ -2,13 +2,20 @@ body {
     background-color: MintCream;
 }
 
-/* whole screen */
+/*=========================================================
+  whole screen, sets the coord system for all the other div
+  we could eliminate the outer shell and use a fixed system
+  but experiments show that fixed divs can be excluded from
+  some animations. */
 .shell {
     position: absolute;
     width: 1440px;
     height: 900px;
 }
 
+/*=========================================================
+  Header region
+  This stays staic through all other visual changes      */
 .header {
     z-index: 50;
     position: absolute;
@@ -19,29 +26,87 @@ body {
     background-color: Silver;
 }
 
-div.header > #title {
+#title {
     z-index: 55;
-    position: absolute;
+    position: inherit;
     font-family: "Trade Winds", cursive;
     font-size: xx-large;
     top: 8px;
     left: 95px;
 }
 
-div.header > #logo {
+#logo {
     z-index: 59;
-    position: absolute;
+    position: inherit;
     left: 4px;
     width: 82px;
     height: 74px;
     top: 4px;
 }
 
-/* manipulations for divs */
-/* pushes the div to the back */
-/* .sendToBack {
-    z-index: 0;
-} */
+/*=========================================================
+  Footer region
+  This stays staic through all other visual changes      */
+.footer {
+    z-index: 50;
+    position: absolute; /* Means all measurements are absolute screen */
+    bottom: 15px;
+    left: 20px;
+    right: 20px;
+    height: 30px;
+    background-color: Silver;
+}
+
+#ephemeris {
+    top: 4px;
+    left: 80px;
+    z-index: 53;
+    position: inherit;
+    text-align: left;
+    font-family: "Trade Winds", cursive;
+    font-size: medium;
+    text-shadow: 1px 1px 3px rgb(116, 115, 115);
+    margin: 0;
+}
+
+#clock {
+    top: 4px;
+    right: 80px;
+    z-index: 53;
+    position: inherit;
+    text-align: left;
+    font-family: "Trade Winds", cursive;
+    font-size: medium;
+    text-shadow: 1px 1px 3px rgb(116, 115, 115);
+    margin: 0;
+}
+
+#network {
+    z-index: 51;
+    position: inherit;
+    font-family: sans-serif;
+    text-align: right;
+    font-size: medium;
+    color: darkgrey;
+    top: -11px;
+    right: 5px;
+}
+
+#toast {
+    z-index: 51;
+    text-align: center;
+    font-family: "Courier", monospace;
+    color: white;
+    font-size: small;
+    margin: 0;
+    position: absolute;
+    top: 8px;
+    left: 520px;
+    width: 480;
+}
+
+/*=========================================================
+  Animations and Transitions                             */
 
 /* default for any screen in waiting */
 .holdScreen {
@@ -84,13 +149,18 @@ div.header > #logo {
     transition-timing-function: ease-in-out;
 }
 
+/*=========================================================
+  Content area
+  The 'swappable' content boxes are called 'screens'. The
+  central container gets assigned animation classes to
+  control the flow into and out of the zoom area.        */
 
-/* Weatherscreen div and contents */
+/* Weatherscreen div its contents */
 #weatherScreen {
     display: block;
 }
 
-/* weatherScreen is laid out manually */
+/* tide graph */
 #tideGraphBox {
     position: inherit;
     top: 12px;
@@ -98,6 +168,7 @@ div.header > #logo {
     /* background-color: rgba(255, 255, 255, 0.5); debugging */
 }
 
+/* tide graphic */
 #tideCartoonBox {
     position: inherit;
     top: 24px;
@@ -105,6 +176,7 @@ div.header > #logo {
     /* background-color: rgba(255, 255, 255, 0.5); debugging */
 }
 
+/* specific key tide points */
 #tideTableBox {
     position: inherit;
     top: 235px;
@@ -112,6 +184,7 @@ div.header > #logo {
     /* background-color: rgba(255, 255, 255, 0.5); debugging */
 }
 
+/* iframe with the above data */
 iframe#tidetable {
     position: inherit;
     width: fit-content;
@@ -119,6 +192,7 @@ iframe#tidetable {
     border-width: 0px;
 }
 
+/* area radar box */
 #radarBox  {
     position: inherit;
     top: 3px;
@@ -126,12 +200,14 @@ iframe#tidetable {
     width: 448px;
 }
 
+/* wind graph */
 #windGraphBox {
     position: inherit;
     top: 400px;
     left: 6px;
 }
 
+/* marine forcast table */
 #forecastBox {
     position: inherit;
     top: 416px;
@@ -146,12 +222,13 @@ iframe#forecast {
     border-width: 0px;
 }
 
-div#yesterday {
+/* three moon images that show the current phase */
+#yesterday {
     top: 200px;
     left: 105px;
 }
 
-div#today {
+#today {
     top: 200px;
     left: 312px;
 }
@@ -167,7 +244,6 @@ div#tomorrow {
 }
 
 .phase {
-    position: static;
     height: 60px;
     opacity: 90%;
 }
@@ -213,6 +289,7 @@ iframe#ideal18 {
     background-color: transparent;
 
 }
+/* end BoatResrvations div and contents */
 
 /* PorchResrvations div and contents */
 div#porchScreen {
@@ -250,65 +327,7 @@ iframe#day2 {
     border-width: 0px;
     top: 3px;
 }
-
-/* Footer for all */
-.footer {
-    z-index: 50;
-    position: absolute; /* Means all measurements are absolute screen */
-    bottom: 15px;
-    left: 20px;
-    right: 20px;
-    height: 30px;
-    background-color: Silver;
-}
-
-div.footer > #ephemeris {
-    z-index: 53;
-    position: inherit;
-    text-align: left;
-    font-family: "Trade Winds", cursive;
-    font-size: medium;
-    text-shadow: 1px 1px 3px rgb(116, 115, 115);
-    margin: 0;
-    top: 4px;
-    left: 80px;
-}
-
-div.footer > #clock {
-    z-index: 53;
-    position: inherit;
-    text-align: right;
-    font-family: "Trade Winds", cursive;
-    font-size: medium;
-    text-shadow: 1px 1px 3px rgb(116, 115, 115);
-    margin: 0;
-    top: 4px;
-    right: 80px;
-}
-
-div.footer > #network {
-    z-index: 51;
-    position: inherit;
-    text-align: right;
-    font-size: medium;
-    color: darkgrey;
-    top: -11px;
-    right: 5px;
-}
-
-div.footer > #toast {
-    z-index: 51;
-    text-align: center;
-    font-family: "Courier", monospace;
-    color: white;
-    font-size: small;
-    margin: 0;
-    position: absolute;
-    top: 8px;
-    left: 520px;
-    width: 480;
-
-}
+/* end PorchResrvations div and contents */
 
 /* Decorations */
 #dn {

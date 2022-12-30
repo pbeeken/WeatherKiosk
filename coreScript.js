@@ -565,14 +565,3 @@ function cyclePanels() {
 
     currentPanel = nextPanel;
 }
-
-/**
- * A highly specialized method that looks at the day of the week to
- * modify the porch view.  There are two panels: today and tomorrow
- * On Thursdays:  today is hidden,  tomorrow is visible
- * On Fridays:    today is visible, tomorrow is visible
- * On Saturday:   today is visible, tomorrow is visible
- * On Sunday:     today is visible, tomorrow is hidden
- * On any other day porch is never shown
- */
-function hidePorches() {}
