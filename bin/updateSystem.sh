@@ -20,7 +20,7 @@ if [ "$localHash" != "$remoteHash" ]; then
     echo "updating..."
     # we don't care about any changes on the pi; we discard them.
     # reset the pointer to ignore any changes (made accidentally?)
-    #git reset --hard origin/main
+    git reset --hard origin
     git pull --force
 
     echo "copying scripts..."
