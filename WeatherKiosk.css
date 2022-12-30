@@ -54,8 +54,8 @@ div.header > #logo {
     bottom: 47px;
     transition-delay: 0s;
     transition-duration: 0s;
-    transition-property: right;
-    transition-timing-function: cubic-bezier(0, 0, 1, 1);
+    transition-property: left;
+    /* transition-timing-function: ease-in-out; //Doesn't matter */
 }
 
 /* the layout and transition for the current incoming screen */
@@ -68,7 +68,7 @@ div.header > #logo {
     transition-delay: 0s;
     transition-duration: 1s;
     transition-property: left;
-    transition-timing-function: cubic-bezier(0, 0, 1, 1);
+    transition-timing-function: ease-in-out;
 }
 
 /* the layout and transition for the current outgoing screen */
@@ -81,7 +81,7 @@ div.header > #logo {
     transition-delay: 0s;
     transition-duration: 1s;
     transition-property: left;
-    transition-timing-function: cubic-bezier(0, 0, 1, 1);
+    transition-timing-function: ease-in-out;
 }
 
 
