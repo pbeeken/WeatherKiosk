@@ -68,7 +68,7 @@ function updateResources(what) {
         // clock graph
         document.getElementById('tidegraph').src = 'resources/tmp/tideGraph.png' + randomSuffix();
         // tide table
-        document.getElementById('tidetable').src = 'resources/tmp/tideTable.html' + randomSuffix();
+        document.getElementById('tideTable').src = 'resources/tmp/tideTable.html' + randomSuffix();
     }
 
     if (what === 'tidecartoon' || what === 'all') {

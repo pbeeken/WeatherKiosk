@@ -113,7 +113,7 @@ body {
   Animations and Transitions                             */
 
 /* default for any screen in waiting */
-.holdScreen {
+.waitScreen {
     position: absolute;
     opacity: 0;
     /* z-index: 0; */
@@ -189,7 +189,7 @@ body {
 }
 
 /* iframe with the above data */
-iframe#tidetable {
+iframe#tideTable {
     position: inherit;
     width: fit-content;
     height: fit-content;
@@ -255,67 +255,82 @@ div#tomorrow {
 
 /* BoatResrvations div and contents */
 #boatScreen {
-    display: grid;
+    position: inherit;
+    /* display: grid;
     grid-template-columns: 700px 700px;
     grid-template-rows: 1fr;
     column-gap: 4px;
-    row-gap: 0px;
+    row-gap: 0px; */
     /* background-color: transparent; */
 }
 
 div#dayBoatBox {
-    grid-column-start: 1;
-    grid-row-start: 1;
+    /* grid-column-start: 1;
+    grid-row-start: 1; */
+    position: inherit;
+    left: 0px;
+    width: 700px;
+    background-image: url("resources/SailingImage.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
     /* background-color: transparent; */
 }
 
 iframe#dayboat {
-    position: relative;
-    width: 100%;
+    position: inherit;
+    width: 700px;
     height: 780px;
     border-width: 0px;
     top: 3px;
-    /* background-color: transparent; */
 }
 
 div#ideal18Box {
-    grid-column-start: 2;
-    grid-row-start: 1;
+    position: inherit;
+    /* grid-column-start: 2;
+    grid-row-start: 1; */
+    left: 704px;
+    width: 700px;
+    background-image: url("resources/SailingImage.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
     /* background-color: transparent; */
 }
 
 iframe#ideal18 {
-    position: relative;
-    width: 100%;
+    position: inherit;
+    width: 700px;
     height: 780px;
     border-width: 0px;
     top: 3px;
-    /* background-color: transparent; */
-
 }
 /* end BoatResrvations div and contents */
 
 /* PorchResrvations div and contents */
 div#porchScreen {
-    display: grid;
-    grid-template-columns: 700px 700px;
-    grid-template-rows: 1fr;
-    column-gap: 4px;
-    row-gap: 0px;
+    position: inherit;
+    /* display: grid; */
+    /* grid-template-columns: 700px 700px;
+    grid-template-rows: 1fr; */
+    /* column-gap: 4px;
+    row-gap: 0px; */
 }
 
 div#day1Box {
-    grid-column-start: 1;
-    grid-row-start: 1;
+    /* grid-column-start: 1;
+    grid-row-start: 1; */
+    position: inherit;
+    left: 0px;
+    width: 700px;
     background-image: url("resources/PorchImage.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    /* background-color: mintcream */
 }
 
 iframe#day1 {
-    position: absolute;
+    position: inherit;
     width: 700px;
     height: 780px;
     border-width: 0px;
@@ -323,17 +338,19 @@ iframe#day1 {
 }
 
 div#day2Box {
-    grid-column-start: 2;
-    grid-row-start: 1;
+    position: inherit;
+    /* grid-column-start: 2;
+    grid-row-start: 1; */
+    left: 704px;
+    width: 700px;
     background-image: url("resources/PorchImage.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    /* background-color: mintcream */
 }
 
 iframe#day2 {
-    position: absolute;
+    position: inherit;
     width: 700px;
     height: 780px;
     border-width: 0px;
