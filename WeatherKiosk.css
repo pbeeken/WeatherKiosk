@@ -115,9 +115,8 @@ body {
 /* default for any screen in waiting */
 .waitScreen {
     position: absolute;
-    opacity: 0;
-    /* z-index: 0; */
-    top: 75px;
+    opacity: 1;
+    top: 70px;
     left: -1440px;
     right: 0px;
     bottom: 47px;
@@ -130,7 +129,6 @@ body {
 /* the layout and transition for the current incoming screen */
 .enterScreen {
     opacity: 1;
-    /* z-index: 15; */
     top: 70px;
     left: 10px;
     bottom: 47px;
@@ -142,14 +140,13 @@ body {
 
 /* the layout and transition for the current outgoing screen */
 .exitScreen {
-    opacity: 0.75;
-    /* z-index: 12; */
-    top: 75px;
+    opacity: 0.75; /* dim it a bit */
+    top: 600px;
     left: 1440px;
     bottom: 47px;
-    transition-delay: 0s;
+    transition-delay: -0.1s; /* head start */
     transition-duration: 1s;
-    transition-property: left;
+    transition-property: left, top;
     transition-timing-function: ease-in-out;
 }
 
