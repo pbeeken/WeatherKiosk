@@ -10,16 +10,18 @@ cd $KIOSK
 git fetch -a # update from upstream (nothing is overwritten)
 
 # fetch from git any updates
+remoteBranch="`git rev-parse --symbolic-full-name --abbrev-ref @{upstream}`"
 localHash="`git rev-parse HEAD`"
-remoteHash="`git rev-parse 'main@{upstream}'`"
+remoteHash="`git rev-parse '@{upstream}'`"
 
 # If the hashes don't match
 if [ "$localHash" != "$remoteHash" ]; then
 
     echo "updating..."
-    # we don't care about any changes on the pi we discard them
+    # we don't care about any changes on the pi; we discard them.
     # reset the pointer to ignore any changes (made accidentally?)
-    git reset --hard origin/main
+    #git reset --hard origin/main
+    git pull --force
 
     echo "copying scripts..."
     # Install scripts, saving old ones.
