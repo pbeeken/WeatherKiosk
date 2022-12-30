@@ -307,7 +307,11 @@ div#porchScreen {
 div#day1Box {
     grid-column-start: 1;
     grid-row-start: 1;
-    background-color: mintcream
+    background-image: url("resources/PorchImage.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    /* background-color: mintcream */
 }
 
 iframe#day1 {
@@ -321,7 +325,11 @@ iframe#day1 {
 div#day2Box {
     grid-column-start: 2;
     grid-row-start: 1;
-    background-color: mintcream
+    background-image: url("resources/PorchImage.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    /* background-color: mintcream */
 }
 
 iframe#day2 {
