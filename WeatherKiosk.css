@@ -4,7 +4,7 @@ body {
 
 /* whole screen */
 .shell {
-    position: fixed;
+    position: absolute;
     width: 1440px;
     height: 900px;
 }
@@ -37,70 +37,60 @@ div.header > #logo {
     top: 4px;
 }
 
-/* Animation rules slide from left */
-/* @keyframes rightSlide {
-    from {
-        width: 1440;
-        left: -1440;
-        z-index: 60;
-    } // start off screen
-    to {
-        left: 0;
-        z-index: 50;
-    }
+/* manipulations for divs */
+/* pushes the div to the back */
+/* .sendToBack {
+    z-index: 0;
 } */
 
-/* @keyframes leftSlide {
-    from {
-        margin-left: 100%;
-        width: 300%;
-        z-index: 60;
-    } // start off screen
-    to {
-        margin-left: 0%;
-        width: 100%;
-        z-index: 50;
-    }
-} */
-
-/* defaults for any screen */
-.screen {
+/* default for any screen in waiting */
+.holdScreen {
     position: absolute;
+    opacity: 0;
+    /* z-index: 0; */
     top: 75px;
     left: -1440px;
     right: 0px;
     bottom: 47px;
-    /* animation: leftSlide 3s ease-in; */
     transition-delay: 0s;
-    transition-duration: 2s;
-    transition-property: left;
-    transition-timing-function: ease-in-out;
-    opacity: 0;
-    z-index: 0;
-    visibility: hidden;
+    transition-duration: 0s;
+    transition-property: right;
+    transition-timing-function: cubic-bezier(0, 0, 1, 1);
 }
+
+/* the layout and transition for the current incoming screen */
+.enterScreen {
+    opacity: 1;
+    /* z-index: 15; */
+    top: 75px;
+    left: 0px;
+    bottom: 47px;
+    transition-delay: 0s;
+    transition-duration: 1s;
+    transition-property: left;
+    transition-timing-function: cubic-bezier(0, 0, 1, 1);
+}
+
+/* the layout and transition for the current outgoing screen */
+.exitScreen {
+    opacity: 0.75;
+    /* z-index: 12; */
+    top: 75px;
+    left: 1440px;
+    bottom: 47px;
+    transition-delay: 0s;
+    transition-duration: 1s;
+    transition-property: left;
+    transition-timing-function: cubic-bezier(0, 0, 1, 1);
+}
+
 
 /* Weatherscreen div and contents */
 #weatherScreen {
     display: block;
 }
 
-.currentScreen {
-    opacity: 1;
-    z-index: 15;
-    left: 0px;
-    visibility: visible;
-    transition-delay: 0s;
-    transition-duration: 2s;
-    transition-property: left;
-    transition-timing-function: ease-in-out;
-}
-
-/* place holder. weather screen uses explicit positioning */
-div#weatherScreen > .grid {
-    position: inherit;
-}
-
+/* weatherScreen is laid out manually */
 #tideGraphBox {
     position: inherit;
     top: 12px;
@@ -117,7 +107,7 @@ div#weatherScreen > .grid {
 
 #tideTableBox {
     position: inherit;
-    top: 262px;
+    top: 235px;
     left: 673px;
     /* background-color: rgba(255, 255, 255, 0.5); debugging */
 }
@@ -184,26 +174,19 @@ div#tomorrow {
 /* end Weatherscreen div and contents */
 
 /* BoatResrvations div and contents */
-div#boatScreen {
-    /* display: none; */
-}
-
-.grid1x2 {
-    position: absolute;
-    top: 70px;
-    left: 20px;
-    right: 20px;
+#boatScreen {
     display: grid;
     grid-template-columns: 2;
     grid-template-rows: 1;
     column-gap: 4px;
     row-gap: 0px;
+    background-color: transparent;
 }
 
 div#dayBoatBox {
     grid-column-start: 1;
     grid-row-start: 1;
-    /* background-color: rgb(217, 202, 228); */
+    background-color: transparent;
 }
 
 iframe#dayboat {
@@ -212,12 +195,13 @@ iframe#dayboat {
     height: 780px;
     border-width: 0px;
     top: 3px;
+    background-color: transparent;
 }
 
 div#ideal18Box {
     grid-column-start: 2;
     grid-row-start: 1;
-    /* background-color: rgb(186, 216, 216); */
+    background-color: transparent;
 }
 
 iframe#ideal18 {
@@ -226,18 +210,12 @@ iframe#ideal18 {
     height: 780px;
     border-width: 0px;
     top: 3px;
+    background-color: transparent;
+
 }
 
 /* PorchResrvations div and contents */
 div#porchScreen {
-    /* display: none; */
-}
-
-div#porchScreen > .grid {
-    position: absolute;
-    top: 70px;
-    left: 20px;
-    right: 20px;
     display: grid;
     grid-template-columns: 2;
     grid-template-rows: 1;

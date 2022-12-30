@@ -550,17 +550,18 @@ function cyclePanels() {
     // find the index of the next panel
     const nextPanel = (currentPanel + 1) % panelList.length;
 
-    // panelList[nextPanel].style.display = 'block';
-    panelList[nextPanel].classList.add('currentScreen');
     changePageTitle(panelList[nextPanel].getAttribute('alt'));
+
+    panelList[currentPanel].classList.add('exitScreen');
+    panelList[nextPanel].classList.add('enterScreen');
 
     // In a time just under the transition dwell
     //      hide the current panel after it is covered.
     const lastPanel = currentPanel; // preserve the current panel for later hidding
     setTimeout(() => {
-        // panelList[lastPanel].style.display = 'none';
-        panelList[lastPanel].classList.remove('currentScreen');
-    }, 1 * sec); // css has the 1.0 sec as the transition
+        panelList[lastPanel].classList.remove('enterScreen');
+        panelList[lastPanel].classList.remove('exitScreen');
+    }, 1.9 * sec); // css has the 1.0 sec as the transition
 
     currentPanel = nextPanel;
 }

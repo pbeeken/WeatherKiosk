@@ -16,7 +16,31 @@
                 <img id="logo" src="resources/HHYC_Flag.png" alt="HHYC Logo">
                 <span id="title">Horseshoe Harbor Yacht Club Tides, Wind &amp; Weather</span>
             </div>
-            <div id="weatherScreen" class="screen currentScreen" alt="Tides, Wind & Weather">
+
+            <!--porchScreen-->
+            <div id="porchScreen" class="holdScreen" alt="Porch Reservations">
+                <div id="day1Box"> <!--PC has a richer set of fonts than the pi, the scaling of the tables are different the pi can display to row 22, windows to 20-->
+                    <iframe id="day1" class="import" src="https://docs.google.com/spreadsheets/d/1GbMXSHZPnyOCj23iswpZLKU6qS9LjlBLstA0DuWigBc/htmlembed/sheet?gid=0&range=A1:D22&000"></iframe>
+                </div>
+                <div id="day2Box"> <!--PC has a richer set of fonts than the pi, the scaling of the tables are different the pi can display to row 22, windows to 20-->
+                    <iframe id="day2" class="import" src="https://docs.google.com/spreadsheets/d/1GbMXSHZPnyOCj23iswpZLKU6qS9LjlBLstA0DuWigBc/htmlembed/sheet?gid=246313815&range=A1:D22&000"></iframe>
+                </div>
+            </div>
+            <!--porchScreen-->
+
+            <!--boatScreen-->
+                <div id="boatScreen" class="holdScreen" alt="Boat Reservations">
+                    <div id="dayBoatBox"> <!-- allows it to be scalable-->
+                        <iframe id="dayboat" class="import" src="https://docs.google.com/spreadsheets/d/160WBuHYjSbOFJxJuQVlx1yP7pYlFd1rCF0LWiPigAuw/htmlembed/sheet?gid=0&range=A1:D22&000"></iframe>
+                    </div>
+                    <div id="ideal18Box">
+                        <iframe id="ideal18" class="import" src="https://docs.google.com/spreadsheets/d/1sU_Gr6Gm7R3N6UQg5ntF16FvoHPYpKFkyK8jUlndJHM/htmlembed/sheet?gid=0&range=A1:E22&000"></iframe>
+                    </div>
+            </div>
+            <!--boatScreen-->
+
+            <!--weatherScreen-->
+            <div id="weatherScreen" class="holdScreen enterScreen" alt="Tides, Wind & Weather">
                 <div id="tideGraphBox">
                         <img id="tidegraph" src="resources/tmp/tideGraph.png" alt="Tide Graph"/>
                     </div>
@@ -44,25 +68,8 @@
                     <div id="forecastBox">
                         <iframe id="forecast" src="resources/tmp/forecastGrid.html"></iframe>
                     </div>
-            </div> <!--weatherScreen-->
-
-            <div id="boatScreen" class="grid1x2 screen" alt="Boat Reservations">
-                    <div id="dayBoatBox"> <!-- allows it to be scalable-->
-                        <iframe id="dayboat" class="import" src="https://docs.google.com/spreadsheets/d/160WBuHYjSbOFJxJuQVlx1yP7pYlFd1rCF0LWiPigAuw/htmlembed/sheet?gid=0&range=A1:D22&000"></iframe>
-                    </div>
-                    <div id="ideal18Box">
-                        <iframe id="ideal18" class="import" src="https://docs.google.com/spreadsheets/d/1sU_Gr6Gm7R3N6UQg5ntF16FvoHPYpKFkyK8jUlndJHM/htmlembed/sheet?gid=0&range=A1:E22&000"></iframe>
-                    </div>
-            </div><!--boatScreen-->
-
-            <div id="porchScreen" class="grid1x2 screen" alt="Porch Reservations">
-                    <div id="day1Box"> <!--PC has a richer set of fonts than the pi, the scaling of the tables are different the pi can display to row 22, windows to 20-->
-                        <iframe id="day1" class="import" src="https://docs.google.com/spreadsheets/d/1GbMXSHZPnyOCj23iswpZLKU6qS9LjlBLstA0DuWigBc/htmlembed/sheet?gid=0&range=A1:D22&000"></iframe>
-                    </div>
-                    <div id="day2Box"> <!--PC has a richer set of fonts than the pi, the scaling of the tables are different the pi can display to row 22, windows to 20-->
-                        <iframe id="day2" class="import" src="https://docs.google.com/spreadsheets/d/1GbMXSHZPnyOCj23iswpZLKU6qS9LjlBLstA0DuWigBc/htmlembed/sheet?gid=246313815&range=A1:D22&000"></iframe>
-                    </div>
-            </div><!--porchScreen-->
+            </div>
+            <!--weatherScreen-->
 
             <div class="footer">
                 <p id="clock">Waiting...</p>
