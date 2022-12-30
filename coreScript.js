@@ -243,7 +243,7 @@ async function fetchMoonImage(when) {
 
 /** fetchResources
  * uses a cgi-calls to rebuild the various images, tables and media
- * @param {'all' | 'tides' | 'tidecartoon' | 'windgraph' | 'forecast'}
+ * @param {'all' | 'tides' | 'tidecartoon' | 'windgraph' | 'forecast' | 'radar'}
  * @param {'metric' | 'imperial' | null} if provided, overrides automatic toggle.
  * trick for relaunching functions with parameters:
  *      // given a function fp(a, b)
@@ -385,13 +385,16 @@ function buildWeatherKiosk() {
     fetchResources('all'); // refresh all our various resources
 
     // we updte the sunrise sunset after a while to make sure astroData is packed.
-    setTimeout(updateSunEphemeris, 25 * sec); // first run
+    setTimeout(updateSunEphemeris, 13 * sec); // first run
 
     // this can run a little later so we have a chance to see that the first, busiest, screen is set.
-    setTimeout(setTimers, 60 * sec);
+    setTimeout(setTimers, 15 * sec);
 }
 
 function setTimers() {
+    // debugging we can manually cycle panels
+    setInterval(cyclePanels, 20 * sec);
+
     // Tides Elements includes both table and graph
     setInterval(() => {
         fetchResources('tides');
@@ -442,9 +445,6 @@ function setTimers() {
         // rinse and repeat
         updateResources('porch');
     }, 5 * min);
-
-    // debugging we can manually cycle panels
-    setInterval(cyclePanels, 20 * sec);
 }
 
 /**
@@ -485,7 +485,7 @@ async function networkStatus() {
         .then((response) => response.text())
         .then((text) => {
             console.log(text);
-            //text = text.trim().replace('networkStatus ', '');
+            text = text.trim().replace('networkStatus ', '');
             document.getElementById('network').innerHTML = text;
         })
         .catch((error) => {
@@ -514,12 +514,15 @@ function randomSuffix(prefix) {
  * Saturday and Sunday we show all three.  The rest of the days we just show the weather
  * and boat reservations.
  */
+/** @type {HTMLDivElement[]} */
 let panelList = [];
 let currentPanel = 0;
-function cyclePanels() {
-    let dow = new Date().getDay();
 
+function cyclePanels() {
+    // First time we enter this method we store all the 'screens'
+    // read: slides we want to manipulate.
     if (panelList.length === 0) {
+        const dow = new Date().getDay();
         panelList.push(document.getElementById('weatherScreen'));
         panelList.push(document.getElementById('boatScreen'));
         // only on thursdays through sunday
@@ -531,25 +534,34 @@ function cyclePanels() {
             // On Saturday:   today is visible, tomorrow is visible
             // On Sunday:     today is visible, tomorrow is hidden
             if (dow === 4) {
-                document.getElementById('day1Box').style.visibility = 'hidden';
+                document.getElementById('day1').style.visibility = 'hidden';
             }
             if (dow === 0) {
-                document.getElementById('day2Box').style.visibility = 'hidden';
+                document.getElementById('day2').style.visibility = 'hidden';
             }
         }
     }
 
-    let nextPanel = (currentPanel + 1) % panelList.length;
-    // panelList.forEach((e) => {
-    //     e.style.display = 'none';
-    // });
-    panelList[nextPanel].style.display = 'block';
+    // This is a flag to stop the rotation so we can examine
+    // a specific panel.  We can then use the 'F' key to manually
+    // rotate through the panels.
+    if (currentPanel < 0) return; // don't do anything.
+
+    // find the index of the next panel
+    const nextPanel = (currentPanel + 1) % panelList.length;
+
+    // panelList[nextPanel].style.display = 'block';
+    panelList[nextPanel].classList.add('currentScreen');
     changePageTitle(panelList[nextPanel].getAttribute('alt'));
-    // In a short time hide the current panel after it is covered.
-    // setTimeout(() => {
-    //     let cp = currentPanel; // save a local copy.
-    //     panelList[cp].style.display = 'none';
-    // }, 2.9 * sec);
+
+    // In a time just under the transition dwell
+    //      hide the current panel after it is covered.
+    const lastPanel = currentPanel; // preserve the current panel for later hidding
+    setTimeout(() => {
+        // panelList[lastPanel].style.display = 'none';
+        panelList[lastPanel].classList.remove('currentScreen');
+    }, 1 * sec); // css has the 1.0 sec as the transition
+
     currentPanel = nextPanel;
 }
 

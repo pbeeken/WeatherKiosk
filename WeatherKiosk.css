@@ -2,11 +2,11 @@ body {
     background-color: MintCream;
 }
 
+/* whole screen */
 .shell {
     position: fixed;
     width: 1440px;
     height: 900px;
-    /* background-color: rgba(255, 220, 255, 0.5); */
 }
 
 .header {
@@ -21,7 +21,7 @@ body {
 
 div.header > #title {
     z-index: 55;
-    position: relative;
+    position: absolute;
     font-family: "Trade Winds", cursive;
     font-size: xx-large;
     top: 8px;
@@ -38,26 +38,62 @@ div.header > #logo {
 }
 
 /* Animation rules slide from left */
-@keyframes horzontalSlide {
-    from {left: -1440px; z-index: 40;} /* start off screen */
-    to {left: 0px; z-index: 30;}
-}
+/* @keyframes rightSlide {
+    from {
+        width: 1440;
+        left: -1440;
+        z-index: 60;
+    } // start off screen
+    to {
+        left: 0;
+        z-index: 50;
+    }
+} */
+
+/* @keyframes leftSlide {
+    from {
+        margin-left: 100%;
+        width: 300%;
+        z-index: 60;
+    } // start off screen
+    to {
+        margin-left: 0%;
+        width: 100%;
+        z-index: 50;
+    }
+} */
 
 /* defaults for any screen */
 .screen {
     position: absolute;
-    z-index: 10;
-    top: 0px;
-    left: 0px;
+    top: 75px;
+    left: -1440px;
     right: 0px;
-    bottom: 26px;
-    animation: horzontalSlide 3s normal;
+    bottom: 47px;
+    /* animation: leftSlide 3s ease-in; */
+    transition-delay: 0s;
+    transition-duration: 2s;
+    transition-property: left;
+    transition-timing-function: ease-in-out;
+    opacity: 0;
+    z-index: 0;
+    visibility: hidden;
 }
 
-
 /* Weatherscreen div and contents */
-div#weatherScreen {
+#weatherScreen {
     display: block;
+}
+
+.currentScreen {
+    opacity: 1;
+    z-index: 15;
+    left: 0px;
+    visibility: visible;
+    transition-delay: 0s;
+    transition-duration: 2s;
+    transition-property: left;
+    transition-timing-function: ease-in-out;
 }
 
 /* place holder. weather screen uses explicit positioning */
@@ -67,21 +103,21 @@ div#weatherScreen > .grid {
 
 #tideGraphBox {
     position: inherit;
-    top: 95px;
+    top: 12px;
     left: 15px;
     /* background-color: rgba(255, 255, 255, 0.5); debugging */
 }
 
 #tideCartoonBox {
     position: inherit;
-    top: 107px;
+    top: 24px;
     left: 700px;
     /* background-color: rgba(255, 255, 255, 0.5); debugging */
 }
 
 #tideTableBox {
     position: inherit;
-    top: 345px;
+    top: 262px;
     left: 673px;
     /* background-color: rgba(255, 255, 255, 0.5); debugging */
 }
@@ -95,20 +131,20 @@ iframe#tidetable {
 
 #radarBox  {
     position: inherit;
-    top: 86px;
+    top: 3px;
     left: 974px;
     width: 448px;
 }
 
 #windGraphBox {
     position: inherit;
-    top: 483px;
+    top: 400px;
     left: 6px;
 }
 
 #forecastBox {
     position: inherit;
-    top: 499px;
+    top: 416px;
     left: 734px;
     width: auto;
 }
@@ -121,24 +157,23 @@ iframe#forecast {
 }
 
 div#yesterday {
-    position: inherit;
-    z-index: -20;
-    top: 280px;
+    top: 200px;
     left: 105px;
 }
 
 div#today {
-    position: inherit;
-    z-index: -20;
-    top: 280px;
+    top: 200px;
     left: 312px;
 }
 
 div#tomorrow {
-    position: inherit;
-    z-index: -20;
-    top: 280px;
+    top: 200px;
     left: 517px;
+}
+
+.moon {
+    position: inherit;
+    z-index: -10;
 }
 
 .phase {
@@ -150,55 +185,10 @@ div#tomorrow {
 
 /* BoatResrvations div and contents */
 div#boatScreen {
-    display: none;
+    /* display: none; */
 }
 
-div#boatScreen > .grid {
-    position: absolute;
-    top: 70px;
-    left: 20px;
-    right: 20px;
-    display: grid;
-    grid-template-columns: 2;
-    grid-template-rows: 1;
-    column-gap: 5px;
-    row-gap: 5px;
-}
-
-div#dayBoatBox {
-    grid-column-start: 1;
-    grid-row-start: 1;
-    /* background-color: rgb(217, 202, 228); */
-}
-
-iframe#dayboat {
-    position: relative;
-    width: 100%;
-    height: 780px;
-    border-width: 0px;
-    top: 3px;
-}
-
-div#ideal18Box {
-    grid-column-start: 2;
-    grid-row-start: 1;
-    /* background-color: rgb(186, 216, 216); */
-}
-
-iframe#ideal18 {
-    position: relative;
-    width: 100%;
-    height: 780px;
-    border-width: 0px;
-    top: 3px;
-}
-
-/* BoatResrvations div and contents */
-div#boatScreen {
-    display: none;
-}
-
-div#boatScreen > .grid {
+.grid1x2 {
     position: absolute;
     top: 70px;
     left: 20px;
@@ -238,9 +228,9 @@ iframe#ideal18 {
     top: 3px;
 }
 
-/* BoatResrvations div and contents */
+/* PorchResrvations div and contents */
 div#porchScreen {
-    display: none;
+    /* display: none; */
 }
 
 div#porchScreen > .grid {
@@ -258,7 +248,7 @@ div#porchScreen > .grid {
 div#day1Box {
     grid-column-start: 1;
     grid-row-start: 1;
-    /* background-color: rgb(217, 202, 228); */
+    background-color: mintcream
 }
 
 iframe#day1 {
@@ -272,7 +262,7 @@ iframe#day1 {
 div#day2Box {
     grid-column-start: 2;
     grid-row-start: 1;
-    /* background-color: rgb(217, 202, 228); */
+    background-color: mintcream
 }
 
 iframe#day2 {
@@ -342,14 +332,13 @@ div.footer > #toast {
 
 }
 
-
-
 /* Decorations */
 #dn {
     color: red;
     font-size: large;
     /* font-weight: 800; */
 }
+
 #up {
     color: green;
     font-size: large;
