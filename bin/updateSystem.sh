@@ -11,7 +11,7 @@ git fetch -a # update from upstream (nothing is overwritten)
 
 # fetch from git any updates
 localHash="`git rev-parse HEAD`"
-remoteHash="`git rev-parse 'refactor@{upstream}'`"
+remoteHash="`git rev-parse 'main@{upstream}'`"
 
 # If the hashes don't match
 if [ "$localHash" != "$remoteHash" ]; then

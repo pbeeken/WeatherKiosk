@@ -6,11 +6,15 @@ body {
   whole screen, sets the coord system for all the other div
   we could eliminate the outer shell and use a fixed system
   but experiments show that fixed divs can be excluded from
-  some animations. */
+  some animations.  The physical screen is an old Dell 1909Wb
+  which has a resolution 1440x900. We reduce the 'paintable'
+  area to guarantee that the screen doesn't create scroll bars
+  */
 .shell {
     position: absolute;
-    width: 1440px;
-    height: 900px;
+    overflow: hidden; /*don't show scroll bars even if we are off screen*/
+    width: 1430px;
+    height: 890px;
 }
 
 /*=========================================================
@@ -19,10 +23,10 @@ body {
 .header {
     z-index: 50;
     position: absolute;
-    top: 10px;
-    left: 20px;
+    top: 0px;
+    left: 10px;
     height: 64px;
-    right: 20px;
+    right: 10px;
     background-color: Silver;
 }
 
@@ -50,8 +54,8 @@ body {
 .footer {
     z-index: 50;
     position: absolute; /* Means all measurements are absolute screen */
-    bottom: 15px;
-    left: 20px;
+    bottom: 10px;
+    left: 10px;
     right: 20px;
     height: 30px;
     background-color: Silver;
@@ -127,8 +131,8 @@ body {
 .enterScreen {
     opacity: 1;
     /* z-index: 15; */
-    top: 75px;
-    left: 0px;
+    top: 70px;
+    left: 10px;
     bottom: 47px;
     transition-delay: 0s;
     transition-duration: 1s;
@@ -163,24 +167,24 @@ body {
 /* tide graph */
 #tideGraphBox {
     position: inherit;
-    top: 12px;
-    left: 15px;
+    top: 0px;
+    left: 0px;
     /* background-color: rgba(255, 255, 255, 0.5); debugging */
 }
 
 /* tide graphic */
 #tideCartoonBox {
     position: inherit;
-    top: 24px;
-    left: 700px;
+    top: 10px;
+    left: 675px;
     /* background-color: rgba(255, 255, 255, 0.5); debugging */
 }
 
 /* specific key tide points */
 #tideTableBox {
     position: inherit;
-    top: 235px;
-    left: 673px;
+    top: 220px;
+    left: 650px;
     /* background-color: rgba(255, 255, 255, 0.5); debugging */
 }
 
@@ -195,23 +199,23 @@ iframe#tidetable {
 /* area radar box */
 #radarBox  {
     position: inherit;
-    top: 3px;
-    left: 974px;
-    width: 448px;
+    top: 0px;
+    left: 955px;
+    width: 450px;
 }
 
 /* wind graph */
 #windGraphBox {
     position: inherit;
-    top: 400px;
-    left: 6px;
+    top: 390px;
+    left: 0px;
 }
 
 /* marine forcast table */
 #forecastBox {
     position: inherit;
-    top: 416px;
-    left: 734px;
+    top: 410px;
+    left: 725px;
     width: auto;
 }
 
@@ -252,17 +256,17 @@ div#tomorrow {
 /* BoatResrvations div and contents */
 #boatScreen {
     display: grid;
-    grid-template-columns: 2;
-    grid-template-rows: 1;
+    grid-template-columns: 700px 700px;
+    grid-template-rows: 1fr;
     column-gap: 4px;
     row-gap: 0px;
-    background-color: transparent;
+    /* background-color: transparent; */
 }
 
 div#dayBoatBox {
     grid-column-start: 1;
     grid-row-start: 1;
-    background-color: transparent;
+    /* background-color: transparent; */
 }
 
 iframe#dayboat {
@@ -271,13 +275,13 @@ iframe#dayboat {
     height: 780px;
     border-width: 0px;
     top: 3px;
-    background-color: transparent;
+    /* background-color: transparent; */
 }
 
 div#ideal18Box {
     grid-column-start: 2;
     grid-row-start: 1;
-    background-color: transparent;
+    /* background-color: transparent; */
 }
 
 iframe#ideal18 {
@@ -286,7 +290,7 @@ iframe#ideal18 {
     height: 780px;
     border-width: 0px;
     top: 3px;
-    background-color: transparent;
+    /* background-color: transparent; */
 
 }
 /* end BoatResrvations div and contents */
@@ -294,8 +298,8 @@ iframe#ideal18 {
 /* PorchResrvations div and contents */
 div#porchScreen {
     display: grid;
-    grid-template-columns: 2;
-    grid-template-rows: 1;
+    grid-template-columns: 700px 700px;
+    grid-template-rows: 1fr;
     column-gap: 4px;
     row-gap: 0px;
 }
