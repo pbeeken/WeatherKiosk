@@ -30,16 +30,17 @@ if [ "$localHash" != "$remoteHash" ]; then
 
     cp $HOME/.xinitrc $HOME/.xinitrc_OLD
     cp $KIOSK/bin/.xinitrc $HOME
-
-    # Update executable tags on linux
-    echo "updating exec mode on scripts..."
-    chmod 755 $KIOSK/bin/*.sh
-    chmod 755 $KIOSK/cgi-bin/*.py
-
 else
 
     echo "up to date..."
 fi
+
+# Update executable tags on linux
+# This is an important step as if the cgi-bin scripts fail,
+# the whole kiosk fails. This guarantees that this is never an issue.
+echo "updating exec mode on scripts..."
+chmod 755 $KIOSK/bin/*.sh
+chmod 755 $KIOSK/cgi-bin/*.py
 
 # ...go back to where we were.
 cd $currLoc
