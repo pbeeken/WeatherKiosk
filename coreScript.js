@@ -517,15 +517,23 @@ function randomSuffix(prefix) {
 /** @type {HTMLDivElement[]} */
 let panelList = [];
 let currentPanel = 0;
+let transitionTime = 1.5;
 
 function cyclePanels() {
     // First time we enter this method we store all the 'screens'
     // read: slides we want to manipulate.
     if (panelList.length === 0) {
         const dow = new Date().getDay();
+
+        // get the transition time from the css file
+        let trans = document.querySelector('.enterScreen');
+        transitionTime = sec * getComputedStyle(trans).transitionDuration.replace('s', ''); // remove the trailing 's'
+
+        // store the two 'always shown' panels
         panelList.push(document.getElementById('weatherScreen'));
         panelList.push(document.getElementById('boatScreen'));
-        // only on thursdays through sunday
+
+        // only on thursdays through sunday store the third panel and prepare it's appearance
         if (dow === 4 || dow === 5 || dow === 6 || dow === 0) {
             panelList.push(document.getElementById('porchScreen'));
             //   There are two panels: today[day1Box] and tomorrow[day2Box]
@@ -543,8 +551,8 @@ function cyclePanels() {
     }
 
     // This is a flag to stop the rotation so we can examine
-    // a specific panel.  We can then use the 'F' key to manually
-    // rotate through the panels.
+    // a specific panel. Tap 'S' when focused on the web page
+    // The 'F' key can then manually rotate through the panels.
     if (currentPanel < 0) return; // don't do anything.
 
     // find the index of the next panel
@@ -561,7 +569,7 @@ function cyclePanels() {
     setTimeout(() => {
         panelList[lastPanel].classList.remove('enterScreen');
         panelList[lastPanel].classList.remove('exitScreen');
-    }, 1.9 * sec); // css has the 1.0 sec as the transition
+    }, transitionTime); // css has the 1.5 sec as the transition
 
     currentPanel = nextPanel;
 }

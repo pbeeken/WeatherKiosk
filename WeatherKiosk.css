@@ -132,7 +132,7 @@ body {
     left: 10px;
     bottom: 47px;
     transition-delay: 0s;
-    transition-duration: 2s;
+    transition-duration: 1.5s;
     transition-property: left, opacity;
     transition-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
 }
