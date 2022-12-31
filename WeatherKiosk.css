@@ -37,6 +37,7 @@ body {
     font-size: xx-large;
     top: 8px;
     left: 95px;
+    text-shadow: 3px 3px 4px rgb(61 61 61);
 }
 
 #logo {
@@ -80,7 +81,7 @@ body {
     text-align: left;
     font-family: "Trade Winds", cursive;
     font-size: medium;
-    text-shadow: 1px 1px 3px rgb(116, 115, 115);
+    text-shadow: 3px 3px 4px rgb(61 61 61);
     margin: 0;
 }
 
@@ -92,7 +93,7 @@ body {
     text-align: left;
     font-family: "Trade Winds", cursive;
     font-size: medium;
-    text-shadow: 1px 1px 3px rgb(116, 115, 115);
+    text-shadow: 3px 3px 4px rgb(61 61 61);
     margin: 0;
 }
 
