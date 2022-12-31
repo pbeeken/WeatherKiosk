@@ -126,6 +126,7 @@ body {
 
 /* default for any screen in waiting */
 .waitScreen {
+    position: absolute; /* need this or weather panel messes up */
     opacity: 0;
     top: 65px;
     left: -1440px;
