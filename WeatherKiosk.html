@@ -15,7 +15,7 @@
             <div class="header">
                 <img id="logo" src="resources/HHYC_Flag.png" alt="HHYC Logo">
                 <span id="title">Horseshoe Harbor Yacht Club Tides, Wind &amp; Weather</span>
-                <p id="version">v2.1.24</p>
+                <p id="version">v2.1.28</p>
             </div>
 
             <!--porchScreen-->
@@ -89,7 +89,10 @@
 
         document.addEventListener("keypress",(ev)=>{
             const kp = ev.key.toUpperCase();
+            // DEBUGGING EasterEggs
+            // Force cycling the panel
             if (kp === 'F') cyclePanels();
+            // Toggle the active cycling so we can examine and manipulate the screen
             else if (kp === 'S')  currentPanel = currentPanel < 0 ? 0 : -1;
         })
     </script>

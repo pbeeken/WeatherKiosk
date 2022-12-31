@@ -169,3 +169,5 @@ Some useful references:
 [Generic css overview](https://devhints.io/css) More example driven css generics
 
 [tools building](https://htmlcheatsheet.com/css/) like above but with interactive tool building.
+
+[cubic bezier visualization](https://cubic-bezier.com/#1,0.5,0.5,1)

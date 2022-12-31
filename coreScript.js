@@ -519,10 +519,16 @@ let panelList = [];
 let currentPanel = 0;
 let transitionTime = 1.5;
 
+/**
+ * Cycle through the panels using transitions set in the css file.
+ * The first time this runs it initializes the above globals.
+ * @returns nothing
+ */
 function cyclePanels() {
-    // First time we enter this method we store all the 'screens'
-    // read: slides we want to manipulate.
+    // Is this the first time we are running?
     if (panelList.length === 0) {
+        // First time we enter this method we store all the 'screens' (read: slides we want to manipulate.)
+        // This is done once per load, on most days this is done once every 24 hout period.
         const dow = new Date().getDay();
 
         // get the transition time from the css file
@@ -542,17 +548,19 @@ function cyclePanels() {
             // On Saturday:   today is visible, tomorrow is visible
             // On Sunday:     today is visible, tomorrow is hidden
             if (dow === 4) {
+                // bad practice, I know. Only place where we override the computed css settings.
                 document.getElementById('day1').style.visibility = 'hidden';
             }
             if (dow === 0) {
+                // bad practice, I know. Only place where we override the computed css settings.
                 document.getElementById('day2').style.visibility = 'hidden';
             }
         }
     }
 
+    // DEBUGING EasterEgg
     // This is a flag to stop the rotation so we can examine
-    // a specific panel. Tap 'S' when focused on the web page
-    // The 'F' key can then manually rotate through the panels.
+    // a specific panel. Tap 'S' when focused on the web page to toggle.
     if (currentPanel < 0) return; // don't do anything.
 
     // find the index of the next panel
