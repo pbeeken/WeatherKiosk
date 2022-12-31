@@ -134,17 +134,38 @@ Much of the work will be relocating and consolidating the different codebits.
 |---|---|
 |_forecastGrid.html                              |template for forcast grid|
 |_tideTable.html                                 |template for tide table|
+|HHYC_Flag.png          |Our site icon|
+|moon.svg                                        |default moon|
+|FullMoon.png | moon image for lune background|
+|PorchImage.png  | Image for background in porch reservation table |
+|SailingImage.png  | Image for background in boat reservation table |
+|TideBackground.png                              |Background for TideImage|
+
+### └───resources/tmp
+The transitory repository for generated images. Many cgi routines don't return graphics they
+simply generate visual media the app simply updates.
+|file|notes|
+|---|---|
 |<font color="red">DetailTides.zip</font>        |cache for Tides|
 |<font color="red">ExtremTides.zip</font>        |cache for wider Tides|
-|HHYC_Flag.png          |Our site icon|
 |<font color="red">moon_today.svg</font>         |Lune for today, generated each day|
 |<font color="red">moon_tomorrow.svg</font>      |Lune for tomorrow, generated each day|
 |<font color="red">moon_yesterday.svg</font>     |Lune for yesterday, generated each day|
-|moon.svg                                        |default moon|
-|TideBackground.png                              |Background for TideImage|
 |<font color="red">tideGraph.png</font>          |Tide graph, generated/updated every ~15min|
 |<font color="red">tideGraphic.png</font>        |Tide graphic, generated/updated every ~15min|
 |<font color="red">windGraph.png</font>          |Wind graph, generated/updated every ~15min|
 
-
 One thing I want to eliminate is the dependance on crontab for minute to minute operations. Let the cgi-bin method of launching processes do the lifting.
+
+## 12/30/2022
+The refactor to a self contained web-app is complete. css does indeed have a complex set of
+transistions that the browser manages with little more than some simple coding rules.  The three main screens were isolated and switched off (held off screen) until a class change is made that tells the screens to transition onto screen. With a little practice it was possible to also have the exiting screen drop away under the incoming screen to appear as if it were dropped.  Quite a bit of code was cleaned up and many routines organized into dispatchers. The final push would be to port the js to ts.
+
+Some useful references:
+[Easing](https://easings.net/#) gives an overview of some of the transitions available in css.
+
+[Animation](https://developer.mozilla.org/en-US/docs/Web/CSS/animation) The effective and useful, because it has examples and trials, reference.
+
+[Generic css overview](https://devhints.io/css) More example driven css generics
+
+[tools building](https://htmlcheatsheet.com/css/) like above but with interactive tool building.
