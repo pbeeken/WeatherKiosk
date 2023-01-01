@@ -12,7 +12,8 @@ body {
   */
 .shell {
     position: absolute;
-    overflow: hidden; /*don't show scroll bars even if we are off screen*/
+    overflow: hidden;
+    /*don't show scroll bars even if we are off screen*/
     width: 1430px;
     height: 890px;
 }
@@ -65,7 +66,8 @@ body {
   This stays staic through all other visual changes      */
 .footer {
     z-index: 50;
-    position: absolute; /* Means all measurements are absolute screen */
+    position: absolute;
+    /* Means all measurements are absolute screen */
     bottom: 10px;
     left: 10px;
     right: 20px;
@@ -126,7 +128,8 @@ body {
 
 /* default for any screen in waiting */
 .waitScreen {
-    position: absolute; /* need this or weather panel messes up */
+    position: absolute;
+    /* need this or weather panel messes up */
     opacity: 0;
     top: 65px;
     left: -1440px;
@@ -151,7 +154,8 @@ body {
 
 /* the layout and transition for the current outgoing screen */
 .exitScreen {
-    opacity: 0.15; /* dim it a bit */
+    opacity: 0.15;
+    /* dim it a bit */
     top: 800px;
     left: 1440px;
     bottom: 47px;
@@ -205,7 +209,7 @@ iframe#tideTable {
 }
 
 /* area radar box */
-#radarBox  {
+#radarBox {
     position: inherit;
     top: 0px;
     left: 955px;
@@ -259,6 +263,7 @@ div#tomorrow {
     height: 60px;
     opacity: 90%;
 }
+
 /* end Weatherscreen div and contents */
 
 /* BoatResrvations div and contents */
@@ -277,6 +282,8 @@ div#dayBoatBox {
     position: inherit;
     left: 0px;
     width: 700px;
+    height: 780px;
+    min-height: 780px;
     background-image: url("resources/SailingImage.png");
     background-size: contain;
     background-repeat: no-repeat;
@@ -298,6 +305,8 @@ div#ideal18Box {
     position: inherit;
     left: 704px;
     width: 700px;
+    height: 780px;
+    min-height: 780px;
     background-image: url("resources/SailingImage.png");
     background-size: contain;
     background-repeat: no-repeat;
@@ -312,6 +321,7 @@ iframe#ideal18 {
     border-width: 0px;
     top: 3px;
 }
+
 /* end BoatResrvations div and contents */
 
 /* PorchResrvations div and contents */
@@ -324,6 +334,8 @@ div#day1Box {
     position: inherit;
     left: 0px;
     width: 700px;
+    height: 780px;
+    min-height: 780px;
     background-image: url("resources/PorchImage.png");
     background-size: contain;
     background-repeat: no-repeat;
@@ -344,6 +356,8 @@ div#day2Box {
     position: inherit;
     left: 704px;
     width: 700px;
+    height: 780px;
+    min-height: 780px;
     background-image: url("resources/PorchImage.png");
     background-size: contain;
     background-repeat: no-repeat;
@@ -358,6 +372,7 @@ iframe#day2 {
     border-width: 0px;
     top: 3px;
 }
+
 /* end PorchResrvations div and contents */
 
 /* Decorations */
