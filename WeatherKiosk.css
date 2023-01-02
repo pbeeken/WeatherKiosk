@@ -147,7 +147,7 @@ body {
     left: 10px;
     bottom: 47px;
     transition-delay: 0s;
-    transition-duration: 1.5s;
+    transition-duration: 1.2s;
     transition-property: left, opacity;
     transition-timing-function: cubic-bezier(0.5, 0, 0.75, 0), linear;
 }
@@ -160,7 +160,7 @@ body {
     left: 1440px;
     bottom: 47px;
     transition-delay: 0s;
-    transition-duration: 1.5s;
+    transition-duration: 1.2s;
     transition-property: left, top, opacity;
     transition-timing-function: cubic-bezier(0.5, 0, 0.75, 0);
 }
@@ -291,7 +291,7 @@ div#dayBoatBox {
     background-image: url("resources/SailingImage.png"); /*Pi can't handle the update?*/
     background-size: 80%;
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: center center;
 }
 
 div#ideal18Box {
@@ -304,7 +304,7 @@ div#ideal18Box {
     background-image: url("resources/SailingImage.png");
     background-size: 80%;
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: center center;
 }
 /* end BoatResrvations div and contents */
 
@@ -321,9 +321,9 @@ div#day1Box {
     height: 780px;
     min-height: 780px;
     background-image: url("resources/PorchImage.png");
-    background-size: contain;
+    background-size: 80%;
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: center center;
 }
 
 
@@ -335,9 +335,9 @@ div#day2Box {
     height: 780px;
     min-height: 780px;
     background-image: url("resources/PorchImage.png");
-    background-size: contain;
+    background-size: 80%;
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: center center;
 }
 /* end PorchResrvations div and contents */
 
