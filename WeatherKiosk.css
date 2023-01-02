@@ -266,15 +266,19 @@ div#tomorrow {
 
 /* end Weatherscreen div and contents */
 
+/* All iFrames on the informational pages */
+.importGsheets {
+    opacity: inherit;
+    position: inherit;
+    width: 700px;
+    height: 780px;
+    border-width: 0px;
+    top: 3px;
+}
+
 /* BoatResrvations div and contents */
 #boatScreen {
     position: inherit;
-    /* display: grid;
-    grid-template-columns: 700px 700px;
-    grid-template-rows: 1fr;
-    column-gap: 4px;
-    row-gap: 0px; */
-    /* background-color: transparent; */
 }
 
 div#dayBoatBox {
@@ -284,20 +288,10 @@ div#dayBoatBox {
     width: 700px;
     height: 780px;
     min-height: 780px;
-    background-image: url("resources/SailingImage.png");
+    /* background-image: url("resources/SailingImage.png"); Pi can't handle the update */
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    /* background-color: transparent; */
-}
-
-iframe#dayboat {
-    opacity: inherit;
-    position: inherit;
-    width: 700px;
-    height: 780px;
-    border-width: 0px;
-    top: 3px;
 }
 
 div#ideal18Box {
@@ -312,16 +306,6 @@ div#ideal18Box {
     background-repeat: no-repeat;
     background-position: center;
 }
-
-iframe#ideal18 {
-    opacity: inherit;
-    position: inherit;
-    width: 700px;
-    height: 780px;
-    border-width: 0px;
-    top: 3px;
-}
-
 /* end BoatResrvations div and contents */
 
 /* PorchResrvations div and contents */
@@ -342,14 +326,6 @@ div#day1Box {
     background-position: center;
 }
 
-iframe#day1 {
-    opacity: inherit;
-    position: inherit;
-    width: 700px;
-    height: 780px;
-    border-width: 0px;
-    top: 3px;
-}
 
 div#day2Box {
     opacity: inherit;
@@ -363,16 +339,6 @@ div#day2Box {
     background-repeat: no-repeat;
     background-position: center;
 }
-
-iframe#day2 {
-    opacity: inherit;
-    position: inherit;
-    width: 700px;
-    height: 780px;
-    border-width: 0px;
-    top: 3px;
-}
-
 /* end PorchResrvations div and contents */
 
 /* Decorations */
