@@ -289,7 +289,7 @@ div#dayBoatBox {
     height: 780px;
     min-height: 780px;
     background-image: url("resources/SailingImage.png"); /*Pi can't handle the update?*/
-    background-size: contain;
+    background-size: 80%;
     background-repeat: no-repeat;
     background-position: center;
 }
@@ -302,7 +302,7 @@ div#ideal18Box {
     height: 780px;
     min-height: 780px;
     background-image: url("resources/SailingImage.png");
-    background-size: contain;
+    background-size: 80%;
     background-repeat: no-repeat;
     background-position: center;
 }
