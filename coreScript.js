@@ -517,7 +517,7 @@ function randomSuffix(prefix) {
 /** @type {HTMLDivElement[]} */
 let panelList = [];
 let currentPanel = 0;
-let transitionTime = 1.5;
+let transitionTime = 1.5 * sec; // default but is replaced with whatever is in css.
 
 /**
  * Cycle through the panels using transitions set in the css file.
@@ -568,15 +568,17 @@ function cyclePanels() {
 
     panelList[currentPanel].classList.add('exitScreen');
     panelList[nextPanel].classList.add('enterScreen');
-    changePageTitle(panelList[nextPanel].getAttribute('alt'));
 
     // In a time just under the transition dwell
     //      hide the current panel after it is covered.
     const lastPanel = currentPanel; // preserve the current panel for later hidding
+    const newTitle = panelList[nextPanel].getAttribute('alt');
+    //changePageTitle(newTitle); // change before switch
     setTimeout(() => {
+        changePageTitle(newTitle); // change after switch
         panelList[lastPanel].classList.remove('enterScreen');
         panelList[lastPanel].classList.remove('exitScreen');
-    }, transitionTime); // css has the 1.5 sec as the transition
+    }, transitionTime); // from css
 
     currentPanel = nextPanel;
 }
