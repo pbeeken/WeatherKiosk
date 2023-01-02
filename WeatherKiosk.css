@@ -131,8 +131,8 @@ body {
     position: absolute;
     /* need this or weather panel messes up */
     opacity: 0;
-    top: -900px /* 65px; */
-    left: 10px /* -1440px; */
+    top: 65px; /* 65px; */
+    left: 10px; /* -1440px; */
     bottom: 47px;
     transition-delay: 0s;
     transition-duration: 0s;
@@ -148,8 +148,8 @@ body {
     bottom: 47px;
     transition-delay: 0s;
     transition-duration: 1.2s;
-    transition-property: top, opacity; /* left, */
-    transition-timing-function: cubic-bezier(0.5, 0, 0.75, 0), linear;
+    transition-property: opacity; /* left, */
+    transition-timing-function: cubic-bezier(0.5, 0, 0.75, 0) /*, linear */;
 }
 
 /* the layout and transition for the current outgoing screen */
@@ -268,7 +268,7 @@ div#tomorrow {
 
 /* All iFrames on the informational pages */
 .importGsheets {
-    opacity: 0.95;
+    opacity: 0.90;
     position: inherit;
     width: 700px;
     height: 780px;
