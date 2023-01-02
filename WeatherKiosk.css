@@ -288,7 +288,7 @@ div#dayBoatBox {
     width: 700px;
     height: 780px;
     min-height: 780px;
-    /* background-image: url("resources/SailingImage.png"); Pi can't handle the update */
+    background-image: url("resources/SailingImage.png"); /*Pi can't handle the update?*/
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
