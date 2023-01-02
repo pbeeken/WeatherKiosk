@@ -268,7 +268,7 @@ div#tomorrow {
 
 /* All iFrames on the informational pages */
 .importGsheets {
-    opacity: inherit;
+    opacity: 0.95;
     position: inherit;
     width: 700px;
     height: 780px;
