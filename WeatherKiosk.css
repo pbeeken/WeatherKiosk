@@ -147,7 +147,7 @@ body {
     left: 10px;
     bottom: 47px;
     transition-delay: 0s;
-    transition-duration: 1.2s;
+    transition-duration: 1.5s;
     transition-property: opacity; /* left, */
     transition-timing-function: cubic-bezier(0.5, 0, 0.75, 0) /*, linear */;
 }
@@ -160,7 +160,7 @@ body {
     left: 1440px;
     bottom: 47px;
     transition-delay: 0s;
-    transition-duration: 1.2s;
+    transition-duration: 1.5s;
     transition-property: left, top, opacity;
     transition-timing-function: cubic-bezier(0.5, 0, 0.75, 0);
 }
@@ -206,6 +206,7 @@ iframe#tideTable {
     width: fit-content;
     height: fit-content;
     border-width: 0px;
+    z-index: -1;
 }
 
 /* area radar box */
@@ -276,6 +277,15 @@ div#tomorrow {
     top: 3px;
 }
 
+.displayBoxes {
+    width: 700px;
+    height: 780px;
+    min-height: 780px;
+    background-size: 80%;
+    background-repeat: no-repeat;
+    background-position: center 142px;
+}
+
 /* BoatResrvations div and contents */
 #boatScreen {
     position: inherit;
@@ -285,26 +295,17 @@ div#dayBoatBox {
     opacity: inherit;
     position: inherit;
     left: 0px;
-    width: 700px;
-    height: 780px;
-    min-height: 780px;
-    background-image: url("resources/SailingImage.png"); /*Pi can't handle the update?*/
-    background-size: 80%;
-    background-repeat: no-repeat;
-    background-position: center center;
+
+    background-image: url("resources/SailingImage.png");
+
 }
 
 div#ideal18Box {
     opacity: inherit;
     position: inherit;
     left: 704px;
-    width: 700px;
-    height: 780px;
-    min-height: 780px;
+
     background-image: url("resources/SailingImage.png");
-    background-size: 80%;
-    background-repeat: no-repeat;
-    background-position: center center;
 }
 /* end BoatResrvations div and contents */
 
@@ -317,13 +318,8 @@ div#day1Box {
     opacity: inherit;
     position: inherit;
     left: 0px;
-    width: 700px;
-    height: 780px;
-    min-height: 780px;
+
     background-image: url("resources/PorchImage.png");
-    background-size: 80%;
-    background-repeat: no-repeat;
-    background-position: center center;
 }
 
 
@@ -331,13 +327,8 @@ div#day2Box {
     opacity: inherit;
     position: inherit;
     left: 704px;
-    width: 700px;
-    height: 780px;
-    min-height: 780px;
+
     background-image: url("resources/PorchImage.png");
-    background-size: 80%;
-    background-repeat: no-repeat;
-    background-position: center center;
 }
 /* end PorchResrvations div and contents */
 

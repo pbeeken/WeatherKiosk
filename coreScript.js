@@ -549,11 +549,11 @@ function cyclePanels() {
             // On Sunday:     today is visible, tomorrow is hidden
             if (dow === 4) {
                 // bad practice, I know. Only place where we override the computed css settings.
-                document.getElementById('day1').style.visibility = 'hidden';
+                document.getElementById('porchToday').style.visibility = 'hidden';
             }
             if (dow === 0) {
                 // bad practice, I know. Only place where we override the computed css settings.
-                document.getElementById('day2').style.visibility = 'hidden';
+                document.getElementById('porchTomorrow').style.visibility = 'hidden';
             }
         }
     }
@@ -566,10 +566,9 @@ function cyclePanels() {
     // find the index of the next panel
     const nextPanel = (currentPanel + 1) % panelList.length;
 
-    changePageTitle(panelList[nextPanel].getAttribute('alt'));
-
     panelList[currentPanel].classList.add('exitScreen');
     panelList[nextPanel].classList.add('enterScreen');
+    changePageTitle(panelList[nextPanel].getAttribute('alt'));
 
     // In a time just under the transition dwell
     //      hide the current panel after it is covered.

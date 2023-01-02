@@ -20,23 +20,21 @@
 
             <!--porchScreen-->
             <div id="porchScreen" class="waitScreen" alt="Porch Reservations">
-                <div id="day1Box"> <!--PC has a richer set of fonts than the pi, the scaling of the tables are different the pi can display to row 22, windows to 20-->
-                    &NonBreakingSpace;
-                    <iframe class="importGsheets" src="https://docs.google.com/spreadsheets/d/1GbMXSHZPnyOCj23iswpZLKU6qS9LjlBLstA0DuWigBc/htmlembed/sheet?gid=0&range=A1:D22&000"></iframe>
+                <div id="day1Box" class="displayBoxes">
+                    <iframe id="porchToday" class="importGsheets" src="https://docs.google.com/spreadsheets/d/1GbMXSHZPnyOCj23iswpZLKU6qS9LjlBLstA0DuWigBc/htmlembed/sheet?gid=0&range=A1:D22&000"></iframe>
                 </div>
-                <div id="day2Box"> <!--PC has a richer set of fonts than the pi, the scaling of the tables are different the pi can display to row 22, windows to 20-->
-                    &NonBreakingSpace;
-                    <iframe class="importGsheets" src="https://docs.google.com/spreadsheets/d/1GbMXSHZPnyOCj23iswpZLKU6qS9LjlBLstA0DuWigBc/htmlembed/sheet?gid=246313815&range=A1:D22&000"></iframe>
+                <div id="day2Box" class="displayBoxes">
+                    <iframe id="porchTomorrow" class="importGsheets" src="https://docs.google.com/spreadsheets/d/1GbMXSHZPnyOCj23iswpZLKU6qS9LjlBLstA0DuWigBc/htmlembed/sheet?gid=246313815&range=A1:D22&000"></iframe>
                 </div>
             </div>
             <!--porchScreen-->
 
             <!--boatScreen-->
                 <div id="boatScreen" class="waitScreen" alt="Boat Reservations">
-                    <div id="dayBoatBox"> <!-- allows it to be scalable-->
+                    <div id="dayBoatBox" class="displayBoxes">
                         <iframe class="importGsheets" src="https://docs.google.com/spreadsheets/d/160WBuHYjSbOFJxJuQVlx1yP7pYlFd1rCF0LWiPigAuw/htmlembed/sheet?gid=0&range=A1:D22&000"></iframe>
                     </div>
-                    <div id="ideal18Box">
+                    <div id="ideal18Box" class="displayBoxes">
                         <iframe class="importGsheets" src="https://docs.google.com/spreadsheets/d/1sU_Gr6Gm7R3N6UQg5ntF16FvoHPYpKFkyK8jUlndJHM/htmlembed/sheet?gid=0&range=A1:E22&000"></iframe>
                     </div>
             </div>
