@@ -573,9 +573,12 @@ function cyclePanels() {
     //      hide the current panel after it is covered.
     const lastPanel = currentPanel; // preserve the current panel for later hidding
     const newTitle = panelList[nextPanel].getAttribute('alt');
-    //changePageTitle(newTitle); // change before switch
+
     setTimeout(() => {
-        changePageTitle(newTitle); // change after switch
+        changePageTitle(newTitle); // change during switch
+    }, transitionTime / 2);
+
+    setTimeout(() => {
         panelList[lastPanel].classList.remove('enterScreen');
         panelList[lastPanel].classList.remove('exitScreen');
     }, transitionTime); // from css
