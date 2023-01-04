@@ -416,7 +416,7 @@ function setTimers() {
     setInterval(() => {
         // rinse and repeat
         fetchResources('windgraph');
-    }, 13 * min);
+    }, 12 * min);
 
     // forecast
     setInterval(() => {
