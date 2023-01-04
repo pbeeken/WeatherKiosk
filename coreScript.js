@@ -62,6 +62,7 @@ function runClock(start) {
 function updateResources(what) {
     if (!what) what = 'timed';
 
+    console.log(`${new Date().toTimeString}-${what}`);
     // Note the trick to get the browser to refresh the images
     if (what === 'tides' || what === 'all') {
         // these guys work together.

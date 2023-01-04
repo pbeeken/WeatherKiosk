@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 #
+# keep the screen alive at all times
 xset -dpms
 xset s off
 xset s noblank
@@ -21,7 +22,8 @@ cd /home/pi/WeatherKiosk
 chromium-browser \
 	http://localhost:8000/WeatherKiosk.html \
 	--window-size=1440,900 --window-position=0,0 \
-	--disk-cache-dir=/dev/null  --start-fullscreen --kiosk
+	--start-fullscreen --kiosk \
+	--disk-cache-dir=/dev/null
 	# doesn't seem to be needed. Not clear what it gives me.
 	# --no-first-run --noerrdialogs --disable-infobars \
 	# This would be cool but it doesn't seem to work (incompatable with kiosk mode?)
