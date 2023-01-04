@@ -62,7 +62,7 @@ function runClock(start) {
 function updateResources(what) {
     if (!what) what = 'timed';
 
-    console.log(`${new Date().toTimeString}-${what}`);
+    //console.log(`${new Date().toTimeString}-${what}`);
     // Note the trick to get the browser to refresh the images
     if (what === 'tides' || what === 'all') {
         // these guys work together.
@@ -115,10 +115,10 @@ function updateResources(what) {
         // update porch stuff.
         let origSrc = document.getElementById('day1').src;
         origSrc = origSrc.replace(/(.+)&.+/, '$1');
-        document.getElementById('day1').src = origSrc + randomSuffix('&');
+        document.getElementById('porchToday').src = origSrc + randomSuffix('&');
         origSrc = document.getElementById('day2').src;
         origSrc = origSrc.replace(/(.+)&.+/, '$1');
-        document.getElementById('day2').src = origSrc + randomSuffix('&');
+        document.getElementById('porchTomorrow').src = origSrc + randomSuffix('&');
     }
 }
 
