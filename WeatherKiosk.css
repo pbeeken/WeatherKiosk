@@ -269,7 +269,7 @@ div#tomorrow {
 
 /* All iFrames on the informational pages */
 .importGsheets {
-    opacity: 0.90;
+    opacity: 83%;
     position: inherit;
     width: 700px;
     height: 780px;
@@ -283,7 +283,7 @@ div#tomorrow {
     min-height: 780px;
     background-size: 80%;
     background-repeat: no-repeat;
-    background-position: center 142px;
+    background-position: center 190px;
 }
 
 /* BoatResrvations div and contents */
