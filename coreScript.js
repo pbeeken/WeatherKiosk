@@ -113,10 +113,10 @@ function updateResources(what) {
 
     if (what === 'porch' || what === 'all') {
         // update porch stuff.
-        let origSrc = document.getElementById('day1').src;
+        let origSrc = document.getElementById('porchToday').src;
         origSrc = origSrc.replace(/(.+)&.+/, '$1');
         document.getElementById('porchToday').src = origSrc + randomSuffix('&');
-        origSrc = document.getElementById('day2').src;
+        origSrc = document.getElementById('porchTomorrow').src;
         origSrc = origSrc.replace(/(.+)&.+/, '$1');
         document.getElementById('porchTomorrow').src = origSrc + randomSuffix('&');
     }
