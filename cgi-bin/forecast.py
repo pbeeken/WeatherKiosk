@@ -62,7 +62,7 @@ class MarineHTMLParser(HTMLParser):
       self.newEntry = True
       if self.forecast != None:
         # Store the complete forecast
-        self.forecasts[self.forecast['code']] = self.forecast
+        self.forecasts[self.forecast['code'][:6]] = self.forecast
       # Create a new empty
       self.forecast = dict()
       return
@@ -176,7 +176,7 @@ class MarineHTMLParser(HTMLParser):
       self.report = data
 
     if self.dayMark and self.lasttag=='br':
-      self.forecast['days'].append((self.report[:6], data))
+      self.forecast['days'].append((self.report, data))
       self.dayMark = False
 
 
@@ -218,6 +218,7 @@ if __name__ == '__main__':                                                      
     The first record is special, it contains general information about the region
     """
     # 'ANZ335': 'Long Island Sound West of New Haven CT/Port Jefferson NY'
+    logging.info(parser.forecasts.keys())
     ourForcasts = parser.forecasts['ANZ335']
     logging.info(ourForcasts['locale']) # Official designation for covered area
     logging.info(ourForcasts['datetime']) # Short version of location
