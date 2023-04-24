@@ -173,10 +173,10 @@ class MarineHTMLParser(HTMLParser):
 
     if self.dayMark and self.lasttag=='span':
       # This is a span the next paragraph will be the forecast
-      self.theDay = data
+      self.report = data
 
     if self.dayMark and self.lasttag=='br':
-      self.forecast['days'].append((self.theDay, data))
+      self.forecast['days'].append((self.report[:6], data))
       self.dayMark = False
 
 
@@ -217,8 +217,8 @@ if __name__ == '__main__':                                                      
     """
     The first record is special, it contains general information about the region
     """
-    # 'ANZ335-240815': 'Long Island Sound West of New Haven CT/Port Jefferson NY'
-    ourForcasts = parser.forecasts['ANZ335-240815']
+    # 'ANZ335': 'Long Island Sound West of New Haven CT/Port Jefferson NY'
+    ourForcasts = parser.forecasts['ANZ335']
     logging.info(ourForcasts['locale']) # Official designation for covered area
     logging.info(ourForcasts['datetime']) # Short version of location
     if 'warning' in ourForcasts:
