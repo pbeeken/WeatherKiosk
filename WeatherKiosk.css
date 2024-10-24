@@ -267,6 +267,29 @@ div#tomorrow {
 
 /* end Weatherscreen div and contents */
 
+/* The execution rocks weather information */
+
+.wxpanel { /* The DIV class */
+    width: 640px;
+    height: 480px;
+}
+
+div#winds.wxpanel {
+    background-image: url("https://clydebank.dms.uconn.edu/exrx_wxSens.png");
+    top: 10px;
+    left: 10px;
+/* TODO: WORK IN PROGRESS */
+}
+
+div#waves.wxpanel {
+    background-image: url("https://clydebank.dms.uconn.edu/exrx_wavs.png");
+    right: 10px;
+    top: 10px
+/* TODO: WORK IN PROGRESS */
+}
+
+
+
 /* All iFrames on the informational pages */
 .importGsheets {
     opacity: 83%;
