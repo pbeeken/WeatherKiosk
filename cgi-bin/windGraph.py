@@ -21,7 +21,7 @@ pathToResources = 'resources/'
 def fetchWindData(source):
   now = datetime.now(tz=EST)
 
-  windDF = pd.read_csv(source, delim_whitespace=True, header=[0,1], na_values='MM', nrows=450 )
+  windDF = pd.read_csv(source, sep="\\s+", header=[0,1], na_values='MM', nrows=450 ) # Deprecated: , delim_whitespace=True
   logging.info(f"\t...got {len(windDF)} data values")
 
   windDF['DateTime'] = windDF[['#YY','MM','DD','hh','mm']].apply(lambda dt: datetime(dt[0], dt[1], dt[2], dt[3], dt[4], tzinfo=UTC).astimezone(EST), axis=1)
@@ -132,7 +132,7 @@ real_EXR_TimeDataFile = 'https://www.ndbc.noaa.gov/data/realtime2/44022.txt'
 # Kings Point
 real_KPH_TimeDataFile = 'https://www.ndbc.noaa.gov/data/realtime2/KPTN6.txt'
 # Western Long Island Sound
-real_WLI_TimeDataFile = 'https://www.ndbc.noaa.gov/data/realtime2/44040.txt'
+real_WLI_TimeDataFile = 'https://www.ndbc.noaa.gov/data/realtime2/44040.txt'  # Onlu game in town right now.
 
 
 if __name__ == '__main__':
@@ -145,28 +145,28 @@ if __name__ == '__main__':
 
     # try to get execution rocks
     try:
-      source = 'Execution Rocks'
+      source = 'Kings Point LI'
       # raise NameError('Skip')
       logging.info(f"\t...source: {source}")
-      theDF = fetchWindData(real_EXR_TimeDataFile)
+      theDF = fetchWindData(real_KPH_TimeDataFile)
       smpl = theDF['DateTime'] > (now - d)
       makeWindGraph( theDF[smpl].resample('1H', on='DateTime').mean(), source )
     except:
       logging.info('\t... failed')
       # if that fails then try western LI buoy
       try:
-        source = 'Western LI'
+        source = 'Execution Rocks'
         # raise NameError('Skip')
         logging.info(f"\t...source: {source}")
-        theDF = fetchWindData(real_WLI_TimeDataFile)
+        theDF = fetchWindData(real_EXR_TimeDataFile)
         smpl = theDF['DateTime'] > (now - d)
         makeWindGraph( theDF[smpl].resample('1H', on='DateTime').mean(), source )
       except:
+        source = 'Western LI'
         logging.info('\t... failed')
         # if that fails then settle on Kings Point (never fails)
-        source = 'Kings Point LI'
         logging.info(f"\t...source: {source}")
-        theDF = fetchWindData(real_KPH_TimeDataFile)
+        theDF = fetchWindData(real_WLI_TimeDataFile)
         smpl = theDF['DateTime'] > (now - d)
         makeWindGraph( theDF[smpl].resample('1H', on='DateTime').mean(), source )
 
