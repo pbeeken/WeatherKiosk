@@ -171,3 +171,13 @@ Some useful references:
 [tools building](https://htmlcheatsheet.com/css/) like above but with interactive tool building.
 
 [cubic bezier visualization](https://cubic-bezier.com/#1,0.5,0.5,1)
+
+# End of Execution Rocks and Western LI Sound buoy public data.
+NIRACOOS  UCONNs weather buoys are no longer being picked up by the NWS. This means that the historic wind data I was picking up is no longer
+available for plotting.  There are, however, new pieces of data but they are presented as images already formed.
+  - Wind information:
+    <img src="https://clydebank.dms.uconn.edu/exrx_wxSens.png" alt="Execution Rocks Weather Panel" border="1" style="border: 1px solid #999999;">
+  - Wave information:
+    <img src="https://clydebank.dms.uconn.edu/exrx_wavs.png" width="640" height="480" alt="EXRX Wave Panel" border="1">
+There are other products promised but as of this exploration, 2/10/2025, they are not ready yet.
+exec rocks: 40 53.00 N   73 43.70 W
