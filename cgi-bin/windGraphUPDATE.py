@@ -23,7 +23,6 @@ def fetchWindData(source):
 
   windDF = pd.read_csv(source, sep="\\s+", header=0, skiprows=[1], na_values='MM', nrows=450 ) # Deprecated: , delim_whitespace=True
   logging.info(f"\t...got {len(windDF)} data values")
-  logging.info(f"\t...got {windDF.head()} data")
 
   def createDateTimeObj(row):
    return datetime(int(row['#YY']), int(row['MM']), int(row['DD']), int(row['hh']), int(row['mm']), tzinfo=UTC).astimezone(EST)
@@ -154,36 +153,36 @@ if __name__ == '__main__':
     d = timedelta(days = 7)
 
     # try to get execution rocks
-    # try:
-    source = 'Kings Point LI'
-    # raise NameError('Skip')
-    logging.info(f"\t...source: {source}")
-    theDF = fetchWindData(real_KPH_TimeDataFile)
-    print(theDF.tail())
+    try:
+        source = 'Kings Point LI'
+        # raise NameError('Skip')
+        logging.info(f"\t...source: {source}")
+        theDF = fetchWindData(real_KPH_TimeDataFile)
+        # print(theDF.tail())
 
-    smplDF = theDF[['WSPD', 'GST', 'WdirSin', 'WdirCos', 'ATMP', 'WDIR']].resample('1h').mean()
-    print(smplDF.head())
-#    smplDF = theDF.loc[].resample('1h').mean()
+        smplDF = theDF[['WSPD', 'GST', 'WdirSin', 'WdirCos', 'ATMP', 'WDIR']].resample('1h').mean()
+        # print(smplDF.head())
+        # smplDF = theDF.loc[].resample('1h').mean()
 
-    makeWindGraph( smplDF, source )
-    # except:
-    #   logging.info('\t... failed')
-    #   # if that fails then try western LI buoy
-    #   try:
-    #     source = 'Execution Rocks'
-    #     # raise NameError('Skip')
-    #     logging.info(f"\t...source: {source}")
-    #     theDF = fetchWindData(real_EXR_TimeDataFile)
-    #     smpl = theDF['DateTime'] > (now - d)
-    #     makeWindGraph( theDF[smpl].resample('1H', on='DateTime').mean(), source )
-    #   except:
-    #     source = 'Western LI'
-    #     logging.info('\t... failed')
-    #     # if that fails then settle on Kings Point (never fails)
-    #     logging.info(f"\t...source: {source}")
-    #     theDF = fetchWindData(real_WLI_TimeDataFile)
-    #     smpl = theDF['DateTime'] > (now - d)
-    #     makeWindGraph( theDF[smpl].resample('1H', on='DateTime').mean(), source )
+        makeWindGraph( smplDF, source )
+    except:
+        try:
+            logging.info(f'\t.{source}. failed')
+            # if that fails then try Execution Rocks
+            source = 'Execution Rocks'
+            # raise NameError('Skip')
+            logging.info(f"\t...source: {source}")
+            theDF = fetchWindData(real_EXR_TimeDataFile)
+            smpl = theDF['DateTime'] > (now - d)
+            makeWindGraph( theDF[smpl].resample('1h', on='DateTime').mean(), source )
+        except:
+            logging.info(f'\t.{source}. failed')
+            # if that fails then try western LI buoy
+            source = 'Western LI'
+            logging.info(f"\t...source: {source}")
+            theDF = fetchWindData(real_WLI_TimeDataFile)
+            smpl = theDF['DateTime'] > (now - d)
+            makeWindGraph( theDF[smpl].resample('1h', on='DateTime').mean(), source )
 
     logging.info('\t...done')
 
