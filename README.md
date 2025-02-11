@@ -180,4 +180,6 @@ available for plotting.  There are, however, new pieces of data but they are pre
   - Wave information:
     <img src="https://clydebank.dms.uconn.edu/exrx_wavs.png" width="640" height="480" alt="EXRX Wave Panel" border="1">
 There are other products promised but as of this exploration, 2/10/2025, they are not ready yet.
-exec rocks: 40 53.00 N   73 43.70 W
+exec rocks: 40 53.00 N   73 43.70
+
+Tested image extraction. Replace wind graph with slugs from graphical products?
