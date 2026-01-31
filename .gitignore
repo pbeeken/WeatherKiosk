@@ -9,5 +9,10 @@ deprecated
 __pycache__
 *.log
 
+# These are legacy graohing routines that have been replaced.
+cgi-bin/windGraphOLD.py
+cgi-bin/windGraphPI.py
+
+
 # files that are generated.
 resources/tmp/*.*

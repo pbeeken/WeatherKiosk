@@ -183,3 +183,21 @@ There are other products promised but as of this exploration, 2/10/2025, they ar
 exec rocks: 40 53.00 N   73 43.70
 
 Tested image extraction. Replace wind graph with slugs from graphical products?
+
+## 1/24/2026
+I have developed a python tool that grabs the images from the LIRACOOS weather buoys and OCRs the data fairly reliably.  The idea is to have the
+weather kiosk grab the data on a regular basis (~10 min or so) and populate a circular buffer (so it doesn't eat up all the space) that can be used
+to present date from Exec Rocks. I can, as a backup, grab from the other proximate buoys.
+
+Before implementing I need to check the status of our current setup.
+
+  1. Update the python libraries. ✅
+  2. Install tesseract-ocr, pytesseract, etc. ✅
+  3. Update the git access code.
+  4. See if our little RaspPi can handle the graphical processeing.
+
+Item 1 through 4 tested and completed. The OCR capture is driven by a crontab asynchronous to the web interface and synchronous with the reported screen updates.
+As of 1/27/26 it is undergoing burn in to make sure the ring buffer is working. New graphic tools need to be developed to take advantage of the new dataset.
+
+## 1/31/2026
+Sybchornized the windGraph.py tool between RaspPi and this repo.

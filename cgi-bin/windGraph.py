@@ -21,10 +21,14 @@ pathToResources = 'resources/'
 def fetchWindData(source):
   now = datetime.now(tz=EST)
 
-  windDF = pd.read_csv(source, sep="\\s+", header=[0,1], na_values='MM', nrows=450 ) # Deprecated: , delim_whitespace=True
+  windDF = pd.read_csv(source, sep="\\s+", header=0, skiprows=[1], na_values='MM', nrows=450 ) # Deprecated: , delim_whitespace=True
   logging.info(f"\t...got {len(windDF)} data values")
 
-  windDF['DateTime'] = windDF[['#YY','MM','DD','hh','mm']].apply(lambda dt: datetime(dt[0], dt[1], dt[2], dt[3], dt[4], tzinfo=UTC).astimezone(EST), axis=1)
+  def createDateTimeObj(row):
+   return datetime(int(row['#YY']), int(row['MM']), int(row['DD']), int(row['hh']), int(row['mm']), tzinfo=UTC).astimezone(EST)
+
+  #windDF['DateTime'] = windDF[['#YY','MM','DD','hh','mm']].apply(lambda dt: datetime(dt['#YY'], dt['MM'], dt['DD'], dt['hh'], dt['mm'], tzinfo=UTC).astimezone(EST), axis=1)
+  windDF['DateTime'] = windDF.apply(createDateTimeObj, axis=1)
   windDF['Time'] = windDF['DateTime'].apply(lambda t: t.time())
   windDF['Date'] = windDF['DateTime'].apply(lambda d: d.date())
 
@@ -32,14 +36,15 @@ def fetchWindData(source):
   windDF['WdirSin'] = np.sin(np.radians(windDF['WDIR']))
   windDF['WdirCos'] = np.cos(np.radians(windDF['WDIR']))
 
-  return windDF #.set_index(windDF['DateTime'] - windDF['DateTime'].min()) # returns a new copy
-#  return windDF.set_index('DateTime')
+  windDF = windDF[['DateTime', 'Time', 'Date', 'WDIR', 'WSPD', 'GST', 'ATMP', 'WdirSin', 'WdirCos']]
+  windDF = windDF.set_index('DateTime')
+  return windDF
 
 def makeWindGraph(windDF, whereFrom=""):
   if len(windDF) < 16:
     raise BaseException('Not enough points')
 
-  imageRef = pathToResources  + 'tmp/' + 'windGraph.png' # fetch locally (way faster on a pi)
+  imageRef = pathToResources + 'tmp/' +  'windGraph.png' # fetch locally (way faster on a pi)
   fig, ax = plt.subplots(figsize=(8, 4))
 
   tme = windDF.index
@@ -92,12 +97,16 @@ def makeWindGraph(windDF, whereFrom=""):
   ##
   # Put a current conditions slug at the top
   tme = windDF.index[-1]
-  wspd = np.round(2.23694 * windDF['WSPD'].to_numpy()[-1][0],1)
-  mxsp = np.round(2.23694 * windDF['GST'].to_numpy()[-1][0],1)
+  wspd = np.round(2.23694 * windDF['WSPD'].to_numpy()[-1],1)
+  mxsp = np.round(2.23694 * windDF['GST'].to_numpy()[-1],1)
+  # wspd = np.round(2.23694 * windDF['WSPD'].to_numpy()[-1][0],1)
+  # mxsp = np.round(2.23694 * windDF['GST'].to_numpy()[-1][0],1)
   if mxsp != mxsp:
     mxsp = '-'
-  temp = windDF['ATMP'].to_numpy()[-1][0]
-  wdir = windDF['WDIR'].to_numpy()[-1][0]
+  temp = windDF['ATMP'].to_numpy()[-1]
+  wdir = windDF['WDIR'].to_numpy()[-1]
+  # temp = windDF['ATMP'].to_numpy()[-1][0]
+  # wdir = windDF['WDIR'].to_numpy()[-1][0]
   old = datetime.now(tz=EST)-tme
   oldmin = np.int32(old.total_seconds()%60)
   oldhrs = np.int32(old.total_seconds()/3600)
@@ -141,34 +150,39 @@ if __name__ == '__main__':
     logging.info('Build wind graph...')
 
     now = datetime.now().astimezone(EST)
-    d = timedelta(days = 2)
+    d = timedelta(days = 7)
 
-    # try to get execution rocks
+    # try to get Kings Point First rocks Other sources are off line.
     try:
-      source = 'Kings Point LI'
-      # raise NameError('Skip')
-      logging.info(f"\t...source: {source}")
-      theDF = fetchWindData(real_KPH_TimeDataFile)
-      smpl = theDF['DateTime'] > (now - d)
-      makeWindGraph( theDF[smpl].resample('1H', on='DateTime').mean(), source )
-    except:
-      logging.info('\t... failed')
-      # if that fails then try western LI buoy
-      try:
-        source = 'Execution Rocks'
+        source = 'Kings Point LI'
         # raise NameError('Skip')
         logging.info(f"\t...source: {source}")
-        theDF = fetchWindData(real_EXR_TimeDataFile)
-        smpl = theDF['DateTime'] > (now - d)
-        makeWindGraph( theDF[smpl].resample('1H', on='DateTime').mean(), source )
-      except:
-        source = 'Western LI'
-        logging.info('\t... failed')
-        # if that fails then settle on Kings Point (never fails)
-        logging.info(f"\t...source: {source}")
-        theDF = fetchWindData(real_WLI_TimeDataFile)
-        smpl = theDF['DateTime'] > (now - d)
-        makeWindGraph( theDF[smpl].resample('1H', on='DateTime').mean(), source )
+        theDF = fetchWindData(real_KPH_TimeDataFile)
+        # print(theDF.tail())
+
+        smplDF = theDF[['WSPD', 'GST', 'WdirSin', 'WdirCos', 'ATMP', 'WDIR']].resample('1h').mean()
+        # print(smplDF.head())
+        # smplDF = theDF.loc[].resample('1h').mean()
+
+        makeWindGraph( smplDF, source )
+    except:
+        try:
+            logging.info(f'\t.{source}. failed')
+            # if that fails then try Execution Rocks
+            source = 'Execution Rocks'
+            # raise NameError('Skip')
+            logging.info(f"\t...source: {source}")
+            theDF = fetchWindData(real_EXR_TimeDataFile)
+            smpl = theDF['DateTime'] > (now - d)
+            makeWindGraph( theDF[smpl].resample('1h', on='DateTime').mean(), source )
+        except:
+            logging.info(f'\t.{source}. failed')
+            # if that fails then try western LI buoy
+            source = 'Western LI'
+            logging.info(f"\t...source: {source}")
+            theDF = fetchWindData(real_WLI_TimeDataFile)
+            smpl = theDF['DateTime'] > (now - d)
+            makeWindGraph( theDF[smpl].resample('1h', on='DateTime').mean(), source )
 
     logging.info('\t...done')
 
