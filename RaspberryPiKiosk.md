@@ -137,15 +137,50 @@ network={
 }
 ```
 
-personal cron tab. use `cron -e` from the command line to edit
+cron tab. use `cron -e` from the command line to edit
+---
+#PRIOR TO 1.15.2025:
 ```
 # m h  dom mon dow command
 */5  * * * *          /bin/bash /home/pi/WeatherKiosk/bin/updateTides.sh
 2,12,27,32,47 * * * * /bin/bash /home/pi/WeatherKiosk/bin/updateWinds.sh
 */14 * * * *          /bin/bash /home/pi/WeatherKiosk/bin/RotateTabs.sh
 45 21 * * *           /bin/bash /home/pi/WeatherKiosk/bin/shutDown.sh
-# update ssl libraries  This turned out to be a problem with one info site so we do thie regularly
+# update ssl libraries  This turned out to be a problem with one info site so we do this regularly
 * * 5,10,15,20,25 * * /usr/lib/python3/dist-packages/pip install certifi --upgrade # update ssl libraries
 ```
+---
+```
+# At the end of the day we shut down to save power and guarantee that we update and refresh
+# all the buffers. It does require that the staff turn it on in the morning when they open
+# the doors.  Now that the machine is a spider we don't shut down but we will restart it so the browser
+# can "blow it's nose."
+5 0 * * *           /bin/bash /home/pi/WeatherKiosk/bin/restartMachine.sh
+# Capture new wind and wave data
+4-59/15 * * * *       /bin/bash /home/pi/WeatherKiosk/bin/collectWeatherData.sh -z  # Winds ExecRocks is default
+8-59/20 * * * *       /bin/bash /home/pi/WeatherKiosk/bin/collectWeatherData.sh -w  # Waves ExecRocks is default
+
+# update ssl libraries every few days so we stay current grabbing data from USNO
+* * */5 * * /usr/bin/pip install certifi --upgrade # update ssl libraries
+```
+
 
 Turn on cron logging `sudo nano /etc/rsyslog.conf` and uncommenting the generation of the log file (really useful for debugging)
+
+## Suprise! 01/31/2026
+
+**The Raspberry Pi hates IPv6.**
+The little kiosk beastie is old. She a donna like all them numbers.  After much fiddling and hacking
+within the code I settled on a system wide solution where I uncommented a line in the `/etc/gai.conf`
+file which forces the use of IPv4 addresses.
+This also speeds things up because it doesn't try to deal with the IPv6 response and consequent
+timeout.
+```
+...
+#precedence ::/96          20
+#precedence ::ffff:0:0/96  10
+#
+#    For sites which prefer IPv4 connections change the last line to
+#
+precedence ::ffff:0:0/96  100  # I UNCOMMENTED THIS LINE ON 1.31.2026
+```

@@ -13,6 +13,5 @@ __pycache__
 cgi-bin/windGraphOLD.py
 cgi-bin/windGraphPI.py
 
-
 # files that are generated.
 resources/tmp/*.*
