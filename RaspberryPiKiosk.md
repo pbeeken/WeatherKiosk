@@ -167,7 +167,7 @@ cron tab. use `cron -e` from the command line to edit
 
 Turn on cron logging `sudo nano /etc/rsyslog.conf` and uncommenting the generation of the log file (really useful for debugging)
 
-## Suprise! 01/31/2026
+## Surprise! 01/31/2026
 
 **The Raspberry Pi hates IPv6.**
 The little kiosk beastie is old. She a donna like all them numbers.  After much fiddling and hacking

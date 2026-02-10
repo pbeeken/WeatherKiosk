@@ -1,0 +1,73 @@
+.
+├── bin
+│   ├── captureBuoyData.py
+│   ├── collectWeatherData.sh
+│   ├── OCRDataCapture.log
+│   ├── quitChrome.sh
+│   ├── restartMachine.sh
+│   ├── rotateTabs.sh
+│   ├── shutDown.sh
+│   ├── testRotate.sh
+│   └── updateSystem.sh
+├── cgi-bin
+│   ├── forecast.py
+│   ├── moonData.py
+│   ├── moonFetch.py
+│   ├── moonPhase.py
+│   ├── networkStatus.py
+│   ├── __pycache__
+│   │   └── tidedata.cpython-39.pyc
+│   ├── tidedata.py
+│   ├── tidesCartoon.py
+│   ├── tidesGraph.py
+│   ├── tidesTable.py
+│   ├── usNavObsData.py
+│   └── windGraph.py
+├── coreScript.js
+├── jsconfig.json
+├── package.json
+├── package-lock.json
+├── RaspberryPiKiosk.md
+├── README.md
+├── resources
+│   ├── favicon.ico
+│   ├── _forecastGrid.html
+│   ├── FullMoon.png
+│   ├── HHYC_Flag.png
+│   ├── moon.svg
+│   ├── PorchImage.png
+│   ├── SailingImage.png
+│   ├── TideBackground.png
+│   ├── TideBackground.svg
+│   ├── _tideTable.html
+│   ├── tmp
+│   │   ├── DetailTides.zip
+│   │   ├── ExtremTides.zip
+│   │   ├── forecastGrid.html
+│   │   ├── moon_today.svg
+│   │   ├── moon_tomorrow.svg
+│   │   ├── moon_yesterday.svg
+│   │   ├── tideCartoon.png
+│   │   ├── tideGraph.png
+│   │   ├── tideTable.html
+│   │   ├── wave_panel.png
+│   │   ├── windGraph.png
+│   │   └── wind_panel.png
+│   ├── wave_data.csv
+│   └── wind_data.csv
+├── settings.json
+├── WeatherKiosk.css
+├── WeatherKiosk.html
+├── WeatherKiosk.log
+├── WeatherKiosk.log.0
+├── WeatherKiosk.log.1
+├── WeatherKiosk.log.2
+├── WeatherKiosk.log.3
+├── WeatherKiosk.log.4
+├── WeatherKiosk.log.5
+├── WeatherKiosk.log.6
+├── WeatherKiosk.log.7
+├── weatherkioskTREE.txt
+└── WeatherTests.ipynb
+
+5 directories, 65 files

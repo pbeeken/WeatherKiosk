@@ -176,7 +176,8 @@ Some useful references:
 NIRACOOS  UCONNs weather buoys are no longer being picked up by the NWS. This means that the historic wind data I was picking up is no longer
 available for plotting.  There are, however, new pieces of data but they are presented as images already formed.
   - Wind information:
-    <img src="https://clydebank.dms.uconn.edu/exrx_wxSens.png" alt="Execution Rocks Weather Panel" border="1" style="border: 1px solid #999999;">
+    <img src="https://clydebank.dms.uconn.edu/exrx_wxSens2.png" alt="Execution Rocks Weather Panel" border="1" style="border: 1px solid #999999;">
+
   - Wave information:
     <img src="https://clydebank.dms.uconn.edu/exrx_wavs.png" width="640" height="480" alt="EXRX Wave Panel" border="1">
 There are other products promised but as of this exploration, 2/10/2025, they are not ready yet.
@@ -200,4 +201,101 @@ Item 1 through 4 tested and completed. The OCR capture is driven by a crontab as
 As of 1/27/26 it is undergoing burn in to make sure the ring buffer is working. New graphic tools need to be developed to take advantage of the new dataset.
 
 ## 1/31/2026
-Sybchornized the windGraph.py tool between RaspPi and this repo.
+Synchornized the windGraph.py tool between RaspPi and this repo.
+
+## 2/10/2026
+Clean up the operation in preparation for the new wind/wave graphic.
+Like many projects, this system grew organically and some features which were external were incorporated into main engine.
+Take a step back to review the overall goal of the kiosk.
+
+The kiosk stands just inside the main door of the club house. It is designed to take some
+pressure off the staff from 'policing' the day boats as it displays the reservations for a given day.
+As with any sailing activity weather plays a vital role in how or even whether you are going to sail
+this day. Another screen was added to present a customized presentation of local conditions as reported
+by the NWS along with tide data and eventually radar.  This turned out to be the most closely watched
+component of the system.
+
+Later on the tail of the Covid era we implemented a reservation system for the porch tables as well to
+control the traffic on busy days like Friday, Saturday and Sunday.
+
+In summary:
+
+1. Weather Information
+2. Boat Reservations
+3. Porch Reservations
+
+These screens are cycled through on 20s intervals (based on airport timing) within a single document view.
+
+When I started I had three different screens so I had an external program rotating through different pages.  I had an outside script pressing a 'virtual' button to tab through the screens. Very kludgy but
+demonstrated proof of principal. As my understanding of web page design and the new superpowers of current browsers improved it became clear that what I needed to to do was have 1 page with a program that swapped between regions.  The many of the screens were updated using iframes of local pages that could be edited independently. The idea was that it could be modified more easily.
+
+Using crontab (this is a raspb-$\pi$), graphics are updated asynchronously (after all the data is only changed every 15 minutes.)
+
+There are a handful of graphics that are updated on demand (the tide clock is just that)
+
+### Here is a tree of the current operational directory with commentary and annotation:
+```
+.
+├── bin               - holds operational scripts for this system, run by crontab
+│   ├── captureBuoyData.py
+│   ├── collectWeatherData.sh
+│   ├── quitChrome.sh
+│   ├── restartMachine.sh
+│   ├── rotateTabs.sh
+│   ├── shutDown.sh
+│   ├── testRotate.sh
+│   └── updateSystem.sh
+├── cgi-bin          - these are commands run from the browser as requests to generate illustrations
+│   ├── forecast.py
+│   ├── moonData.py
+│   ├── moonFetch.py
+│   ├── moonPhase.py
+│   ├── networkStatus.py
+│   ├── __pycache__
+│   │   └── tidedata.cpython-39.pyc
+│   ├── tidedata.py
+│   ├── tidesCartoon.py
+│   ├── tidesGraph.py
+│   ├── tidesTable.py
+│   ├── usNavObsData.py
+│   └── windGraph.py
+├── coreScript.js   - the 'main' js code for the kiosk central page
+├── jsconfig.json
+├── package.json
+├── package-lock.json
+├── RaspberryPiKiosk.md   - Notes on the immediate external processes that need to be set up and run.
+├── README.md
+├── resources     - repository for generated data
+│   ├── favicon.ico
+│   ├── _forecastGrid.html
+│   ├── FullMoon.png
+│   ├── HHYC_Flag.png
+│   ├── moon.svg
+│   ├── PorchImage.png
+│   ├── SailingImage.png
+│   ├── TideBackground.png
+│   ├── TideBackground.svg
+│   ├── _tideTable.html
+│   ├── tmp      - temporary cached data and images
+│   │   ├── DetailTides.zip
+│   │   ├── ExtremTides.zip
+│   │   ├── forecastGrid.html
+│   │   ├── moon_today.svg
+│   │   ├── moon_tomorrow.svg
+│   │   ├── moon_yesterday.svg
+│   │   ├── OCRDataCapture.log
+│   │   ├── tideCartoon.png
+│   │   ├── tideGraph.png
+│   │   ├── tideTable.html
+│   │   ├── wave_panel.png
+│   │   ├── windGraph.png
+│   │   └── wind_panel.png
+│   ├── wave_data.csv  - wave data pulled from OCR
+│   └── wind_data.csv  - wind data pulled from OCR
+├── settings.json
+├── WeatherKiosk.css
+├── WeatherKiosk.html
+├── WeatherKiosk.log.*   - As it sez, log files
+├── weatherkioskTREE.txt - This file
+└── WeatherTests.ipynb   - jn test bed for graphics
+```

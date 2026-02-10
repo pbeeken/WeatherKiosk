@@ -8,6 +8,7 @@ deprecated
 *.zip
 __pycache__
 *.log
+*_DEPR.*
 
 # These are legacy graohing routines that have been replaced.
 cgi-bin/windGraphOLD.py
