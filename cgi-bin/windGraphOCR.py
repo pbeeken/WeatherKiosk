@@ -2,10 +2,10 @@
 #
 """
 Docstring for cgi-bin.windGraphOCR
-This is intended to be a 'plug replacement' for the existing 
-wind graph generation code. It will fetch the data from the 
-buoys, process it, and generate a graph that can be used in the 
-kiosk display. The graph will show wind speed and direction 
+This is intended to be a 'plug replacement' for the existing
+wind graph generation code. It will fetch the data from the
+buoys, process it, and generate a graph that can be used in the
+kiosk display. The graph will show wind speed and direction
 over time, with annotations for current conditions and data source.
 
 2/16/26 It WORKS!  Tough to develop on a powerful pc and deploy on a toy.
@@ -26,7 +26,7 @@ import matplotlib.dates as mdates
 EST = timezone('America/New_York')
 UTC = timezone('UTC')
 
-# The data is stored locally in a csv file that is updated by a separate process that fetches the data from the buoys. 
+# The data is stored locally in a csv file that is updated by a separate process that fetches the data from the buoys.
 # This is much faster than fetching the data from the buoys every time we want to generate a graph, especially on a Raspberry Pi.
 # On the pi there are two repositories. One contains the feedstock of the visual elements (static images, html, etc) and the other
 # is the cache of materials (graphs, images and table) that are refreshed by separate processes.
@@ -38,8 +38,8 @@ def fetchWindData(source):
     This gathers the accumulated data from an asynchronous populated datastore by
     OCR the screens from floating buoys out on the sound within a few miles of our club.
     The tabulated data was published by the NWS but UCONN redesigned or had built
-    new more robust units but lost the personnel to vet the data so the NWS stopped 
-    hosting the stream.  
+    new more robust units but lost the personnel to vet the data so the NWS stopped
+    hosting the stream.
     :param source: the path to the file that contains the data store.  We ingest it.
     :return pandas dataframe containing the data.
     """
@@ -169,13 +169,6 @@ def windDirection(ang):
             return tag
     return 'Unknown'
 
-# # Execution Rocks weather buoy  Only the link to King's Point works.
-#   real_EXR_TimeDataFile = 'https://www.ndbc.noaa.gov/data/realtime2/44022.txt'
-# # Kings Point
-#   real_KPH_TimeDataFile = 'https://www.ndbc.noaa.gov/data/realtime2/KPTN6.txt' # Only game in town right now.
-# # Western Long Island Sound
-#   real_WLI_TimeDataFile = 'https://www.ndbc.noaa.gov/data/realtime2/44040.txt'  
-
 def main():
     # Retrieve the OCR data for execution rocks.
     source = pathToResources + "wind_data.csv"
@@ -200,6 +193,6 @@ def main():
 
 if __name__ == '__main__':
     prog = 'WindGraph    '
-    logging.basicConfig(filename='../resources/tmp/WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
+    logging.basicConfig(filename='WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
     logging.info('Build wind graph...')
     main()
