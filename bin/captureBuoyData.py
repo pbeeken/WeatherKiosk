@@ -4,7 +4,7 @@ General imports needed.
 # foundational libraries
 from datetime import datetime, timedelta
 # from zoneinfo import ZoneInfo
-import pytz  # may need to migrate to ZoneInfo
+import pytz  # may need to migrate to ZoneInfo  RaspberryPi OS doesn't have the latest Python and thus doesn't have ZoneInfo.  This is a workaround until we can upgrade the OS.
 import requests
 
 # OCR tools
@@ -64,24 +64,24 @@ windURLS = {
 
 # dictionary of locations within the image of the data we want.
 windSources = {
-    INDEX:                {'bounds':(100,  62, 294,  78), 'value': NaN }, #dateString for reading
-    'WindSpeedAvg [kts]': {'bounds':( 21, 307,  63, 327), 'value': NaN,}, #kts
-    'WindSpeedGst [kts]': {'bounds':(116, 307, 158, 327), 'value': NaN }, #kts
-    'WindSpeedAvg [mph]': {'bounds':( 21, 334,  63, 351), 'value': NaN }, #mph
-    'WindSpeedGst [mph]': {'bounds':(116, 332, 158, 351), 'value': NaN }, #mph
-    'WindSpeedAvg [m/s]': {'bounds':( 21, 358,  63, 375), 'value': NaN }, #m/s
-    'WindSpeedGst [m/s]': {'bounds':(116, 358, 158, 375), 'value': NaN }, #m/s
-    'WindDir [°]':        {'bounds':(230, 320, 287, 339), 'value': NaN }, #deg True
-    'AirTemp [°F]':       {'bounds':(410, 169, 471, 188), 'value': NaN }, #deg Farenheit
-    'AirTemp [°C]':       {'bounds':(409, 221, 471, 238), 'value': NaN }, #deg Centegrade
-    'BaromPres [mmHg]':   {'bounds':(391, 415, 449, 434), 'value': NaN }, #barm in mmHg
-    'BaromPres [mB]':     {'bounds':(467, 415, 537, 434), 'value': NaN }, #barm in mBar
-    'DewPoint [°F]':      {'bounds':(505, 322, 552, 341), 'value': NaN }, #dewpoint deg Farenheit
-    'DewPoint [°C]':      {'bounds':(563, 322, 605, 341), 'value': NaN }, #dewPoint degCentegrade
-    'RelHum [%]':         {'bounds':(391, 323, 448, 341), 'value': NaN }, #rel. humidity
-    'WindSpeedM24 [kt]':  {'bounds':(112, 412, 150, 435), 'value': NaN }, #kts max in last 24hrs
-    'WindDirM24 [°]':     {'bounds':(271, 412, 300, 433), 'value': NaN }, #deg True in last 24hrs
-    'WindTimeM24':        {'bounds':(114, 433, 299, 454), 'value': NaN }, #dateString of 24Hr Max
+    INDEX:                {'bounds':(100,  62, 294,  78), 'value': NaN , 'range':           None}, #dateString for reading
+    'WindSpeedAvg [kts]': {'bounds':( 21, 307,  63, 327), 'value': NaN , 'range':     (0.0,60.0)}, #kts
+    'WindSpeedGst [kts]': {'bounds':(116, 307, 158, 327), 'value': NaN , 'range':     (0.0,60.0)}, #kts
+    'WindSpeedAvg [mph]': {'bounds':( 21, 334,  63, 351), 'value': NaN , 'range':     (0.0,70.0)}, #mph
+    'WindSpeedGst [mph]': {'bounds':(116, 332, 158, 351), 'value': NaN , 'range':     (0.0,70.0)}, #mph
+    'WindSpeedAvg [m/s]': {'bounds':( 21, 358,  63, 375), 'value': NaN , 'range':     (0.0,31.0)}, #m/s
+    'WindSpeedGst [m/s]': {'bounds':(116, 358, 158, 375), 'value': NaN , 'range':     (0.0,31.0)}, #m/s
+    'WindDir [°]':        {'bounds':(230, 320, 287, 339), 'value': NaN , 'range':   (0,     360)}, #deg True
+    'AirTemp [°F]':       {'bounds':(410, 169, 471, 188), 'value': NaN , 'range':  (-20.0,110.0)}, #deg Farenheit
+    'AirTemp [°C]':       {'bounds':(409, 221, 471, 238), 'value': NaN , 'range':  (-30.0, 40.0)}, #deg Centegrade
+    'BaromPres [mmHg]':   {'bounds':(391, 415, 449, 434), 'value': NaN , 'range':    (25.0,32.5)}, #barm in mmHg
+    'BaromPres [mB]':     {'bounds':(467, 415, 537, 434), 'value': NaN , 'range': (850.0,1100.0)}, #barm in mBar
+    'DewPoint [°F]':      {'bounds':(505, 322, 552, 341), 'value': NaN , 'range':  (-20.0,110.0)}, #dewpoint deg Farenheit
+    'DewPoint [°C]':      {'bounds':(563, 322, 605, 341), 'value': NaN , 'range':  (-30.0, 40.0)}, #dewPoint degCentegrade
+    'RelHum [%]':         {'bounds':(391, 323, 448, 341), 'value': NaN , 'range':    (0.0,100.0)}, #rel. humidity
+    'WindSpeedM24 [kt]':  {'bounds':(112, 412, 150, 435), 'value': NaN , 'range':     (0.0,60.0)}, #kts max in last 24hrs
+    'WindDirM24 [°]':     {'bounds':(271, 412, 300, 433), 'value': NaN , 'range':   (0,     360)}, #deg True in last 24hrs
+    'WindTimeM24':        {'bounds':(114, 433, 299, 454), 'value': NaN , 'range':           None}, #dateString of 24Hr Max
 }
 
 # image URIs for Wave information
@@ -97,19 +97,19 @@ waveURLS = {
 
 # dictionary of locations within the image of the data we want.
 waveSources = {
-    INDEX:                {'bounds':(100,  62, 294,  78), 'value': NaN }, #dateString for reading
-    'WaveHgtSig [ft]':    {'bounds':( 68, 329, 112, 346), 'value': NaN,}, #ft
-    'WaveHgtMax [ft]':    {'bounds':(168, 329, 212, 346), 'value': NaN }, #ft
-    'WaveHgtSig [m]':     {'bounds':( 68, 353, 112, 371), 'value': NaN,}, #m
-    'WaveHgtMax [m]':     {'bounds':(168, 353, 212, 371), 'value': NaN }, #m
-    'WaveDir [°]':        {'bounds':(292, 320, 347, 340), 'value': NaN }, #degT
-    'WavPerAvg [s]':      {'bounds':(479, 193, 539, 211), 'value': NaN }, #sec
-    'WavPerDom [s]':      {'bounds':(479, 251, 539, 269), 'value': NaN }, #sec
-    'WaveHgt24 [ft]':     {'bounds':(169, 413, 207, 433), 'value': NaN }, #kts max in last 24hrs
-    'WaveDirM24 [°]':     {'bounds':(327, 412, 354, 433), 'value': NaN }, #deg True in last 24hrs
-    'WavePerAvgM24 [s]':  {'bounds':(440, 412, 468, 430), 'value': NaN }, #avg period in last 24hrs
-    'WavePerDomM24 [s]':  {'bounds':(540, 412, 570, 430), 'value': NaN }, #dominant period in last 24hrs
-    'WaveTimeM24':        {'bounds':(169, 433, 363, 455), 'value': NaN }, #dateString of 24Hr Max
+    INDEX:                {'bounds':(100,  62, 294,  78), 'value': NaN, 'range':       None}, #dateString for reading
+    'WaveHgtSig [ft]':    {'bounds':( 68, 329, 112, 346), 'value': NaN, 'range': (0.0,12.0)}, #ft
+    'WaveHgtMax [ft]':    {'bounds':(168, 329, 212, 346), 'value': NaN, 'range': (0.0,12.0)}, #ft
+    'WaveHgtSig [m]':     {'bounds':( 68, 353, 112, 371), 'value': NaN, 'range': (0.0, 3.7)}, #m
+    'WaveHgtMax [m]':     {'bounds':(168, 353, 212, 371), 'value': NaN, 'range': (0.0, 3.7),}, #m
+    'WaveDir [°]':        {'bounds':(292, 320, 347, 340), 'value': NaN, 'range': (  0, 360)}, #degT
+    'WavPerAvg [s]':      {'bounds':(479, 193, 539, 211), 'value': NaN, 'range':       None}, #sec
+    'WavPerDom [s]':      {'bounds':(479, 251, 539, 269), 'value': NaN, 'range':       None}, #sec
+    'WaveHgt24 [ft]':     {'bounds':(169, 413, 207, 433), 'value': NaN, 'range': (0.0,12.0)}, #ft max in last 24hrs
+    'WaveDirM24 [°]':     {'bounds':(327, 412, 354, 433), 'value': NaN, 'range': (  0, 360)}, #deg True in last 24hrs
+    'WavePerAvgM24 [s]':  {'bounds':(440, 412, 468, 430), 'value': NaN, 'range':       None}, #avg period in last 24hrs
+    'WavePerDomM24 [s]':  {'bounds':(540, 412, 570, 430), 'value': NaN, 'range':       None}, #dominant period in last 24hrs
+    'WaveTimeM24':        {'bounds':(169, 433, 363, 455), 'value': NaN, 'range':       None}, #dateString of 24Hr Max
 }
 ######  ^^^^^^^^^^^^^  ###### USER CONFIGURABLE ######  ^^^^^^^^^^^^^  ######
 
@@ -293,6 +293,22 @@ class BuoyDataCapture:
                     try:
                         data = self._ocr_values(croppedImage, self.ocrLimits['numberlike'])
                         data = float(data)
+                        # New Feature as of 2/13/26: Test to see if the value is within the expected range. If not, do some additional processing.
+                        # Often the OCR in this instance has missed a decimal point. We can try to fix this by dividing by 10 to see if it falls
+                        # within the expected range. If not, we can be pretty sure the value is wrong and set it to NaN.  OCR optimization isn't
+                        # an option beyond what we have done because of the hardware limitations of the the raspberry pi.  This is a workaround to improve data quality.
+                        if 'range' in item and item['range'] is not None:
+                            min_val, max_val = item['range']
+                            if not (min_val <= data <= max_val):
+                                logging.warning(f"Value {data} is outside expected range {item['range']} for key '{key}'")
+                                # Try fixing by dividing by 10 and checking if it falls within the expected range
+                                data_div10 = data / 10.  # Empirically this is the most common error we see in the OCR results.
+                                                         # The OCRed value is 3 sig figs overall but should have 1 decimal value
+                                if min_val <= data_div10 <= max_val:
+                                    logging.warning(f"Value {data} fixed to {data_div10}")
+                                    data = data_div10
+                                else:
+                                    data = np.nan  # give up and set to NaN if it is still out of range after the fix attempt
                     except:
                         data = np.nan
                 item['value'] = data
@@ -456,5 +472,5 @@ def main():
         captureWaveData(waveURLS[args.source])
 
 if __name__ == "__main__":
-    logging.basicConfig(filename='../resources/tmp/OCRDataCapture.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(filename='../resources/tmp/OCRDataCapture.log', level=logging.WARNING, format='%(asctime)s - %(levelname)s - %(message)s')
     main()
