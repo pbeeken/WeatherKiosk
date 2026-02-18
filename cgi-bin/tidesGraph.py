@@ -13,11 +13,11 @@ I am using which seems to corrupt its memory if I leave this program running. (M
 The solution for this given my degree of interest is to simply shut down the program and restart.
 This has some consequences: Loading the libraries (pandas and matplotlib in particular) costs.
 Before the program can even run the startup can take some time. Fortunately the most frequent
-operation we need to perform is once evey 5 minutes so we can live with this.
+operation we need to perform is once every 5 minutes so we can live with this.
 
 The toughest part of this has been the alternating between metric and imperial units every other
 time.  This is accomplished using an variable stored in a local file .env.  I tried to develop a
-persistance method using environment files but just couldn't make it stick.  If I were ambitious I
+persistence method using environment files but just couldn't make it stick.  If I were ambitious I
 would implement a profile tool to set many of the specific parameters in there rather than set them
 willy nilly throughout this code.
 

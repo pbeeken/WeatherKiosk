@@ -11,5 +11,7 @@ __pycache__
 *_DEPR.*
 *.csv
 
+UsefulTools.md
+
 # files that are generated.
 resources/tmp/*

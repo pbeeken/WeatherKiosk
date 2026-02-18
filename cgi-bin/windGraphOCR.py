@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-#
+
 """
 Docstring for cgi-bin.windGraphOCR
 This is intended to be a 'plug replacement' for the existing
@@ -69,15 +69,19 @@ def makeWindGraph(windDF, whereFrom=""):
     last = windDF.index[-1].to_pydatetime()
     now = datetime.now(EST)
     delta = now-last
+    print(f"{last} -> {now}  Data is {delta} old")
 
     # Work with data from the last 2 days
-    cutoff_time = datetime.now(EST) - timedelta(days=2)
+    cutoff_time = datetime.now(EST) - timedelta(hours=32)
     windDF = windDF[windDF.index >= cutoff_time]
 
     # Resample to 1 hour intervals, averaging the components
-    windDF = windDF.select_dtypes('number').resample('1h').mean()
+    windDF = windDF.select_dtypes('number').resample('30min').mean()
 
-    # imageRef = pathToResources + 'tmp/' +  'windGraph.png' # fetch locally (way faster on a pi)
+    logging.debug(windDF.head())
+    logging.debug('...')
+    logging.debug(windDF.tail())
+
     imageRef = pathToCache + "windGraph.png" # fetch locally (way faster on a pi)
     fig, ax = plt.subplots(figsize=(8, 4))
 
@@ -130,24 +134,25 @@ def makeWindGraph(windDF, whereFrom=""):
     ##
     # Put a current conditions slug at the top
     tme = windDF.index[-1]
-    wspd = np.round(2.23694 * windDF['WindSpeedAvg [kts]'].to_numpy()[-1],1)
-    mxsp = np.round(2.23694 * windDF['WindSpeedGst [kts]'].to_numpy()[-1],1)
+    wspd = np.round(windDF['WindSpeedAvg [kts]'].to_numpy()[-1],1)
+    mxsp = np.round(windDF['WindSpeedGst [kts]'].to_numpy()[-1],1)
     # wspd = np.round(2.23694 * windDF['WSPD'].to_numpy()[-1][0],1)
     # mxsp = np.round(2.23694 * windDF['GST'].to_numpy()[-1][0],1)
     if mxsp != mxsp:
       mxsp = '-'
     temp = windDF['AirTemp [°F]'].to_numpy()[-1]
-    wdir = windDF['WindSpeedAvg [m/s]'].to_numpy()[-1]
+    wdir = windDF['WindDir [°]'].to_numpy()[-1]
     # temp = windDF['AirTemp [°F]'].to_numpy()[-1][0]
     # wdir = windDF['WindSpeedAvg [m/s]'].to_numpy()[-1][0]
     oldmin = np.int32(delta.total_seconds()%60)
     oldhrs = np.int32(delta.total_seconds()/3600)
-    logging.debug(f"{tme}, {oldhrs}:{oldmin} old, {wspd} mph, {mxsp} mph, {wdir:4.0f}°T, {temp}°C")
+    logging.info(f"{tme}, {oldhrs}:{oldmin} old, {wspd} kts, {mxsp} kts, {wdir:4.0f}°T, {windDirection(wdir)}, {temp}°F")
+    print(f"{tme}, {oldhrs}:{oldmin} old, {wspd} kts, {mxsp} kts, {wdir:4.0f}°T, {windDirection(wdir)}, {temp}°F")
 
     plt.text(0.99, 0.90, f"Last readings spd:{wspd}, max:{mxsp}, dir:{windDirection(wdir)}",
           horizontalalignment='right', verticalalignment='center',
           transform=ax.transAxes, color='blue', alpha=0.6 )
-    if oldhrs > 1 or oldmin > 40:
+    if oldhrs > 1 and oldmin > 30:
       plt.text(0.99, 0.84, f"Warning {oldhrs}:{oldmin} old",
             horizontalalignment='right', verticalalignment='center',
             transform=ax.transAxes, color='darkred', alpha=0.6 )

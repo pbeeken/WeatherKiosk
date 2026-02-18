@@ -267,27 +267,32 @@ class BuoyDataCapture:
                     # Decoding the date can be tricky. Though the buoys are connected via cell their clocks can be wildly off.
                     data = self._ocr_values(croppedImage, self.ocrLimits['datelike']) + f", {datetime.now().year}"
                     logging.debug(f"\t\tTime string [raw]: {repr(data)}")
+                    # Gemini recommends stripping the timezone from the string and then localizing it to EST. This is because the timezone is often captured as "EST" but the time is actually in EDT during daylight savings time. This is a common issue with OCR of time strings that include timezones. By stripping the timezone and then localizing to EST, we can ensure that we get the correct time regardless of whether it is currently EST or EDT.
+                    data = data.replace("EST, ", "").replace("EDT, ", "")
+                    logging.debug(f"\t\tTime string [raw]: {repr(data)}")
                     try:
-                        data = datetime.strptime(data, "%I:%M:%S %p %Z, %a %b %d, %Y")  # even though it captures the EST it is naive
-                    except:
+                        data = datetime.strptime(data, "%I:%M:%S %p %a %b %d, %Y")  # even though it captures the EST it is naive
+                    except ValueError:
                         try:
-                            data = datetime.strptime(data, "%I:%M:%S %p %Z, %a%b %d, %Y")  # even though it captures the EST it is naive
-                        except:
+                            data = datetime.strptime(data, "%I:%M:%S %p %a%b %d, %Y")  # even though it captures the EST it is naive
+                        except ValueError:
                             try:
-                                data = datetime.strptime(data, "%I:%M:%S %p %Z, %b %d, %Y")  # even though it captures the EST it is naive
-                            except:
-                                logging.critical(f"Can't decode date string '{repr(data)}'")
+                                data = datetime.strptime(data, "%I:%M:%S %p %b %d, %Y")  # even though it captures the EST it is naive
+                            except ValueError:
+                                logging.critical(f"Can't decode date string use current time'{repr(data)}'")
+                                data = datetime.now(tz=EST)
 
                     data = data.replace(tzinfo=EST)
-                    item['value'] = data
+                    logging.debug(f"\t\tTime string [decoded]: {repr(data)}")
+                    item['value'] = data + timedelta(minutes=4)
                     #ATTN: When testing this on Jan 02, 2026 the buoy's clock was 2hrs fast. This may be corrected later.
-                    if datetime.now(EST) < data:
-                        # The buoy reports the wrong time every now and again probably 2 hours off. 1/7/26 Seems to have been fixed.
-                        logging.debug("\t\tFixing time: {data}")
-                        data = data - timedelta(hours=2)
-                        logging.debug("\t\t{data}")
-                    else:
-                        logging.debug("\t\tTime is correct: {data}")
+                    # if datetime.now(EST) < data:
+                    #     # The buoy reports the wrong time every now and again probably 2 hours off. 1/7/26 Seems to have been fixed.
+                    #     logging.debug(f"\t\tFixing time: {repr(data)}")
+                    #     data = data - timedelta(hours=2)
+                    #     logging.debug(f"\t\t{data}")
+                    # else:
+                    logging.debug(f"\t\tTime {key} is correct: {repr(item['value'])}")
                         # data = data
                 else:
                     try:
@@ -324,8 +329,17 @@ class BuoyDataCapture:
         """
         Return the time index aware dataframe suitable for concatenation.
         """
+        logging.debug(f"New DF Dict:\t{self.getDict()}")
         df = pd.DataFrame([self.getDict()])
+
+        # Select columns with datetime types
+        datetime_cols = df.select_dtypes(include=['datetime64[ns, US/Eastern]']).columns
+        # Add 4 minutes to the US/Eastern tz columns
+        df[datetime_cols] = df[datetime_cols] + pd.Timedelta(minutes=4)
+        df[INDEX] = pd.to_datetime(df[INDEX]) # + pd.Timedelta(minutes=4)  # ensure the index is a datetime object and fix the LTZ issue
+
         df.set_index(INDEX, inplace=True)
+        logging.debug(f"New DF Record:\n{df}")
         return df
 
         # return pd.DataFrame([self.getDict()], index=[self.getTime()])
@@ -472,5 +486,5 @@ def main():
         captureWaveData(waveURLS[args.source])
 
 if __name__ == "__main__":
-    logging.basicConfig(filename='../resources/tmp/OCRDataCapture.log', level=logging.WARNING, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(filename='../resources/tmp/OCRDataCapture.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     main()
