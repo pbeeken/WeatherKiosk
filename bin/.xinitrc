@@ -12,7 +12,8 @@ unclutter &
 
 # rotate the log files
 savelog -l -n -c 8 WeatherKiosk/WeatherKiosk.log
-
+# Move old log files to logs directory
+mv WeatherKiosk.log.* resources/logs/
 #
 # default directory
 cd /home/pi/WeatherKiosk
