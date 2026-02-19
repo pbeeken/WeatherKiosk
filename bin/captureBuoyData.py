@@ -2,6 +2,7 @@
 General imports needed.
 """
 # foundational libraries
+from pathlib import Path
 from datetime import datetime, timedelta
 # from zoneinfo import ZoneInfo
 import pytz  # may need to migrate to ZoneInfo  RaspberryPi OS doesn't have the latest Python and thus doesn't have ZoneInfo.  This is a workaround until we can upgrade the OS.
@@ -24,6 +25,8 @@ import os
 import argparse
 
 ### Global Structures and Configurations
+BASE_DIR = Path(__file__).resolve().parent
+
 # Timezone configuration OLD SCHOOL
 UTC = pytz.utc
 EST = pytz.timezone('US/Eastern')
@@ -63,25 +66,29 @@ windURLS = {
 }
 
 # dictionary of locations within the image of the data we want.
+#   bounds: are tuples of (left, upper, right, lower) pixel coordinates.
+#   value:  is where we will store the result.
+#   range:  is the expected range of values for this data point (used for error checking).
+#   decpts: is the number of expected decimal points (may be better for error checking).
 windSources = {
-    INDEX:                {'bounds':(100,  62, 294,  78), 'value': NaN , 'range':           None}, #dateString for reading
-    'WindSpeedAvg [kts]': {'bounds':( 21, 307,  63, 327), 'value': NaN , 'range':     (0.0,60.0)}, #kts
-    'WindSpeedGst [kts]': {'bounds':(116, 307, 158, 327), 'value': NaN , 'range':     (0.0,60.0)}, #kts
-    'WindSpeedAvg [mph]': {'bounds':( 21, 334,  63, 351), 'value': NaN , 'range':     (0.0,70.0)}, #mph
-    'WindSpeedGst [mph]': {'bounds':(116, 332, 158, 351), 'value': NaN , 'range':     (0.0,70.0)}, #mph
-    'WindSpeedAvg [m/s]': {'bounds':( 21, 358,  63, 375), 'value': NaN , 'range':     (0.0,31.0)}, #m/s
-    'WindSpeedGst [m/s]': {'bounds':(116, 358, 158, 375), 'value': NaN , 'range':     (0.0,31.0)}, #m/s
-    'WindDir [°]':        {'bounds':(230, 320, 287, 339), 'value': NaN , 'range':   (0,     360)}, #deg True
-    'AirTemp [°F]':       {'bounds':(410, 169, 471, 188), 'value': NaN , 'range':  (-20.0,110.0)}, #deg Farenheit
-    'AirTemp [°C]':       {'bounds':(409, 221, 471, 238), 'value': NaN , 'range':  (-30.0, 40.0)}, #deg Centegrade
-    'BaromPres [mmHg]':   {'bounds':(391, 415, 449, 434), 'value': NaN , 'range':    (25.0,32.5)}, #barm in mmHg
-    'BaromPres [mB]':     {'bounds':(467, 415, 537, 434), 'value': NaN , 'range': (850.0,1100.0)}, #barm in mBar
-    'DewPoint [°F]':      {'bounds':(505, 322, 552, 341), 'value': NaN , 'range':  (-20.0,110.0)}, #dewpoint deg Farenheit
-    'DewPoint [°C]':      {'bounds':(563, 322, 605, 341), 'value': NaN , 'range':  (-30.0, 40.0)}, #dewPoint degCentegrade
-    'RelHum [%]':         {'bounds':(391, 323, 448, 341), 'value': NaN , 'range':    (0.0,100.0)}, #rel. humidity
-    'WindSpeedM24 [kt]':  {'bounds':(112, 412, 150, 435), 'value': NaN , 'range':     (0.0,60.0)}, #kts max in last 24hrs
-    'WindDirM24 [°]':     {'bounds':(271, 412, 300, 433), 'value': NaN , 'range':   (0,     360)}, #deg True in last 24hrs
-    'WindTimeM24':        {'bounds':(114, 433, 299, 454), 'value': NaN , 'range':           None}, #dateString of 24Hr Max
+    INDEX:                {'bounds':(100,  62, 294,  78), 'value': NaN , 'range':           None, 'decpts': None}, #dateString for reading
+    'WindSpeedAvg [kts]': {'bounds':( 21, 307,  63, 327), 'value': NaN , 'range':     (0.0,60.0), 'decpts':    1}, #kts
+    'WindSpeedGst [kts]': {'bounds':(116, 307, 158, 327), 'value': NaN , 'range':     (0.0,60.0), 'decpts':    1}, #kts
+    'WindSpeedAvg [mph]': {'bounds':( 21, 334,  63, 351), 'value': NaN , 'range':     (0.0,70.0), 'decpts':    1}, #mph
+    'WindSpeedGst [mph]': {'bounds':(116, 332, 158, 351), 'value': NaN , 'range':     (0.0,70.0), 'decpts':    1}, #mph
+    'WindSpeedAvg [m/s]': {'bounds':( 21, 358,  63, 375), 'value': NaN , 'range':     (0.0,31.0), 'decpts':    2}, #m/s
+    'WindSpeedGst [m/s]': {'bounds':(116, 358, 158, 375), 'value': NaN , 'range':     (0.0,31.0), 'decpts':    2}, #m/s
+    'WindDir [°]':        {'bounds':(230, 320, 287, 339), 'value': NaN , 'range':   (0,     360), 'decpts':    0}, #deg True
+    'AirTemp [°F]':       {'bounds':(410, 169, 471, 188), 'value': NaN , 'range':  (-20.0,110.0), 'decpts':    1}, #deg Fahrenheit
+    'AirTemp [°C]':       {'bounds':(409, 221, 471, 238), 'value': NaN , 'range':  (-30.0, 40.0), 'decpts':    1}, #deg Centigrade
+    'BaromPres [mmHg]':   {'bounds':(391, 415, 449, 434), 'value': NaN , 'range':    (25.0,32.5), 'decpts':    2}, #barom. in mmHg
+    'BaromPres [mB]':     {'bounds':(467, 415, 537, 434), 'value': NaN , 'range': (850.0,1100.0), 'decpts':    2}, #barom. in mBar
+    'DewPoint [°F]':      {'bounds':(505, 322, 552, 341), 'value': NaN , 'range':  (-20.0,110.0), 'decpts':    1}, #dew point deg Fahrenheit
+    'DewPoint [°C]':      {'bounds':(563, 322, 605, 341), 'value': NaN , 'range':   (-30.0,40.0), 'decpts':    1}, #dew point deg Centigrade
+    'RelHum [%]':         {'bounds':(391, 323, 448, 341), 'value': NaN , 'range':    (0.0,100.0), 'decpts':    1}, #rel. humidity
+    'WindSpeedM24 [kt]':  {'bounds':(112, 412, 150, 435), 'value': NaN , 'range' :    (0.0,60.0), 'decpts':    1}, #kts max in last 24hrs
+    'WindDirM24 [°]':     {'bounds':(271, 412, 300, 433), 'value': NaN , 'range':   (0,     360), 'decpts':    0}, #deg True in last 24hrs
+    'WindTimeM24':        {'bounds':(114, 433, 299, 454), 'value': NaN , 'range':           None, 'decpts': None}, #dateString of 24Hr Max
 }
 
 # image URIs for Wave information
@@ -96,20 +103,24 @@ waveURLS = {
 }
 
 # dictionary of locations within the image of the data we want.
+#   bounds: are tuples of (left, upper, right, lower) pixel coordinates.
+#   value:  is where we will store the result.
+#   range:  is the expected range of values for this data point (used for error checking).
+#   decpts: is the number of expected decimal points (may be better for error checking).
 waveSources = {
-    INDEX:                {'bounds':(100,  62, 294,  78), 'value': NaN, 'range':       None}, #dateString for reading
-    'WaveHgtSig [ft]':    {'bounds':( 68, 329, 112, 346), 'value': NaN, 'range': (0.0,12.0)}, #ft
-    'WaveHgtMax [ft]':    {'bounds':(168, 329, 212, 346), 'value': NaN, 'range': (0.0,12.0)}, #ft
-    'WaveHgtSig [m]':     {'bounds':( 68, 353, 112, 371), 'value': NaN, 'range': (0.0, 3.7)}, #m
-    'WaveHgtMax [m]':     {'bounds':(168, 353, 212, 371), 'value': NaN, 'range': (0.0, 3.7),}, #m
-    'WaveDir [°]':        {'bounds':(292, 320, 347, 340), 'value': NaN, 'range': (  0, 360)}, #degT
-    'WavPerAvg [s]':      {'bounds':(479, 193, 539, 211), 'value': NaN, 'range':       None}, #sec
-    'WavPerDom [s]':      {'bounds':(479, 251, 539, 269), 'value': NaN, 'range':       None}, #sec
-    'WaveHgt24 [ft]':     {'bounds':(169, 413, 207, 433), 'value': NaN, 'range': (0.0,12.0)}, #ft max in last 24hrs
-    'WaveDirM24 [°]':     {'bounds':(327, 412, 354, 433), 'value': NaN, 'range': (  0, 360)}, #deg True in last 24hrs
-    'WavePerAvgM24 [s]':  {'bounds':(440, 412, 468, 430), 'value': NaN, 'range':       None}, #avg period in last 24hrs
-    'WavePerDomM24 [s]':  {'bounds':(540, 412, 570, 430), 'value': NaN, 'range':       None}, #dominant period in last 24hrs
-    'WaveTimeM24':        {'bounds':(169, 433, 363, 455), 'value': NaN, 'range':       None}, #dateString of 24Hr Max
+    INDEX:                {'bounds':(100,  62, 294,  78), 'value': NaN, 'range':       None, 'decpts': None}, #dateString for reading
+    'WaveHgtSig [ft]':    {'bounds':( 68, 329, 112, 346), 'value': NaN, 'range': (0.0,12.0), 'decpts':    2}, #ft
+    'WaveHgtMax [ft]':    {'bounds':(168, 329, 212, 346), 'value': NaN, 'range': (0.0,12.0), 'decpts':    2}, #ft
+    'WaveHgtSig [m]':     {'bounds':( 68, 353, 112, 371), 'value': NaN, 'range': (0.0, 3.7), 'decpts':    2}, #m
+    'WaveHgtMax [m]':     {'bounds':(168, 353, 212, 371), 'value': NaN, 'range': (0.0, 3.7), 'decpts':    2}, #m
+    'WaveDir [°]':        {'bounds':(292, 320, 347, 340), 'value': NaN, 'range': (  0, 360), 'decpts':    0}, #degT
+    'WavPerAvg [s]':      {'bounds':(479, 193, 539, 211), 'value': NaN, 'range':       None, 'decpts':    1}, #sec
+    'WavPerDom [s]':      {'bounds':(479, 251, 539, 269), 'value': NaN, 'range':       None, 'decpts':    1}, #sec
+    'WaveHgt24 [ft]':     {'bounds':(169, 413, 207, 433), 'value': NaN, 'range': (0.0,12.0), 'decpts':    2}, #ft max in last 24hrs
+    'WaveDirM24 [°]':     {'bounds':(327, 412, 354, 433), 'value': NaN, 'range': (  0, 360), 'decpts':    0}, #deg True in last 24hrs
+    'WavePerAvgM24 [s]':  {'bounds':(440, 412, 468, 430), 'value': NaN, 'range':       None, 'decpts':    1}, #avg period in last 24hrs
+    'WavePerDomM24 [s]':  {'bounds':(540, 412, 570, 430), 'value': NaN, 'range':       None, 'decpts':    1}, #dominant period in last 24hrs
+    'WaveTimeM24':        {'bounds':(169, 433, 363, 455), 'value': NaN, 'range':       None, 'decpts': None}, #dateString of 24Hr Max
 }
 ######  ^^^^^^^^^^^^^  ###### USER CONFIGURABLE ######  ^^^^^^^^^^^^^  ######
 
@@ -130,7 +141,7 @@ class BuoyDataCapture:
     # Placeholder for results
     dataParts = {}
     # temporary holder for downloaded image (maybe keep in memory?)
-    filename  = "image.png"
+    filename  = BASE_DIR.parent / "resources" / "tmp" / "image.png"
     # Tesseract works best when limiting the characters to look for.
     ocrLimits = { # 0 decode for numbers
         'numberlike': r'--psm 6 -c tessedit_char_whitelist=-0123456789.',
@@ -148,22 +159,21 @@ class BuoyDataCapture:
         self.sourceURL = sourceImageURL
         self.dataParts = dataExtraction
         if filename == None:
-            self.filename = sourceImageURL.split("/")[-1]
+            self.filename = BASE_DIR.parent / "resources" / "tmp" / sourceImageURL.split("/")[-1]
         else:
             self.filename = filename
         # self.df = pd.DataFrame(columns=dataExtraction.keys())
 
-    def fetch_image(self, filename=None):
+    def fetch_image(self):
         """
         retrieve the png and store to a file
-        :param filename:  An optional name for the capture.
         """
         # 1. Retrieve the image  n.b. add a "?###" random number to sidestep local caching (which probably doesn't happen on a direct fetch)
         response = requests.get(self.sourceURL + f"?{np.random.randint(1000)}")
 
-        # 2. Change the stored filename
-        if filename != None:
-            self.filename = filename
+        # 2. NOT Change the stored filename
+        # if filename != None:
+        #     self.filename = filename
 
         # Check if the request was successful (HTTP 200)
         if response.status_code == 200:
@@ -199,22 +209,45 @@ class BuoyDataCapture:
         # upscaled = ImageOps.invert(upscaled)
         return upscaledImage
 
-    def ocr_numerals_only(self, image_crop, ocrCharacterLimit):
+    def ocr_numbers_only(self, image_crop, valueLimits=None):
         """
         Processes a cropped image to extract only numbers and decimal points.
         :param image_crop: A single cropped image.
-        :param ocrCharacterLimit: A set of characters to use when trying to decode the image
         :return: The value for the image.
         """
+        logging.debug("--NUMERALS ONLY--")
         # Configuration breakdown:
         # --psm 6: Assume a single uniform block of text (good for small crops)
         # tessedit_char_whitelist: Restrict characters to digits and dot
-
         # Perform OCR
-        # text = pytesseract.image_to_string(image_crop, config=self.ocrLimits['numberLike'])
-        # # Clean up whitespace/newlines
-        # return float(text.strip())
-        return self._ocr_values(image_crop, self.ocrLimits['numberlike'])
+        value_text = self._ocr_values(image_crop, self.ocrLimits['numberlike'])
+        logging.debug(f"--NUMERALS ONLY-- {value_text}")
+
+        # Clean up whitespace/newlines
+        value = np.nan
+        try:
+            # value_text = self._ocr_values(image_crop, self.ocrLimits['numberlike'])
+            value = float(value_text)
+            # New Feature as of 2/13/26: Test to see if the value is within the expected range. If not, do some additional processing.
+            # Often the OCR in this instance has missed a decimal point. We can try to fix this by dividing by 10 to see if it falls
+            # within the expected range. If not, we can be pretty sure the value is wrong and set it to NaN.  OCR optimization isn't
+            # an option beyond what we have done because of the hardware limitations of the the raspberry pi. THE MOST COMMON ERROR I
+            # SEE IF THE OCR RESULTS IS A MISSING DECIMAL POINT. Each number we are capturing has a specific structure. Instead of testing
+            # for a magnitude, real values should contain a decimal point. We have the found string and can test the capture.
+            # This is a workaround to improve data quality.
+            if 'decpts' in valueLimits and valueLimits['decpts'] is not None:
+                if valueLimits['decpts'] == 0:
+                    logging.warning(f"Value {value} has unexpected decimal point for expected decpts=0") if '.' in value_text else None # Unlikely to ever happen.
+                    value = int(value_text)  # expect an integer.
+                elif valueLimits['decpts'] > 0 and '.' not in value_text:
+                    logging.warning(f"Value {value} is missing expected decimal point for expected decpts={valueLimits['decpts']}")
+                    # OCR doesn't miss digits but sometimes misses the decimal point. We can fix this by dividing by 10^decpts.
+                    value = value / (10 ** valueLimits['decpts'])
+                    # This will fix it.
+        except ValueError:
+            value = np.nan
+
+        return value
 
     def ocr_dates_only(self, image_crop):
         """
@@ -226,12 +259,35 @@ class BuoyDataCapture:
         # Configuration breakdown:
         # --psm 6: Assume a single uniform block of text (good for small crops)
         # tessedit_char_whitelist: Restrict characters to digits and dot
-
         # Perform OCR
-        # text = pytesseract.image_to_string(image_crop, config=self.ocrLimits['dateLike'])
+        value_text = self._ocr_values(image_crop, self.ocrLimits['datelike']) + f", {datetime.now().year}"
+        logging.debug(f"--DATES ONLY-- {value_text}")
         # Clean up whitespace/newlines
-        # return text.strip()
-        return self._ocr_values(image_crop, self.ocrLimits['datelike'])
+        logging.debug(f"\t\tTime string [raw]: {repr(value_text)}")
+            # Gemini recommends stripping the timezone from the string and then localizing it to EST.
+            # This is because the timezone is often captured as "EST" but the time is actually in EDT
+            # during daylight savings time. This is a common issue with OCR of time strings that include timezones.
+            # By stripping the timezone and then localizing to EST, we can ensure that we get the
+            # correct time regardless of whether it is currently EST or EDT.
+        value_text = value_text.replace("EST, ", "").replace("EDT, ", "")
+        logging.debug(f"\t\tTime string [raw]: {repr(value_text)}")
+        try:
+            value = datetime.strptime(value_text, "%I:%M:%S %p %a %b %d, %Y")  # even though it captures the EST it is naive
+        except ValueError:
+            try:
+                value = datetime.strptime(value_text, "%I:%M:%S %p %a%b %d, %Y")  # even though it captures the EST it is naive
+            except ValueError:
+                try:
+                    value = datetime.strptime(value_text, "%I:%M:%S %p %b %d, %Y")  # even though it captures the EST it is naive
+                except ValueError:
+                    logging.critical(f"Can't decode date string use current time'{repr(value_text)}'")
+                    value = datetime.now(tz=EST)
+
+        value = value.replace(tzinfo=EST)
+        logging.debug(f"\t\tTime string [decoded]: {repr(value)}")
+        value = value + timedelta(minutes=4)  # Quick fix to LTZ problem.
+
+        return value
 
     def _ocr_values(self, image_crop, ocrCharacterLimit):
         """
@@ -257,65 +313,69 @@ class BuoyDataCapture:
 
         with Image.open(self.filename) as img:
             # Standardize for OCR: convert to RGB and remove transparency
-            img = img.convert("RGB")
+            img = img.convert("RGB") # needs to be over the whole image to avoid issues with cropping and OCR. We can do the cropping on the RGB image.
 
             for key, item in self.dataParts.items():
                 logging.debug(f"WRK: {key}: {item['bounds']} {key.find('Time')}")
                 croppedImage = self._preprocess_for_ocr(img.crop(item['bounds']))
-
                 if key.find("Time")>-1:
-                    # Decoding the date can be tricky. Though the buoys are connected via cell their clocks can be wildly off.
-                    data = self._ocr_values(croppedImage, self.ocrLimits['datelike']) + f", {datetime.now().year}"
-                    logging.debug(f"\t\tTime string [raw]: {repr(data)}")
-                    # Gemini recommends stripping the timezone from the string and then localizing it to EST. This is because the timezone is often captured as "EST" but the time is actually in EDT during daylight savings time. This is a common issue with OCR of time strings that include timezones. By stripping the timezone and then localizing to EST, we can ensure that we get the correct time regardless of whether it is currently EST or EDT.
-                    data = data.replace("EST, ", "").replace("EDT, ", "")
-                    logging.debug(f"\t\tTime string [raw]: {repr(data)}")
-                    try:
-                        data = datetime.strptime(data, "%I:%M:%S %p %a %b %d, %Y")  # even though it captures the EST it is naive
-                    except ValueError:
-                        try:
-                            data = datetime.strptime(data, "%I:%M:%S %p %a%b %d, %Y")  # even though it captures the EST it is naive
-                        except ValueError:
-                            try:
-                                data = datetime.strptime(data, "%I:%M:%S %p %b %d, %Y")  # even though it captures the EST it is naive
-                            except ValueError:
-                                logging.critical(f"Can't decode date string use current time'{repr(data)}'")
-                                data = datetime.now(tz=EST)
+                    data = self.ocr_dates_only(croppedImage)
+                    # # Decoding the date can be tricky. Though the buoys are connected via cell their clocks can be wildly off.
+                    # data = self._ocr_values(croppedImage, self.ocrLimits['datelike']) + f", {datetime.now().year}"
+                    # logging.debug(f"\t\tTime string [raw]: {repr(data)}")
+                    # # Gemini recommends stripping the timezone from the string and then localizing it to EST. This is because the timezone is often captured as "EST" but the time is actually in EDT during daylight savings time. This is a common issue with OCR of time strings that include timezones. By stripping the timezone and then localizing to EST, we can ensure that we get the correct time regardless of whether it is currently EST or EDT.
+                    # data = data.replace("EST, ", "").replace("EDT, ", "")
+                    # logging.debug(f"\t\tTime string [raw]: {repr(data)}")
+                    # try:
+                    #     data = datetime.strptime(data, "%I:%M:%S %p %a %b %d, %Y")  # even though it captures the EST it is naive
+                    # except ValueError:
+                    #     try:
+                    #         data = datetime.strptime(data, "%I:%M:%S %p %a%b %d, %Y")  # even though it captures the EST it is naive
+                    #     except ValueError:
+                    #         try:
+                    #             data = datetime.strptime(data, "%I:%M:%S %p %b %d, %Y")  # even though it captures the EST it is naive
+                    #         except ValueError:
+                    #             logging.critical(f"Can't decode date string use current time'{repr(data)}'")
+                    #             data = datetime.now(tz=EST)
 
-                    data = data.replace(tzinfo=EST)
-                    logging.debug(f"\t\tTime string [decoded]: {repr(data)}")
-                    item['value'] = data + timedelta(minutes=4)
-                    #ATTN: When testing this on Jan 02, 2026 the buoy's clock was 2hrs fast. This may be corrected later.
-                    # if datetime.now(EST) < data:
-                    #     # The buoy reports the wrong time every now and again probably 2 hours off. 1/7/26 Seems to have been fixed.
-                    #     logging.debug(f"\t\tFixing time: {repr(data)}")
-                    #     data = data - timedelta(hours=2)
-                    #     logging.debug(f"\t\t{data}")
-                    # else:
-                    logging.debug(f"\t\tTime {key} is correct: {repr(item['value'])}")
-                        # data = data
+                    # data = data.replace(tzinfo=EST)
+                    # logging.debug(f"\t\tTime string [decoded]: {repr(data)}")
+                    # item['value'] = data + timedelta(minutes=4)
+                    # #ATTN: When testing this on Jan 02, 2026 the buoy's clock was 2hrs fast. This may be corrected later.
+                    # # if datetime.now(EST) < data:
+                    # #     # The buoy reports the wrong time every now and again probably 2 hours off. 1/7/26 Seems to have been fixed.
+                    # #     logging.debug(f"\t\tFixing time: {repr(data)}")
+                    # #     data = data - timedelta(hours=2)
+                    # #     logging.debug(f"\t\t{data}")
+                    # # else:
+                    # logging.debug(f"\t\tTime {key} is correct: {repr(item['value'])}")
+                    #     # data = data
                 else:
-                    try:
-                        data = self._ocr_values(croppedImage, self.ocrLimits['numberlike'])
-                        data = float(data)
-                        # New Feature as of 2/13/26: Test to see if the value is within the expected range. If not, do some additional processing.
-                        # Often the OCR in this instance has missed a decimal point. We can try to fix this by dividing by 10 to see if it falls
-                        # within the expected range. If not, we can be pretty sure the value is wrong and set it to NaN.  OCR optimization isn't
-                        # an option beyond what we have done because of the hardware limitations of the the raspberry pi.  This is a workaround to improve data quality.
-                        if 'range' in item and item['range'] is not None:
-                            min_val, max_val = item['range']
-                            if not (min_val <= data <= max_val):
-                                logging.warning(f"Value {data} is outside expected range {item['range']} for key '{key}'")
-                                # Try fixing by dividing by 10 and checking if it falls within the expected range
-                                data_div10 = data / 10.  # Empirically this is the most common error we see in the OCR results.
-                                                         # The OCRed value is 3 sig figs overall but should have 1 decimal value
-                                if min_val <= data_div10 <= max_val:
-                                    logging.warning(f"Value {data} fixed to {data_div10}")
-                                    data = data_div10
-                                else:
-                                    data = np.nan  # give up and set to NaN if it is still out of range after the fix attempt
-                    except:
-                        data = np.nan
+                    data = self.ocr_numbers_only(croppedImage, item)
+                    # try:
+                    #     data = self._ocr_values(croppedImage, self.ocrLimits['numberlike'])
+                    #     data = float(data)
+                    #     # New Feature as of 2/13/26: Test to see if the value is within the expected range. If not, do some additional processing.
+                    #     # Often the OCR in this instance has missed a decimal point. We can try to fix this by dividing by 10 to see if it falls
+                    #     # within the expected range. If not, we can be pretty sure the value is wrong and set it to NaN.  OCR optimization isn't
+                    #     # an option beyond what we have done because of the hardware limitations of the the raspberry pi. THE MOST COMMON ERROR I
+                    #     # SEE IN THE OCR RESULTS IS A MISSING DECIMAL POINt. Each number we are capturing has a specific structure. Instead of testing
+                    #     # for a magnitude, real values should contain a decimal point. We have the found string and can test the capture.
+                    #     # This is a workaround to improve data quality.
+                    #     if 'range' in item and item['range'] is not None:
+                    #         min_val, max_val = item['range']
+                    #         if not (min_val <= data <= max_val):
+                    #             logging.warning(f"Value {data} is outside expected range {item['range']} for key '{key}'")
+                    #             # Try fixing by dividing by 10 and checking if it falls within the expected range
+                    #             data_div10 = data / 10.  # Empirically this is the most common error we see in the OCR results.
+                    #                                      # The OCRed value is 3 sig figs overall but should have 1 decimal value
+                    #             if min_val <= data_div10 <= max_val:
+                    #                 logging.warning(f"Value {data} fixed to {data_div10}")
+                    #                 data = data_div10
+                    #             else:
+                    #                 data = np.nan  # give up and set to NaN if it is still out of range after the fix attempt
+                    # except:
+                    #     data = np.nan
                 item['value'] = data
         # self.df = pd.DataFrame([self.getDict()], index=self.getTime())
 
@@ -335,7 +395,7 @@ class BuoyDataCapture:
         # Select columns with datetime types
         datetime_cols = df.select_dtypes(include=['datetime64[ns, US/Eastern]']).columns
         # Add 4 minutes to the US/Eastern tz columns
-        df[datetime_cols] = df[datetime_cols] + pd.Timedelta(minutes=4)
+        df[datetime_cols] = df[datetime_cols] # + pd.Timedelta(minutes=4)
         df[INDEX] = pd.to_datetime(df[INDEX]) # + pd.Timedelta(minutes=4)  # ensure the index is a datetime object and fix the LTZ issue
 
         df.set_index(INDEX, inplace=True)
@@ -373,9 +433,11 @@ class DataBuffer:
         if os.path.exists(self.filepath):
             # Load existing data and ensure the index is parsed as datetime
             self.df = pd.read_csv(self.filepath, index_col=0, parse_dates=True)
+            # self.df.index = pd.to_datetime(self.df.index, utc=True)
+            # df.index = df.index.tz_convert('America/New_York'
             # Ensure index is timezone-aware (EST) to match new records
-            if self.df.index.tz is None:
-                self.df.index = self.df.index.tz_localize(EST)
+            # if self.df.index.tz is None:
+            #     self.df.index = self.df.index.tz_localize(EST)
             # Ensure existing columns match the provided labels
             # self.df.columns = self.columns
         else:
@@ -406,10 +468,17 @@ class DataBuffer:
         self._truncate_and_save()
 
     def _truncate_and_save(self):
-        """Truncates data older than 3 days and saves to CSV to persist through reboots."""
-        cutoff_time = datetime.now(EST) - timedelta(days=3)
-        # Keep only records from the last 72 hours
-        self.df = self.df[self.df.index >= cutoff_time]
+
+        if len(self.df) > 5:
+
+            """Truncates data older than 3 days and saves to CSV to persist through reboots."""
+            cutoff_time = pd.Timestamp.now(tz=EST) - pd.Timedelta(days=3)
+            logging.info(f"Truncating data older than {cutoff_time}")
+
+            # Keep only records from the last 72 hours
+            self.df = self.df[self.df.index > cutoff_time]
+        else:
+            logging.info("DataFrame is empty, skipping truncation.")
 
         # Remove columns that are completely empty
         df_filtered = self.df.dropna(axis=1, how='all')
@@ -430,7 +499,7 @@ def captureWindData(srcURL=EXRX_WIND_URL):
     logging.info("-----------------------------------------")
     logging.info("--- Execution Rocks Wind Data Read:")
 
-    wind = BuoyDataCapture(srcURL, windSources, "../resources/tmp/wind_panel.png")
+    wind = BuoyDataCapture(srcURL, windSources, BASE_DIR.parent / "resources" / "tmp" / "wind_panel.png")
     wind.fetch_image()
     wind.extract_regions()
 
@@ -443,7 +512,7 @@ def captureWindData(srcURL=EXRX_WIND_URL):
     logging.info("dataframe:  %s", wind.getNewDFRecord())
     ## Now we want to store this data in a CSV file or a database.
     #
-    wind_buffer = DataBuffer(list(windSources.keys()), filepath="../resources/wind_data.csv")
+    wind_buffer = DataBuffer(list(windSources.keys()), filepath=BASE_DIR.parent / "resources" / "wind_data.csv")
     # Add the new record (automatically handles truncation and saving)
     wind_buffer.add_record(wind.getNewDFRecord())
 
@@ -455,7 +524,7 @@ def captureWaveData(srcURL=EXRX_WAVE_URL):
     """
     logging.info("----------------------------------------")
     logging.info("--- Execution Rocks Wave Data Read:")
-    wave = BuoyDataCapture(srcURL, waveSources, "../resources/tmp/wave_panel.png")
+    wave = BuoyDataCapture(srcURL, waveSources, BASE_DIR.parent / "resources" / "tmp" / "wave_panel.png")
     wave.fetch_image()
     wave.extract_regions()
 
@@ -464,7 +533,7 @@ def captureWaveData(srcURL=EXRX_WAVE_URL):
     logging.debug("dataframe:  %s", wave.getNewDFRecord())
     ## Now we want to store this data in a CSV file or a database.
     #
-    wave_buffer = DataBuffer(list(waveSources.keys()), filepath="../resources/wave_data.csv")
+    wave_buffer = DataBuffer(list(waveSources.keys()), filepath=BASE_DIR.parent / "resources" / "wave_data.csv")
     # Add the new record (automatically handles truncation and saving)
     wave_buffer.add_record(wave.getNewDFRecord())
 
@@ -486,5 +555,6 @@ def main():
         captureWaveData(waveURLS[args.source])
 
 if __name__ == "__main__":
-    logging.basicConfig(filename='../resources/tmp/OCRDataCapture.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logFile  = BASE_DIR.parent / "resources" / "logs" / "OCRDataCapture.log"
+    logging.basicConfig(filename=logFile, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     main()
