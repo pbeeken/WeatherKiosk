@@ -12,7 +12,7 @@ unclutter &
 
 # rotate the log files
 savelog -l -n -c 8 WeatherKiosk/WeatherKiosk.log
-# Move old log files to logs directory
+# Move old log files to logs directory  (eventually we we will fix the individual log files to do this automatically, but this is a quick fix for now)
 mv WeatherKiosk.log.* resources/logs/
 #
 # default directory

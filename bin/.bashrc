@@ -134,7 +134,11 @@ then
    # /bin/bash /home/pi/WeatherKiosk/bin/updateTides.sh
    # /bin/bash /home/pi/WeatherKiosk/bin/updateWinds.sh
 
-   #launch the server
+   #launch the server, logging to a file for debugging
+   #python3 -u -m http.server --cgi 2> /home/pi/log.txt &
+
+   #launch the server without logging
    python -m http.server --cgi &
+
    startx
 fi
