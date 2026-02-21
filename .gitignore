@@ -11,7 +11,9 @@ __pycache__
 *_DEPR.*
 *.csv
 
+#specifc exclusions
+weatherkioskTREE.txt
 UsefulTools.md
 
-# files that are generated.
+# files that are generated (but not the directory)
 resources/tmp/*

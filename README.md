@@ -299,3 +299,17 @@ There are a handful of graphics that are updated on demand (the tide clock is ju
 ├── weatherkioskTREE.txt - This file
 └── WeatherTests.ipynb   - jn test bed for graphics
 ```
+
+## 2/19/2026
+Updated the current kiosk. Interestingly the Pi is more robust than I could have supposed.  The OCR data fetch
+is more robust than I could have hoped. Running the kiosk 24/7 has caused the chromium browser to stall from
+time to time but the cron jobs keep on running. The machine keeps on cooking. Just restart and the whole
+thing picks up right where it would have been if it hadn't crashed. It almost makes me want to launch a watchdog
+timer from cron.  I completed the LTZ correction problem and nearly broke all the robust data decoding for the
+OCR capture. Decimal points sometimes ~20/290 captures. I was trying to set limits but the better way was to
+notice that I know in advance what the precision of the value I am trying to parse. I check the returned string
+to see if it matches the pattern. If it doesn't (always due to a missing period) I know how to arithmetically fix
+the problem.
+
+I also started to canonize the paths to files which vexed me given that I am running in 3 (4 with the debugger)
+environments. `from pathlib import Path` to the rescue.
