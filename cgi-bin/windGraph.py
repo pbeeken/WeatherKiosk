@@ -179,7 +179,7 @@ def windDirection(ang):
         else:
             if min_ang < ang <= max_ang:
                 return tag
-    return 'Unknown'
+    return '-?-'
 
 def main():
     # Retrieve the OCR data for execution rocks.
