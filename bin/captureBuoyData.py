@@ -89,6 +89,7 @@ windSources = {
     'WindSpeedM24 [kt]':  {'bounds':(112, 412, 150, 435), 'value': NaN , 'range' :    (0.0,60.0), 'decpts':    1}, #kts max in last 24hrs
     'WindDirM24 [°]':     {'bounds':(271, 412, 300, 433), 'value': NaN , 'range':   (0,     360), 'decpts':    0}, #deg True in last 24hrs
     'WindTimeM24':        {'bounds':(114, 433, 299, 454), 'value': NaN , 'range':           None, 'decpts': None}, #dateString of 24Hr Max
+    'Source':             {'bounds':(196,  25, 317,  52), 'value': NaN,  'range':            None, 'decpts': None}, #placeholder for source tag
 }
 
 # image URIs for Wave information
@@ -121,6 +122,7 @@ waveSources = {
     'WavePerAvgM24 [s]':  {'bounds':(440, 412, 468, 430), 'value': NaN, 'range':       None, 'decpts':    1}, #avg period in last 24hrs
     'WavePerDomM24 [s]':  {'bounds':(540, 412, 570, 430), 'value': NaN, 'range':       None, 'decpts':    1}, #dominant period in last 24hrs
     'WaveTimeM24':        {'bounds':(169, 433, 363, 455), 'value': NaN, 'range':       None, 'decpts': None}, #dateString of 24Hr Max
+    'Source':             {'bounds':(196,  25, 317,  52), 'value': NaN, 'range':       None, 'decpts': None}, #placeholder for source tag
 }
 ######  ^^^^^^^^^^^^^  ###### USER CONFIGURABLE ######  ^^^^^^^^^^^^^  ######
 
@@ -147,6 +149,8 @@ class BuoyDataCapture:
         'numberlike': r'--psm 6 -c tessedit_char_whitelist=-0123456789.',
                   # 1 decode for date
         'datelike':   r'--psm 6 -c tessedit_char_whitelist=-0123456789,:\ APMSunMonTueWedThuFriSatJanFebMarAprMayJunJulAugSepOctNovDecESTGMT',
+
+        'letterlike': r'--psm 6 -c tessedit_char_whitelist=-0123456789\ ABCDEFGHIJKLMNOPQRSTUVWXYZ', # for decoding the source tag,
     }
 
     def __init__(self, sourceImageURL, dataExtraction, filename:None):
@@ -209,7 +213,7 @@ class BuoyDataCapture:
         # upscaled = ImageOps.invert(upscaled)
         return upscaledImage
 
-    def ocr_numbers_only(self, image_crop, valueLimits=None):
+    def _ocr_numbers_only(self, image_crop, valueLimits=None):
         """
         Processes a cropped image to extract only numbers and decimal points.
         :param image_crop: A single cropped image.
@@ -249,7 +253,7 @@ class BuoyDataCapture:
 
         return value
 
-    def ocr_dates_only(self, image_crop):
+    def _ocr_dates_only(self, image_crop):
         """
         Processes image crops to extract only numbers and decimal points.
         :param image_crops: List of PIL Image objects (from previous step).
@@ -319,7 +323,7 @@ class BuoyDataCapture:
                 logging.debug(f"WRK: {key}: {item['bounds']} {key.find('Time')}")
                 croppedImage = self._preprocess_for_ocr(img.crop(item['bounds']))
                 if key.find("Time")>-1:
-                    data = self.ocr_dates_only(croppedImage)
+                    data = self._ocr_dates_only(croppedImage)
                     # # Decoding the date can be tricky. Though the buoys are connected via cell their clocks can be wildly off.
                     # data = self._ocr_values(croppedImage, self.ocrLimits['datelike']) + f", {datetime.now().year}"
                     # logging.debug(f"\t\tTime string [raw]: {repr(data)}")
@@ -350,8 +354,10 @@ class BuoyDataCapture:
                     # # else:
                     # logging.debug(f"\t\tTime {key} is correct: {repr(item['value'])}")
                     #     # data = data
+                elif key == "Source":
+                    data = self._ocr_values(croppedImage, self.ocrLimits['letterlike'])
                 else:
-                    data = self.ocr_numbers_only(croppedImage, item)
+                    data = self._ocr_numbers_only(croppedImage, item)
                     # try:
                     #     data = self._ocr_values(croppedImage, self.ocrLimits['numberlike'])
                     #     data = float(data)
@@ -490,14 +496,29 @@ class DataBuffer:
         """Access the dataframe for graphing or analysis."""
         return self.df
 
-def captureWindData(srcURL=EXRX_WIND_URL):
+def captureWindData(srcTag='exrx'):
     """
     Docstring for captureWindData
     Capture information from the wind buoy graphical image
     and store it into a database.
     """
+
+    if srcTag in windURLS:
+        srcURL = windURLS[srcTag]
+
+    elif srcTag == 'all':
+        # # Handle the case where all sources are to be fetched
+        # for tag, url in windURLS.items():
+        logging.info(f"Capturing wind data for source: {tag}")
+        #     captureWindData(srcTag=tag)
+        return  # Exit after processing all sources
+
+    else:
+        logging.warning(f"Source tag '{srcTag}' not recognized. Defaulting to 'exrx'.")
+        srcURL = windURLS['exrx']
+
     logging.info("-----------------------------------------")
-    logging.info("--- Execution Rocks Wind Data Read:")
+    logging.info("--- Wind Data Read:")
 
     wind = BuoyDataCapture(srcURL, windSources, BASE_DIR.parent / "resources" / "tmp" / "wind_panel.png")
     wind.fetch_image()
@@ -516,14 +537,29 @@ def captureWindData(srcURL=EXRX_WIND_URL):
     # Add the new record (automatically handles truncation and saving)
     wind_buffer.add_record(wind.getNewDFRecord())
 
-def captureWaveData(srcURL=EXRX_WAVE_URL):
+def captureWaveData(srcTag='exrx'):
     """
     Docstring for captureWaveData
     Capture information from the wind buoy graphical image
     and store it into a database.
     """
+    logging.info(f"Capturing wave data for source: {srcTag}")
+
+    if srcTag in windURLS:
+        srcURL = windURLS[srcTag]
+
+    elif srcTag == 'all':
+    #     # Handle the case where all sources are to be fetched
+        for tag, url in waveURLS.items():
+            captureWaveData(srcTag=tag)
+        return  # Exit after processing all sources
+
+    else:
+        logging.warning(f"Source tag '{srcTag}' not recognized. Defaulting to 'exrx'.")
+        srcURL = windURLS['exrx']
+
     logging.info("----------------------------------------")
-    logging.info("--- Execution Rocks Wave Data Read:")
+    logging.info("--- Wave Data Read:")
     wave = BuoyDataCapture(srcURL, waveSources, BASE_DIR.parent / "resources" / "tmp" / "wave_panel.png")
     wave.fetch_image()
     wave.extract_regions()
@@ -545,14 +581,14 @@ def main():
                     epilog='')
     parser.add_argument("-z", "--wind",   help="Gather wind information", action='store_true')
     parser.add_argument("-w", "--wave",   help="Gather wave information", action='store_true')
-    parser.add_argument("-s", "--source", help="Select buoy to farm", choices=['exrx', 'wlis', 'clis'], default='exrx')
+    parser.add_argument("-s", "--source", help="Select buoy to farm", choices=['exrx', 'wlis', 'clis', 'all'], default='exrx')
     args = parser.parse_args()
 
     if args.wind:
-        captureWindData(windURLS[args.source])
+        captureWindData(args.source)
 
     if args.wave:
-        captureWaveData(waveURLS[args.source])
+        captureWaveData(args.source)
 
 if __name__ == "__main__":
     logFile  = BASE_DIR.parent / "resources" / "logs" / "OCRDataCapture.log"
