@@ -502,15 +502,15 @@ def captureWindData(srcTag='exrx'):
     Capture information from the wind buoy graphical image
     and store it into a database.
     """
+    logging.info(f"Capturing wind data for source: {srcTag}")
 
     if srcTag in windURLS:
         srcURL = windURLS[srcTag]
 
     elif srcTag == 'all':
-        # # Handle the case where all sources are to be fetched
-        # for tag, url in windURLS.items():
-        logging.info(f"Capturing wind data for source: {tag}")
-        #     captureWindData(srcTag=tag)
+        # Handle the case where all sources are to be fetched
+        for tag, url in windURLS.items():
+            captureWindData(srcTag=tag)
         return  # Exit after processing all sources
 
     else:
