@@ -130,7 +130,7 @@ waveSources = {
 class BuoyDataCapture:
     """
     Class to capture data from NERACOOS weather buoys. NERACOOS (long acronym: https://neracoos.org/), capture data from
-    floating environmental stations up and down the coast. Mostly, it standardardizes the data storage and engineering of
+    floating environmental stations up and down the coast. Mostly, it standardizes the data storage and engineering of
     these stations. The data can be made available via an API but for the last 18 mos. it has only been available through
     a graphical display. As a consequence, this class uses OCR to read data from images and store the results in this object.
     This class works for both wind and wave data sections.  They have similar layouts. The water chemistry and bathymetry panels
@@ -149,7 +149,7 @@ class BuoyDataCapture:
     ocrLimits = { # 0 decode for numbers
         'numberlike': r'--psm 6 -c tessedit_char_whitelist=-0123456789.',
                   # 1 decode for date
-        'datelike':   r'--psm 6 -c tessedit_char_whitelist=-0123456789,:\ APMSunMonTueWedThuFriSatJanFebMarAprMayJunJulAugSepOctNovDecESTGMT',
+        'datelike':   r'--psm 6 -c tessedit_char_whitelist=-0123456789,:\ APMSunMonTueWedThuFriSatJanFebMarAprMayJunJulAugSepOctNovDecESTEDTGMT',
 
         'letterlike': r'--psm 6 -c tessedit_char_whitelist=-0123456789\ ABCDEFGHIJKLMNOPQRSTUVWXYZ', # for decoding the source tag,
     }
@@ -277,16 +277,16 @@ class BuoyDataCapture:
             # during daylight savings time. This is a common issue with OCR of time strings that include timezones.
             # By stripping the timezone and then localizing to EST, we can ensure that we get the
             # correct time regardless of whether it is currently EST or EDT.
-        value_text = value_text.replace("EST, ", "").replace("EDT, ", "")
+        value_text = value_text.replace(" EST", "").replace(" DST", "")
         logging.debug(f"\t\tTime string [raw]: >{repr(value_text)}<")
         try:
-            value = datetime.strptime(value_text, "%I:%M:%S %p %a %b %d, %Y")  # even though it captures the EST it is naive
+            value = datetime.strptime(value_text, "%I:%M:%S %p, %a %b %d, %Y")  # even though it captures the EST it is naive
         except ValueError:
             try:
-                value = datetime.strptime(value_text, "%I:%M:%S %p %a%b %d, %Y")  # even though it captures the EST it is naive
+                value = datetime.strptime(value_text, "%I:%M:%S %p, %b %d, %Y")  # even though it captures the EST it is naive
             except ValueError:
                 try:
-                    value = datetime.strptime(value_text, "%I:%M:%S %p %b %d, %Y")  # even though it captures the EST it is naive
+                    value = datetime.strptime(value_text, "%I:%M:%S %p, %b %d, %Y")  # even though it captures the EST it is naive
                 except ValueError:
                     logging.critical(f"Can't decode date string use current time'{repr(value_text)}'")
                     value = datetime.now(tz=EST)
@@ -561,6 +561,8 @@ def main():
     parser.add_argument("-s", "--source", help="Select buoy to farm", choices=['exrx', 'wlis', 'clis', 'all'], default='exrx')
     args = parser.parse_args()
 
+    args.wind = True #TEMP
+
     if args.wind:
         captureWindData(args.source)
 
@@ -569,5 +571,5 @@ def main():
 
 if __name__ == "__main__":
     logFile  = BASE_DIR.parent / "resources" / "logs" / "OCRDataCapture.log"
-    logging.basicConfig(filename=logFile, level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(filename=logFile, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     main()
