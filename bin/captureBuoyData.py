@@ -2,6 +2,7 @@
 General imports needed.
 """
 # foundational libraries
+from io import BytesIO
 from pathlib import Path
 from datetime import datetime, timedelta
 # from zoneinfo import ZoneInfo
@@ -55,9 +56,9 @@ NaN = float('nan')
 INDEX = 'TimeStamp' # standard index label for dataframes
 
 # image URIs for Wind information
-EXRX_WIND_URL = "https://clydebank.dms.uconn.edu/exrx_wxSens2.png"  # Execution rocks
-WLIS_WIND_URL = "https://clydebank.dms.uconn.edu/wlis_wxSens1.png"  # Western Long Island
-CLIS_WIND_URL = "https://clydebank.dms.uconn.edu/clis_wxSens1.png"  # Central Long Island
+EXRX_WIND_URL = "https://clydebank.dms.uconn.edu/exrx_wx.png"  # Execution rocks
+WLIS_WIND_URL = "https://clydebank.dms.uconn.edu/wlis_wx.png"  # Western Long Island
+CLIS_WIND_URL = "https://clydebank.dms.uconn.edu/clis_wx.png"  # Central Long Island
 
 windURLS = {
     'exrx': EXRX_WIND_URL,
@@ -71,31 +72,31 @@ windURLS = {
 #   range:  is the expected range of values for this data point (used for error checking).
 #   decpts: is the number of expected decimal points (may be better for error checking).
 windSources = {
-    INDEX:                {'bounds':(100,  62, 294,  78), 'value': NaN , 'range':           None, 'decpts': None}, #dateString for reading
+    INDEX:                {'bounds':(100,  62, 294,  80), 'value': NaN , 'range':           None, 'decpts': None}, #dateString for reading
     'WindSpeedAvg [kts]': {'bounds':( 21, 307,  63, 327), 'value': NaN , 'range':     (0.0,60.0), 'decpts':    1}, #kts
     'WindSpeedGst [kts]': {'bounds':(116, 307, 158, 327), 'value': NaN , 'range':     (0.0,60.0), 'decpts':    1}, #kts
-    'WindSpeedAvg [mph]': {'bounds':( 21, 334,  63, 351), 'value': NaN , 'range':     (0.0,70.0), 'decpts':    1}, #mph
+    'WindSpeedAvg [mph]': {'bounds':( 21, 332,  63, 351), 'value': NaN , 'range':     (0.0,70.0), 'decpts':    1}, #mph
     'WindSpeedGst [mph]': {'bounds':(116, 332, 158, 351), 'value': NaN , 'range':     (0.0,70.0), 'decpts':    1}, #mph
-    'WindSpeedAvg [m/s]': {'bounds':( 21, 358,  63, 375), 'value': NaN , 'range':     (0.0,31.0), 'decpts':    2}, #m/s
-    'WindSpeedGst [m/s]': {'bounds':(116, 358, 158, 375), 'value': NaN , 'range':     (0.0,31.0), 'decpts':    2}, #m/s
+    'WindSpeedAvg [m/s]': {'bounds':( 21, 356,  63, 375), 'value': NaN , 'range':     (0.0,31.0), 'decpts':    2}, #m/s
+    'WindSpeedGst [m/s]': {'bounds':(116, 356, 158, 375), 'value': NaN , 'range':     (0.0,31.0), 'decpts':    2}, #m/s
     'WindDir [°]':        {'bounds':(230, 320, 287, 339), 'value': NaN , 'range':   (0,     360), 'decpts':    0}, #deg True
     'AirTemp [°F]':       {'bounds':(410, 169, 471, 188), 'value': NaN , 'range':  (-20.0,110.0), 'decpts':    1}, #deg Fahrenheit
     'AirTemp [°C]':       {'bounds':(409, 221, 471, 238), 'value': NaN , 'range':  (-30.0, 40.0), 'decpts':    1}, #deg Centigrade
     'BaromPres [mmHg]':   {'bounds':(391, 415, 449, 434), 'value': NaN , 'range':    (25.0,32.5), 'decpts':    2}, #barom. in mmHg
     'BaromPres [mB]':     {'bounds':(467, 415, 537, 434), 'value': NaN , 'range': (850.0,1100.0), 'decpts':    2}, #barom. in mBar
-    'DewPoint [°F]':      {'bounds':(505, 322, 552, 341), 'value': NaN , 'range':  (-20.0,110.0), 'decpts':    1}, #dew point deg Fahrenheit
-    'DewPoint [°C]':      {'bounds':(563, 322, 605, 341), 'value': NaN , 'range':   (-30.0,40.0), 'decpts':    1}, #dew point deg Centigrade
-    'RelHum [%]':         {'bounds':(391, 323, 448, 341), 'value': NaN , 'range':    (0.0,100.0), 'decpts':    1}, #rel. humidity
-    'WindSpeedM24 [kt]':  {'bounds':(112, 412, 150, 435), 'value': NaN , 'range' :    (0.0,60.0), 'decpts':    1}, #kts max in last 24hrs
-    'WindDirM24 [°]':     {'bounds':(271, 412, 300, 433), 'value': NaN , 'range':   (0,     360), 'decpts':    0}, #deg True in last 24hrs
+    'DewPoint [°F]':      {'bounds':(505, 321, 552, 341), 'value': NaN , 'range':  (-20.0,110.0), 'decpts':    1}, #dew point deg Fahrenheit
+    'DewPoint [°C]':      {'bounds':(563, 321, 605, 341), 'value': NaN , 'range':   (-30.0,40.0), 'decpts':    1}, #dew point deg Centigrade
+    'RelHum [%]':         {'bounds':(391, 321, 448, 341), 'value': NaN , 'range':    (0.0,100.0), 'decpts':    1}, #rel. humidity
+    'WindSpeedM24 [kt]':  {'bounds':(112, 412, 150, 435), 'value': NaN , 'range':     (0.0,60.0), 'decpts':    1}, #kts max in last 24hrs
+    'WindDirM24 [°]':     {'bounds':(271, 412, 308, 433), 'value': NaN , 'range':   (0,     360), 'decpts':    0}, #deg True in last 24hrs
     'WindTimeM24':        {'bounds':(114, 433, 299, 454), 'value': NaN , 'range':           None, 'decpts': None}, #dateString of 24Hr Max
-    'Source':             {'bounds':(196,  25, 317,  52), 'value': NaN,  'range':            None, 'decpts': None}, #placeholder for source tag
+    'Source':             {'bounds':(212,  25, 300,  52), 'value': NaN , 'range':           None, 'decpts': None}, #placeholder for source tag
 }
 
 # image URIs for Wave information
-EXRX_WAVE_URL = "https://clydebank.dms.uconn.edu/exrx_wavs.png"
-WLIS_WAVE_URL = "https://clydebank.dms.uconn.edu/wlis_wavs.png"
-CLIS_WAVE_URL = "https://clydebank.dms.uconn.edu/clis_wavs.png"
+EXRX_WAVE_URL = "https://clydebank.dms.uconn.edu/exrx_wav.png"
+WLIS_WAVE_URL = "https://clydebank.dms.uconn.edu/wlis_wav.png"
+CLIS_WAVE_URL = "https://clydebank.dms.uconn.edu/clis_wav.png"
 
 waveURLS = {
     'exrx': EXRX_WAVE_URL,
@@ -109,7 +110,7 @@ waveURLS = {
 #   range:  is the expected range of values for this data point (used for error checking).
 #   decpts: is the number of expected decimal points (may be better for error checking).
 waveSources = {
-    INDEX:                {'bounds':(100,  62, 294,  78), 'value': NaN, 'range':       None, 'decpts': None}, #dateString for reading
+    INDEX:                {'bounds':(100,  62, 294,  80), 'value': NaN, 'range':       None, 'decpts': None}, #dateString for reading
     'WaveHgtSig [ft]':    {'bounds':( 68, 329, 112, 346), 'value': NaN, 'range': (0.0,12.0), 'decpts':    2}, #ft
     'WaveHgtMax [ft]':    {'bounds':(168, 329, 212, 346), 'value': NaN, 'range': (0.0,12.0), 'decpts':    2}, #ft
     'WaveHgtSig [m]':     {'bounds':( 68, 353, 112, 371), 'value': NaN, 'range': (0.0, 3.7), 'decpts':    2}, #m
@@ -118,11 +119,11 @@ waveSources = {
     'WavPerAvg [s]':      {'bounds':(479, 193, 539, 211), 'value': NaN, 'range':       None, 'decpts':    1}, #sec
     'WavPerDom [s]':      {'bounds':(479, 251, 539, 269), 'value': NaN, 'range':       None, 'decpts':    1}, #sec
     'WaveHgt24 [ft]':     {'bounds':(169, 413, 207, 433), 'value': NaN, 'range': (0.0,12.0), 'decpts':    2}, #ft max in last 24hrs
-    'WaveDirM24 [°]':     {'bounds':(327, 412, 354, 433), 'value': NaN, 'range': (  0, 360), 'decpts':    0}, #deg True in last 24hrs
-    'WavePerAvgM24 [s]':  {'bounds':(440, 412, 468, 430), 'value': NaN, 'range':       None, 'decpts':    1}, #avg period in last 24hrs
-    'WavePerDomM24 [s]':  {'bounds':(540, 412, 570, 430), 'value': NaN, 'range':       None, 'decpts':    1}, #dominant period in last 24hrs
-    'WaveTimeM24':        {'bounds':(169, 433, 363, 455), 'value': NaN, 'range':       None, 'decpts': None}, #dateString of 24Hr Max
-    'Source':             {'bounds':(196,  25, 317,  52), 'value': NaN, 'range':       None, 'decpts': None}, #placeholder for source tag
+    'WaveDirM24 [°]':     {'bounds':(314, 412, 341, 433), 'value': NaN, 'range': (  0, 360), 'decpts':    0}, #deg True in last 24hrs
+    'WavePerAvgM24 [s]':  {'bounds':(432, 412, 463, 430), 'value': NaN, 'range':       None, 'decpts':    1}, #avg period in last 24hrs
+    'WavePerDomM24 [s]':  {'bounds':(534, 412, 564, 430), 'value': NaN, 'range':       None, 'decpts':    1}, #dominant period in last 24hrs
+    'WaveTimeM24':        {'bounds':(169, 433, 360, 455), 'value': NaN, 'range':       None, 'decpts': None}, #dateString of 24Hr Max
+    'Source':             {'bounds':(212,  25, 300,  52), 'value': NaN, 'range':       None, 'decpts': None}, #placeholder for source tag
 }
 ######  ^^^^^^^^^^^^^  ###### USER CONFIGURABLE ######  ^^^^^^^^^^^^^  ######
 
@@ -166,6 +167,8 @@ class BuoyDataCapture:
             self.filename = BASE_DIR.parent / "resources" / "tmp" / sourceImageURL.split("/")[-1]
         else:
             self.filename = filename
+
+        self.img = None  # placeholder for the image object in memory
         # self.df = pd.DataFrame(columns=dataExtraction.keys())
 
     def fetch_image(self):
@@ -181,10 +184,11 @@ class BuoyDataCapture:
 
         # Check if the request was successful (HTTP 200)
         if response.status_code == 200:
-            # 3. Store to disk for a second step, the image is not large, maybe keep in memory?
-            with open(self.filename, "wb") as f:
-                f.write(response.content)
-            # return filename  # Return path to the stored file
+            # 3. Store in memory maybe speeds up? the image is not large, maybe keep in memory?
+            self.img = Image.open(BytesIO(response.content)).resize((640,480))  # resize to standard size for testing
+            # with open(self.filename, "wb") as f:
+            #     f.write(response.content)
+            # # return filename  # Return path to the stored file
         else:
             raise requests.RequestException(f"Failed to retrieve image. Status code: {response.status_code}")
 
@@ -225,7 +229,7 @@ class BuoyDataCapture:
         # tessedit_char_whitelist: Restrict characters to digits and dot
         # Perform OCR
         value_text = self._ocr_values(image_crop, self.ocrLimits['numberlike'])
-        logging.debug(f"--NUMERALS ONLY-- {value_text}")
+        logging.debug(f"--NUMERALS ONLY-- >{value_text}<")
 
         # Clean up whitespace/newlines
         value = np.nan
@@ -265,7 +269,7 @@ class BuoyDataCapture:
         # tessedit_char_whitelist: Restrict characters to digits and dot
         # Perform OCR
         value_text = self._ocr_values(image_crop, self.ocrLimits['datelike']) + f", {datetime.now().year}"
-        logging.debug(f"--DATES ONLY-- {value_text}")
+        logging.debug(f"--DATES ONLY-- >{value_text}<")
         # Clean up whitespace/newlines
         logging.debug(f"\t\tTime string [raw]: {repr(value_text)}")
             # Gemini recommends stripping the timezone from the string and then localizing it to EST.
@@ -274,7 +278,7 @@ class BuoyDataCapture:
             # By stripping the timezone and then localizing to EST, we can ensure that we get the
             # correct time regardless of whether it is currently EST or EDT.
         value_text = value_text.replace("EST, ", "").replace("EDT, ", "")
-        logging.debug(f"\t\tTime string [raw]: {repr(value_text)}")
+        logging.debug(f"\t\tTime string [raw]: >{repr(value_text)}<")
         try:
             value = datetime.strptime(value_text, "%I:%M:%S %p %a %b %d, %Y")  # even though it captures the EST it is naive
         except ValueError:
@@ -315,7 +319,9 @@ class BuoyDataCapture:
         """
         # extracted_images = []
 
-        with Image.open(self.filename) as img:
+        # with Image.open(self.filename) as img:
+        if self.img is not None:
+            img = self.img
             # Standardize for OCR: convert to RGB and remove transparency
             img = img.convert("RGB") # needs to be over the whole image to avoid issues with cropping and OCR. We can do the cropping on the RGB image.
 
@@ -324,38 +330,9 @@ class BuoyDataCapture:
                 croppedImage = self._preprocess_for_ocr(img.crop(item['bounds']))
                 if key.find("Time")>-1:
                     data = self._ocr_dates_only(croppedImage)
-                    # # Decoding the date can be tricky. Though the buoys are connected via cell their clocks can be wildly off.
-                    # data = self._ocr_values(croppedImage, self.ocrLimits['datelike']) + f", {datetime.now().year}"
-                    # logging.debug(f"\t\tTime string [raw]: {repr(data)}")
-                    # # Gemini recommends stripping the timezone from the string and then localizing it to EST. This is because the timezone is often captured as "EST" but the time is actually in EDT during daylight savings time. This is a common issue with OCR of time strings that include timezones. By stripping the timezone and then localizing to EST, we can ensure that we get the correct time regardless of whether it is currently EST or EDT.
-                    # data = data.replace("EST, ", "").replace("EDT, ", "")
-                    # logging.debug(f"\t\tTime string [raw]: {repr(data)}")
-                    # try:
-                    #     data = datetime.strptime(data, "%I:%M:%S %p %a %b %d, %Y")  # even though it captures the EST it is naive
-                    # except ValueError:
-                    #     try:
-                    #         data = datetime.strptime(data, "%I:%M:%S %p %a%b %d, %Y")  # even though it captures the EST it is naive
-                    #     except ValueError:
-                    #         try:
-                    #             data = datetime.strptime(data, "%I:%M:%S %p %b %d, %Y")  # even though it captures the EST it is naive
-                    #         except ValueError:
-                    #             logging.critical(f"Can't decode date string use current time'{repr(data)}'")
-                    #             data = datetime.now(tz=EST)
-
-                    # data = data.replace(tzinfo=EST)
-                    # logging.debug(f"\t\tTime string [decoded]: {repr(data)}")
-                    # item['value'] = data + timedelta(minutes=4)
-                    # #ATTN: When testing this on Jan 02, 2026 the buoy's clock was 2hrs fast. This may be corrected later.
-                    # # if datetime.now(EST) < data:
-                    # #     # The buoy reports the wrong time every now and again probably 2 hours off. 1/7/26 Seems to have been fixed.
-                    # #     logging.debug(f"\t\tFixing time: {repr(data)}")
-                    # #     data = data - timedelta(hours=2)
-                    # #     logging.debug(f"\t\t{data}")
-                    # # else:
-                    # logging.debug(f"\t\tTime {key} is correct: {repr(item['value'])}")
-                    #     # data = data
                 elif key == "Source":
                     data = self._ocr_values(croppedImage, self.ocrLimits['letterlike'])
+                    logging.debug(f"--RAW TEXT ONLY-- >{data}<")
                 else:
                     data = self._ocr_numbers_only(croppedImage, item)
                     # try:
@@ -545,8 +522,8 @@ def captureWaveData(srcTag='exrx'):
     """
     logging.info(f"Capturing wave data for source: {srcTag}")
 
-    if srcTag in windURLS:
-        srcURL = windURLS[srcTag]
+    if srcTag in waveURLS:
+        srcURL = waveURLS[srcTag]
 
     elif srcTag == 'all':
     #     # Handle the case where all sources are to be fetched
@@ -592,5 +569,5 @@ def main():
 
 if __name__ == "__main__":
     logFile  = BASE_DIR.parent / "resources" / "logs" / "OCRDataCapture.log"
-    logging.basicConfig(filename=logFile, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(filename=logFile, level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
     main()
