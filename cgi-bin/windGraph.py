@@ -14,7 +14,9 @@ over time, with annotations for current conditions and data source.
 
 import logging
 from datetime import datetime, timedelta
-from pytz import timezone  # should already be part of pandas but it doesn't hurt to do it again.
+from zoneinfo import ZoneInfo
+#import pytz  # may need to migrate to ZoneInfo  RaspberryPi OS doesn't have the latest Python and thus doesn't have ZoneInfo.
+# This is a workaround until we can upgrade the OS.  03/04/26 now supports ZoneInfo so we can remove the pytz dependency.
 
 import pandas as pd
 import numpy as np
@@ -23,8 +25,8 @@ import matplotlib.pyplot as plt
 import matplotlib.transforms
 import matplotlib.dates as mdates
 
-EST = timezone('America/New_York')
-UTC = timezone('UTC')
+TZ_NY = ZoneInfo('America/New_York')
+UTC = ZoneInfo('UTC')
 
 # The data is stored locally in a csv file that is updated by a separate process that fetches the data from the buoys.
 # This is much faster than fetching the data from the buoys every time we want to generate a graph, especially on a Raspberry Pi.
@@ -56,7 +58,9 @@ def fetchWindData(source):
     windDF['WdirSin'] = np.sin(np.radians(windDF['WindDir [°]']))
     windDF['WdirCos'] = np.cos(np.radians(windDF['WindDir [°]']))
 
-    return windDF
+    sel = windDF['Source'] == 44022
+    # we have data from multiple buoys, but we only want one for the graph. The others are for the table.
+    return windDF[sel].filter(items=['WindSpeedAvg [kts]', 'WindSpeedGst [kts]', 'AirTemp [°F]', 'WindDir [°]', 'WdirSin', 'WdirCos'])
 
 def makeWindGraph(windDF, whereFrom=""):
     """
@@ -70,12 +74,12 @@ def makeWindGraph(windDF, whereFrom=""):
 
     # determine how old the data is...
     last = windDF.index[-1].to_pydatetime()
-    now = datetime.now(EST)
+    now = datetime.now(TZ_NY)
     delta = now-last
     # print(f"{last} -> {now}  Data is {delta} old")
 
     # Work with data from the last 2 days
-    cutoff_time = datetime.now(EST) - timedelta(hours=32)
+    cutoff_time = datetime.now(TZ_NY) - timedelta(hours=32)
     windDF = windDF[windDF.index >= cutoff_time]
 
     # Resample to 1 hour intervals, averaging the components
@@ -109,11 +113,11 @@ def makeWindGraph(windDF, whereFrom=""):
     ax.set_ylabel('Wind Speed [knots]', fontsize=12, fontstyle='italic', color='SlateGray')
 
     #Fix the time axis
-    ax.xaxis.set_major_locator(mdates.DayLocator(tz=EST))
-    ax.xaxis.set_minor_locator(mdates.HourLocator(interval=4, tz=EST))
+    ax.xaxis.set_major_locator(mdates.DayLocator(tz=TZ_NY))
+    ax.xaxis.set_minor_locator(mdates.HourLocator(interval=4, tz=TZ_NY))
 
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%a, %b %d', tz=EST))
-    ax.xaxis.set_minor_formatter(mdates.DateFormatter('%H:%M', tz=EST))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%a, %b %d', tz=TZ_NY))
+    ax.xaxis.set_minor_formatter(mdates.DateFormatter('%H:%M', tz=TZ_NY))
 
     dx = 0.; dy = -10/72.
     offset = matplotlib.transforms.ScaledTranslation(dx, dy, fig.dpi_scale_trans)

@@ -5,8 +5,9 @@ General imports needed.
 from io import BytesIO
 from pathlib import Path
 from datetime import datetime, timedelta
-# from zoneinfo import ZoneInfo
-import pytz  # may need to migrate to ZoneInfo  RaspberryPi OS doesn't have the latest Python and thus doesn't have ZoneInfo.  This is a workaround until we can upgrade the OS.
+from zoneinfo import ZoneInfo
+#import pytz  # may need to migrate to ZoneInfo  RaspberryPi OS doesn't have the latest Python and thus doesn't have ZoneInfo.
+# This is a workaround until we can upgrade the OS.  03/04/26 now supports ZoneInfo so we can remove the pytz dependency.
 import requests
 
 # OCR tools
@@ -29,11 +30,11 @@ import argparse
 BASE_DIR = Path(__file__).resolve().parent
 
 # Timezone configuration OLD SCHOOL
-UTC = pytz.utc
-EST = pytz.timezone('US/Eastern')
+# UTC = pytz.utc
+# EST = pytz.timezone('US/Eastern')
 # Timezone configuration NEW SCHOOL
-# UTC = ZoneInfo('UTC')
-# EST = ZoneInfo('US/Eastern')
+UTC = ZoneInfo('UTC')
+NY_TZ = ZoneInfo('America/New_York')
 
 """
     Quick review: NERACOOS weather buoys are managed by the Univ. of Ct. Bridgeport. They have invested,
@@ -272,26 +273,26 @@ class BuoyDataCapture:
         logging.debug(f"--DATES ONLY-- >{value_text}<")
         # Clean up whitespace/newlines
         logging.debug(f"\t\tTime string [raw]: {repr(value_text)}")
-            # Gemini recommends stripping the timezone from the string and then localizing it to EST.
-            # This is because the timezone is often captured as "EST" but the time is actually in EDT
-            # during daylight savings time. This is a common issue with OCR of time strings that include timezones.
-            # By stripping the timezone and then localizing to EST, we can ensure that we get the
-            # correct time regardless of whether it is currently EST or EDT.
+            # What a mess. First these buoys should be capturing data in UTC.  Maybe it is internally but they don't
+            # present it that way. strptime produces naive time objects. GOOD NEWS capturing the date with the time
+            # allows us to assign NY_TZ and datetime will take care of the rest.
+            # By stripping the timezone string EST and DST out and then localizing to NY_TZ fixes everything.
         value_text = value_text.replace(" EST", "").replace(" DST", "")
         logging.debug(f"\t\tTime string [raw]: >{repr(value_text)}<")
+        # We still have to capture and correct common OCR errors.
         try:
-            value = datetime.strptime(value_text, "%I:%M:%S %p, %a %b %d, %Y")  # even though it captures the EST it is naive
+            value = datetime.strptime(value_text, "%I:%M:%S %p, %a %b %d, %Y")
         except ValueError:
             try:
-                value = datetime.strptime(value_text, "%I:%M:%S %p, %b %d, %Y")  # even though it captures the EST it is naive
+                value = datetime.strptime(value_text, "%I:%M:%S %p, %b %d, %Y")
             except ValueError:
                 try:
-                    value = datetime.strptime(value_text, "%I:%M:%S %p, %b %d, %Y")  # even though it captures the EST it is naive
+                    value = datetime.strptime(value_text, "%I:%M:%S %p, %b %d, %Y")
                 except ValueError:
                     logging.critical(f"Can't decode date string use current time'{repr(value_text)}'")
-                    value = datetime.now(tz=EST)
+                    value = datetime.now(tz=NY_TZ)
 
-        value = value.replace(tzinfo=EST)
+        value = value.replace(tzinfo=NY_TZ)
         logging.debug(f"\t\tTime string [decoded]: {repr(value)}")
         value = value + timedelta(minutes=4)  # Quick fix to LTZ problem.
 
@@ -418,16 +419,16 @@ class DataBuffer:
             self.df = pd.read_csv(self.filepath, index_col=0, parse_dates=True)
             # self.df.index = pd.to_datetime(self.df.index, utc=True)
             # df.index = df.index.tz_convert('America/New_York'
-            # Ensure index is timezone-aware (EST) to match new records
+            # Ensure index is timezone-aware (NY_TZ) to match new records
             # if self.df.index.tz is None:
-            #     self.df.index = self.df.index.tz_localize(EST)
+            #     self.df.index = self.df.index.tz_localize(NY_TZ)
             # Ensure existing columns match the provided labels
             # self.df.columns = self.columns
         else:
             # Initialize empty DataFrame with custom labels and UTC timezone awareness
             #    - 'data=[]' ensures it is empty
             #    - 'tz="US/Eastern"' sets the timezone (you can use 'UTC', 'Asia/Tokyo', etc.)
-            tz_aware_index = pd.DatetimeIndex([], dtype='datetime64[ns, US/Eastern]', name=INDEX)
+            tz_aware_index = pd.DatetimeIndex([], dtype='datetime64[ns, America/New_York]', name=INDEX)
             self.df = pd.DataFrame(columns=self.columns, index=tz_aware_index)
 
     def add_record(self, newRowDF):
@@ -455,7 +456,7 @@ class DataBuffer:
         if len(self.df) > 5:
 
             """Truncates data older than 3 days and saves to CSV to persist through reboots."""
-            cutoff_time = pd.Timestamp.now(tz=EST) - pd.Timedelta(days=3)
+            cutoff_time = pd.Timestamp.now(tz=NY_TZ) - pd.Timedelta(days=3)
             logging.info(f"Truncating data older than {cutoff_time}")
 
             # Keep only records from the last 72 hours
@@ -504,7 +505,7 @@ def captureWindData(srcTag='exrx'):
     logging.debug("time: %s @%s  ", wind[INDEX].strftime('%Y-%m-%d %I:%M:%S %P %Z'), wind[INDEX])
 
     # # I think this early problem was a one off.
-    # if datetime.now(EST) < wind[INDEX]:
+    # if datetime.now(NY_TZ) < wind[INDEX]:
     #     logging.warning("Why is the time wrong?")
 
     logging.info("dataframe:  %s", wind.getNewDFRecord())
