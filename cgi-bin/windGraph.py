@@ -79,6 +79,7 @@ def makeWindGraph(windDF, whereFrom=""):
     # determine how old the data is...
     last = windDF.index[-1].to_pydatetime()
     now = datetime.now(TZ_NY)
+    delta = now-last
 
     # Work with data from the last 2 days
     cutoff_time = last - timedelta(hours=32)
