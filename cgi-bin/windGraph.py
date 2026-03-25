@@ -13,6 +13,7 @@ over time, with annotations for current conditions and data source.
 """
 
 import logging
+from pathlib import Path
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 #import pytz  # may need to migrate to ZoneInfo  RaspberryPi OS doesn't have the latest Python and thus doesn't have ZoneInfo.
@@ -25,6 +26,8 @@ import matplotlib.pyplot as plt
 import matplotlib.transforms
 import matplotlib.dates as mdates
 
+### Global Structures and Configurations
+BASE_DIR = Path(__file__).resolve().parent
 TZ_NY = ZoneInfo('America/New_York')
 UTC = ZoneInfo('UTC')
 
@@ -34,8 +37,8 @@ UTC = ZoneInfo('UTC')
 # is the cache of materials (graphs, images and table) that are refreshed by separate processes.
 
 # The pwd is the webpage
-pathToResources = 'resources/'  # where the data cache and the "static" resources are stored.
-pathToImages = 'resources/tmp/'  # where the generated graphs and tables are stored. aja "mutable content"
+pathToResources = '../resources/'  # where the data cache and the "static" resources are stored.
+pathToImages = '../resources/tmp/'  # where the generated graphs and tables are stored. aja "mutable content"
 
 def fetchWindData(source):
     """
@@ -61,6 +64,7 @@ def fetchWindData(source):
     sel = windDF['Source'] == 44022
     # we have data from multiple buoys, but we only want one for the graph. The others are for the table.
     return windDF[sel].filter(items=['WindSpeedAvg [kts]', 'WindSpeedGst [kts]', 'AirTemp [°F]', 'WindDir [°]', 'WdirSin', 'WdirCos'])
+    # return windDF.filter(items=['WindSpeedAvg [kts]', 'WindSpeedGst [kts]', 'AirTemp [°F]', 'WindDir [°]', 'WdirSin', 'WdirCos'])
 
 def makeWindGraph(windDF, whereFrom=""):
     """
@@ -75,18 +79,16 @@ def makeWindGraph(windDF, whereFrom=""):
     # determine how old the data is...
     last = windDF.index[-1].to_pydatetime()
     now = datetime.now(TZ_NY)
-    delta = now-last
-    # print(f"{last} -> {now}  Data is {delta} old")
 
     # Work with data from the last 2 days
-    cutoff_time = datetime.now(TZ_NY) - timedelta(hours=32)
+    cutoff_time = last - timedelta(hours=32)
     windDF = windDF[windDF.index >= cutoff_time]
 
     # Resample to 1 hour intervals, averaging the components
     windDF = windDF.select_dtypes('number').resample('30min').mean()
 
     logging.debug(windDF.head())
-    logging.debug('...')
+    logging.debug(f'..{len(windDF)}..')
     logging.debug(windDF.tail())
 
     imageRef = pathToImages + "windGraph.png" # fetch locally (way faster on a pi)
@@ -187,15 +189,17 @@ def windDirection(ang):
 
 def main():
     # Retrieve the OCR data for execution rocks.
-    source = pathToResources + "wind_data.csv"
-    dest   = pathToImages + "windGraph.png" # desitnation for the graph, but also the source of the data (since it's generated locally from the csv)
+    source = BASE_DIR / pathToResources / "wind_data.csv"
+    # source = pathToResources + "wind_data.csv"
+    # dest   = pathToImages + "windGraph.png" # desitnation for the graph, but also the source of the data (since it's generated locally from the csv)
+    dest = BASE_DIR / pathToImages / "windGraph.png"
 
     logging.info(f"\t...source: {source}")
 
     windDF = fetchWindData(source)
 
     logging.debug(windDF.head())
-    logging.debug('...')
+    logging.debug(f'..{len(windDF)}..')
     logging.debug(windDF.tail())
 
     logging.info(f"\t...destination: {dest}")
@@ -209,6 +213,7 @@ def main():
 
 if __name__ == '__main__':
     prog = 'WindGraph    '
-    logging.basicConfig(filename='WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
+    logFile = '../resources/logs/WeatherKiosk.log'
+    logging.basicConfig(filename=logFile, format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
     logging.info('Build wind graph...')
     main()

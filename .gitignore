@@ -3,6 +3,7 @@
 # base modules
 node_modules
 deprecated
+GetCSVData.sh
 
 # temporary files as part of testing and debugging
 *.zip
