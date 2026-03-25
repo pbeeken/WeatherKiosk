@@ -86,7 +86,7 @@ def makeWindGraph(windDF, whereFrom=""):
     windDF = windDF[windDF.index >= cutoff_time]
 
     # Resample to 1 hour intervals, averaging the components
-    windDF = windDF.select_dtypes('number').resample('30min').mean()
+    windDF = windDF.select_dtypes('number').resample('45min').mean()
 
     logging.debug(windDF.head())
     logging.debug(f'..{len(windDF)}..')
