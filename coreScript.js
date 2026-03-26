@@ -304,7 +304,12 @@ async function fetchResources(what, units) {
     if (what === 'windgraph' || what === 'all') {
         let url = `http://localhost:8000/cgi-bin/windGraph.py`;
         toastStatus('↣wind', 'add');
-        await fetch(url)
+
+        const timeout = 15000; // Default to 15 seconds
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), timeout);
+
+        await fetch(url, { signal: controller.signal })
             .then((response) => response.text())
             .then((text) => {
                 console.log(text);
@@ -313,8 +318,10 @@ async function fetchResources(what, units) {
             })
             .catch((error) => {
                 console.error(`Failed to fetch ${url}`, error);
+                toastStatus('↣wind', 'rem'); // remove the 'fetching' status even if it fails
                 networkStatus();
-            });
+            })
+            .finally(() => clearTimeout(id));
     }
 
     if (what === 'forecast' || what === 'all') {
