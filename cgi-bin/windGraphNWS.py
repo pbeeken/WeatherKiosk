@@ -4,17 +4,19 @@ import pandas as pd
 import numpy as np
 
 import matplotlib.pyplot as plt
-from datetime import datetime, date, time, timedelta
-from pytz import timezone  # should already be part of pandas but it doesn't hurt to do it again.
+from datetime import datetime, timedelta
+# from pytz import timezone  # should already be part of pandas but it doesn't hurt to do it again.
 import logging
 
-EST = timezone('America/New_York')
-UTC = timezone('UTC')
+### Global Structures and Configurations
+# 03/04/26 now supports ZoneInfo so we can remove the pytz dependency.
+from zoneinfo import ZoneInfo
+TZ_NY = ZoneInfo('America/New_York')
+UTC = ZoneInfo('UTC')
+EST = TZ_NY
 
 import matplotlib.transforms
 import matplotlib.dates as mdates
-
-pathToResources = 'resources/'
 
 # Getting Weather Data from execution rocks (station 44022)  Only needs to run every 15 minutes.
 
@@ -39,7 +41,7 @@ def makeWindGraph(windDF, whereFrom=""):
   if len(windDF) < 16:
     raise BaseException('Not enough points')
 
-  imageRef = pathToResources  + 'tmp/' + 'windGraph.png' # fetch locally (way faster on a pi)
+  imageRef = pathToImages / 'windGraph.png' # fetch locally (way faster on a pi)
   fig, ax = plt.subplots(figsize=(8, 4))
 
   tme = windDF.index

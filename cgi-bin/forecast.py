@@ -1,12 +1,15 @@
 #!/usr/bin/python
-
-from html.parser import HTMLParser
-import logging
-
 import os
 import sys
 
-pathToResources = "resources/"
+from html.parser import HTMLParser
+
+import logging
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent
+pathToResources = BASE_DIR.parent / 'resources'  # where the data cache and the "static" resources are stored.
+pathToImages = BASE_DIR.parent / 'resources' / 'tmp'  # where the generated graphs and tables are stored. aka "mutable content"
+pathToLogs = BASE_DIR.parent / 'resources' / 'logs'  # where the logs are stored.
 
 """
 MarineHTMLParser
@@ -254,7 +257,7 @@ if __name__ == '__main__':                                                      
             ''')
 
     #open and read the template file
-    with open(pathToResources + templateFile, "r") as template:
+    with open(pathToResources / templateFile, "r") as template:
         templateHtml = template.readlines()
 
     # Title Information
@@ -266,7 +269,7 @@ if __name__ == '__main__':                                                      
     templateHtml = templateHtml.replace('<!--Special Warning-->', specialWarning)
 
     # copy the html table into the text and write out a new file
-    with open(pathToResources + "tmp/" + forecastFile, "w") as htmlFile:
+    with open(pathToImages / forecastFile, "w") as htmlFile:
         htmlFile.write(templateHtml)
 
     print("Content-Type: text/plain\n")

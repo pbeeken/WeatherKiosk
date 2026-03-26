@@ -8,9 +8,14 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-import logging
 
-pathToResources = 'resources/'
+# The pwd is the webpage
+import logging
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent
+pathToResources = BASE_DIR.parent / 'resources'  # where the data cache and the "static" resources are stored.
+pathToImages = BASE_DIR.parent / 'resources' / 'tmp'  # where the generated graphs and tables are stored. aka "mutable content"
+pathToLogs = BASE_DIR.parent / 'resources' / 'logs'  # where the logs are stored.
 
 ##
 # make a cartoon of a moon with beta % lit
@@ -69,7 +74,7 @@ def makeMoonLune(beta):
 ###
 if __name__ == '__main__':                                                               #01234567890123
     prog = 'moonPhase    '
-    logging.basicConfig(filename='WeatherKiosk.log', format=f"%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s", level=logging.INFO)
+    logging.basicConfig(filename=pathToLogs / 'WeatherKiosk.log', format=f"%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s", level=logging.INFO)
 
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
     # e.g. fs = { 'fracillum':   '23%', 'stage': 'Waxing', 'filename': 'moon_today.svg' }
@@ -78,7 +83,7 @@ if __name__ == '__main__':                                                      
     # phase and fracillum is passed from javascript
     stage = ""
     fracillum = 0.5
-    filename = pathToResources + 'moon.svg'
+    filename = pathToResources / 'moon.svg'
     result = {'rc': 400, 'filename': filename, 'fracillum': fracillum, 'stage': stage, 'error':""}
 
     if 'fracillum' in fs:
@@ -94,7 +99,7 @@ if __name__ == '__main__':                                                      
 
     if 'filename' in fs:
         filename = fs['filename'].value
-        result['filename'] = pathToResources  + 'tmp/' + filename
+        result['filename'] = pathToImages / filename
         logging.debug(f"\tfilename updated: {filename}")
 
     if stage.find('Waning')>=0 or stage.find('Last')>=0:

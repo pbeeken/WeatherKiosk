@@ -38,17 +38,26 @@ import matplotlib.pyplot as plt
 ###
 # Time libraries we are very dependant on 'aware' times. Most bugs have been traced back
 # to a misunderstanding of how important that times be 'aware'.
-from datetime import tzinfo, timedelta, datetime, date
-from pytz import timezone  # should already be part of pandas but it doesn't hurt to do it again.
-import logging
+from datetime import datetime
 import cgi
-import os
 
 ###
 # cgi call from browser chooses units
 
-# Global constants we use throughout.
-EST = timezone('America/New_York')
+### Global Structures and Configurations
+# 03/04/26 now supports ZoneInfo so we can remove the pytz dependency.
+from zoneinfo import ZoneInfo
+TZ_NY = ZoneInfo('America/New_York')
+UTC = ZoneInfo('UTC')
+EST = TZ_NY
+
+# The pwd is the webpage
+import logging
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent
+pathToResources = BASE_DIR.parent / 'resources'  # where the data cache and the "static" resources are stored.
+pathToImages = BASE_DIR.parent / 'resources' / 'tmp'  # where the generated graphs and tables are stored. aka "mutable content"
+pathToLogs = BASE_DIR.parent / 'resources' / 'logs'  # where the logs are stored.
 
 # values for REST call
 measureUnits = ('english', 'metric')
@@ -65,8 +74,6 @@ stationsNearUs = {  'NewRochelleNY':  '8518490',
                     }
 
 tideStation = stationsNearUs['RyePlaylandNY']  # Closest one to us with reliable data
-
-pathToResources = 'resources/'
 
 ###
 # import common library
@@ -105,12 +112,12 @@ def makeTideTable(extremaDF):
                             )
 
     #open the template file
-    with open(pathToResources + templateFile, 'r') as template:
+    with open(pathToResources / templateFile, 'r') as template:
         templateHTML = template.readlines()
  #   templateFile.close()
 
     # copy the html table into the text and write out a new file   '../' +
-    with open(pathToResources + 'tmp/' +  tideFile, 'w') as html:
+    with open(pathToImages / tideFile, 'w') as html:
         html.write( ("".join(templateHTML)).replace('<!--Table Place-->', htmlText) )
 
 # Should run this every 5 minutes to keep the screen up to date.

@@ -1,23 +1,28 @@
 #!/usr/bin/python
-
-# Launch the following simple server
-# python -m http.server --bind localhost --cgi 8000
-
 import json
 import cgi
-import logging
 
 # import urllib library
 from urllib.request import urlopen
 
+import logging
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent
+# pathToResources = BASE_DIR.parent / 'resources'  # where the data cache and the "static" resources are stored.
+# pathToImages = BASE_DIR.parent / 'resources' / 'tmp'  # where the generated graphs and tables are stored. aka "mutable content"
+pathToLogs = BASE_DIR.parent / 'resources' / 'logs'  # where the logs are stored.
+
+
 ###
 # Time libraries we are very dependant on 'aware' times. Most bugs have been traced back
 # to a misunderstanding of how important that times be 'aware'.
-from datetime import tzinfo, timedelta, datetime, date
-from pytz import timezone  # should already be part of pandas but it doesn't hurt to do it again.
-from dateutil import parser
-import time
-EST = timezone('America/New_York')
+from datetime import datetime
+
+# 03/04/26 now supports ZoneInfo so we can remove the pytz dependency.
+from zoneinfo import ZoneInfo
+TZ_NY = ZoneInfo('America/New_York')
+UTC = ZoneInfo('UTC')
+EST = TZ_NY
 
 ##
 #  Returns the appropriate string value for the REST call
@@ -56,7 +61,7 @@ def fetchMoonPhasesData(theDate, numPhases):
 ###
 if __name__ == '__main__':                                                               #01234567890123
     prog = 'moonFetch       '
-    logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.DEBUG)
+    logging.basicConfig(filename=pathToLogs / 'WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.DEBUG)
 
     # first fetch the strings passed to us with the fields outlined
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!

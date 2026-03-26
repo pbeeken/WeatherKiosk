@@ -1,20 +1,26 @@
 #!/usr/bin/python
 """
-  Former bash shell, python is more cross platform
-  # set default address
-  if [[ '$1' =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    addr='$1'
-  else
-    addr='8.8.8.8'
-  fi
-  echo '$addr'
-  # test reachability
-  status='$(ping $addr -w 1 -c 1 | grep 'packet loss')'
-  ([[ '$status' =~ \ 100\% ]]) && echo '&#11015; DN' || echo '&#11014; UP'
+  # Former bash shell, python is more cross platform
+  # # set default address
+  # if [[ '$1' =~ ^[0-9]+.[0-9]+.[0-9]+.[0-9]+$ ]]; then
+  #   addr='$1'
+  # else
+  #   addr='8.8.8.8'
+  # fi
+  # echo '$addr'
+  # # test reachability
+  # status='$(ping $addr -w 1 -c 1 | grep 'packet loss')'
+  # ([[ '$status' =~  100% ]]) && echo '&#11015; DN' || echo '&#11014; UP'
 """
 from urllib.request import urlopen
 from urllib.error import URLError
+# The pwd is the webpage
 import logging
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent
+pathToResources = BASE_DIR.parent / 'resources'  # where the data cache and the "static" resources are stored.
+pathToImages = BASE_DIR.parent / 'resources' / 'tmp'  # where the generated graphs and tables are stored. aka "mutable content"
+pathToLogs = BASE_DIR.parent / 'resources' / 'logs'  # where the logs are stored.
 
 def isUp(url=None):
   if url is None:
@@ -42,7 +48,7 @@ def isUpAlt(host='8.8.8.8', port=53, timeout=2):
 
 if __name__ == '__main__':
     prog = 'networkStatus   '
-    logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
+    logging.basicConfig(filename=pathToLogs / 'WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
 
     if isUpAlt():
         status = "UP <span id='up'>&#x27F0;</span>" # 🟢,&#x1F7E2; ⇧,&#x21E7; Extended utf-8 doesn't display

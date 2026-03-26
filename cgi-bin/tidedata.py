@@ -13,12 +13,22 @@ import os
 ###
 # Time libraries we are very dependant on 'aware' times. Most bugs have been traced back
 # to a misunderstanding of how important that times be 'aware'.
-from datetime import tzinfo, timedelta, datetime, date
-from pytz import timezone  # should already be part of pandas but it doesn't hurt to do it again.
-import logging
+from datetime import timedelta, datetime
 
-# Global constants we use throughout.
-EST = timezone('America/New_York')
+# The pwd is the webpage
+import logging
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent
+pathToResources = BASE_DIR.parent / 'resources'  # where the data cache and the "static" resources are stored.
+pathToImages = BASE_DIR.parent / 'resources' / 'tmp'  # where the generated graphs and tables are stored. aka "mutable content"
+pathToLogs = BASE_DIR.parent / 'resources' / 'logs'  # where the logs are stored.
+
+### Global Structures and Configurations
+# 03/04/26 now supports ZoneInfo so we can remove the pytz dependency.
+from zoneinfo import ZoneInfo
+TZ_NY = ZoneInfo('America/New_York')
+UTC = ZoneInfo('UTC')
+EST = TZ_NY
 
 # # values for REST call
 # measureUnits = ('english', 'metric')
@@ -115,12 +125,12 @@ def fetchDailyTides(fromTideStation):
     fetchDailyTides
     Fetch daily tide predictions to get the tide data for a few days ahead -> (detailDF, extremaDF)
     This method checks for the existance and timelyness of a local store before going to the web.
-    before fethcing from the NOAA site.
+    before fetchcing from the NOAA site.
     fromTideStation -- NOAA tide station code
     """
     # Local store
-    detailTidesFile = 'resources/tmp/DetailTides.zip'  # 15 minute intervals (for smooth graph)
-    extremTidesFile = 'resources/tmp/ExtremTides.zip'  # Just the hi and low values for extrema
+    detailTidesFile = pathToImages / 'DetailTides.zip'  # 15 minute intervals (for smooth graph)
+    extremTidesFile = pathToImages / 'ExtremTides.zip'  # Just the hi and low values for extrema
 
     # Fetch this data once per day.  And run all the subsequent graphics from the local store.
     now       = datetime.now(tz=EST)
@@ -153,7 +163,7 @@ def fetchDailyTides(fromTideStation):
         tideExtremDF = fetchTideData(fromTideStation, yesterday.date(), tomorrow.date(), interval='hilo')
         tideExtremDF.to_pickle(extremTidesFile, compression='infer')
 
-    # The REST Call always returns at least 3 days of infomraiont (can't just return the next 24 hours)
+    # The REST Call always returns at least 3 days of information (can't just return the next 24 hours)
     # so we have to truncate the list.
     selDet = tideDetailDF['DateTime']<tomorrow
     selExt = tideExtremDF['DateTime']<tomorrow

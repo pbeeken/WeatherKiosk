@@ -6,8 +6,13 @@
 import json
 import cgi
 import ssl
+# The pwd is the webpage
 import logging
-
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent
+pathToResources = BASE_DIR.parent / 'resources'  # where the data cache and the "static" resources are stored.
+pathToImages = BASE_DIR.parent / 'resources' / 'tmp'  # where the generated graphs and tables are stored. aka "mutable content"
+pathToLogs = BASE_DIR.parent / 'resources' / 'logs'  # where the logs are stored.
 # import urllib library
 from urllib.request import urlopen
 
@@ -58,7 +63,7 @@ def fetchOneDayData(theDate, latlong='40.93,-73.76', timezone='-5'):
 ###
 if __name__ == '__main__':
     prog = 'usNavObsData '
-    logging.basicConfig(filename=f'WeatherKiosk.log', format=f"%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s", level=logging.INFO)
+    logging.basicConfig(filename=pathToLogs /'WeatherKiosk.log', format=f"%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s", level=logging.INFO)
 
     #   first fetch the strings passed to us with the fields outlined
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!

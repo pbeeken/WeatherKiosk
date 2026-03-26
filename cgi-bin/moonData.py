@@ -1,10 +1,14 @@
 #!/usr/bin/python
-
-# python -m http.server --bind localhost --cgi 8000
-# python -mwebbrowser http://localhost:8000/cgi-bin/moonData.py
 import json
 import cgi
+
 import logging
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent
+# pathToResources = BASE_DIR.parent / 'resources'  # where the data cache and the "static" resources are stored.
+# pathToImages = BASE_DIR.parent / 'resources' / 'tmp'  # where the generated graphs and tables are stored. aka "mutable content"
+pathToLogs = BASE_DIR.parent / 'resources' / 'logs'  # where the logs are stored.
+
 
 # import urllib library
 from urllib.request import urlopen
@@ -59,7 +63,7 @@ def fetchOneDayData(theDate,latlong):
 ###
 if __name__ == '__main__':                                                               #01234567890123
     prog = 'moonData        '
-    logging.basicConfig(filename='WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
+    logging.basicConfig(filename=pathToLogs / 'WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
 
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
     logging.info(f"\tfield storage: {fs}")

@@ -11,13 +11,8 @@ over time, with annotations for current conditions and data source.
 2/16/26 It WORKS!  Tough to develop on a powerful pc and deploy on a toy.
 2/16/26    needs refactoring to clean-up the hacks.
 """
-
-import logging
-from pathlib import Path
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
-#import pytz  # may need to migrate to ZoneInfo  RaspberryPi OS doesn't have the latest Python and thus doesn't have ZoneInfo.
-# This is a workaround until we can upgrade the OS.  03/04/26 now supports ZoneInfo so we can remove the pytz dependency.
 
 import pandas as pd
 import numpy as np
@@ -27,7 +22,8 @@ import matplotlib.transforms
 import matplotlib.dates as mdates
 
 ### Global Structures and Configurations
-BASE_DIR = Path(__file__).resolve().parent
+# 03/04/26 now supports ZoneInfo so we can remove the pytz dependency.
+from zoneinfo import ZoneInfo
 TZ_NY = ZoneInfo('America/New_York')
 UTC = ZoneInfo('UTC')
 
@@ -37,8 +33,12 @@ UTC = ZoneInfo('UTC')
 # is the cache of materials (graphs, images and table) that are refreshed by separate processes.
 
 # The pwd is the webpage
-pathToResources = '../resources/'  # where the data cache and the "static" resources are stored.
-pathToImages = '../resources/tmp/'  # where the generated graphs and tables are stored. aja "mutable content"
+import logging
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent
+pathToResources = BASE_DIR.parent / 'resources'  # where the data cache and the "static" resources are stored.
+pathToImages = BASE_DIR.parent / 'resources' / 'tmp'  # where the generated graphs and tables are stored. aka "mutable content"
+pathToLogs = BASE_DIR.parent / 'resources' / 'logs'  # where the logs are stored.
 
 def fetchWindData(source):
     """
@@ -54,7 +54,7 @@ def fetchWindData(source):
     logging.info(f"\t...getting from {source}")
     # Getting Weather Data from execution rocks (station 44022)  Only needs to run every 15 minutes.
     windDF = pd.read_csv(source, index_col=0, parse_dates=True)
-    windDF.dropna(inplace=True)                                     # wind data has glitches
+    # windDF.dropna(inplace=True)  # we don't do this globally, some data isn't relevant to what we want.                                     # wind data has glitches
     logging.info(f"\t...got {len(windDF)} data values")
 
     # We need to average the components rather than the angles when re-sampling.
@@ -92,7 +92,7 @@ def makeWindGraph(windDF, whereFrom=""):
     logging.debug(f'..{len(windDF)}..')
     logging.debug(windDF.tail())
 
-    imageRef = pathToImages + "windGraph.png" # fetch locally (way faster on a pi)
+    imageRef = pathToImages / "windGraph.png" # fetch locally (way faster on a pi)
     fig, ax = plt.subplots(figsize=(8, 4))
 
     tme = windDF.index
@@ -190,10 +190,10 @@ def windDirection(ang):
 
 def main():
     # Retrieve the OCR data for execution rocks.
-    source = BASE_DIR / pathToResources / "wind_data.csv"
+    source = pathToResources / "wind_data.csv"
     # source = pathToResources + "wind_data.csv"
     # dest   = pathToImages + "windGraph.png" # desitnation for the graph, but also the source of the data (since it's generated locally from the csv)
-    dest = BASE_DIR / pathToImages / "windGraph.png"
+    dest = pathToImages / "windGraph.png"
 
     logging.info(f"\t...source: {source}")
 
@@ -214,7 +214,7 @@ def main():
 
 if __name__ == '__main__':
     prog = 'WindGraph    '
-    logFile = '../resources/logs/WeatherKiosk.log'
+    logFile = pathToLogs / 'WeatherKiosk.log'
     logging.basicConfig(filename=logFile, format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
     logging.info('Build wind graph...')
     main()

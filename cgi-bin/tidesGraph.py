@@ -38,9 +38,21 @@ import matplotlib.pyplot as plt
 ###
 # Time libraries we are very dependant on 'aware' times. Most bugs have been traced back
 # to a misunderstanding of how important that times be 'aware'.
-from datetime import tzinfo, timedelta, datetime, date
-from pytz import timezone  # should already be part of pandas but it doesn't hurt to do it again.
+from datetime import datetime
+### Global Structures and Configurations
+# 03/04/26 now supports ZoneInfo so we can remove the pytz dependency.
+from zoneinfo import ZoneInfo
+TZ_NY = ZoneInfo('America/New_York')
+UTC = ZoneInfo('UTC')
+
+# The pwd is the webpage
 import logging
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent
+pathToResources = BASE_DIR.parent / 'resources'  # where the data cache and the "static" resources are stored.
+pathToImages = BASE_DIR.parent / 'resources' / 'tmp'  # where the generated graphs and tables are stored. aka "mutable content"
+pathToLogs = BASE_DIR.parent / 'resources' / 'logs'  # where the logs are stored.
+
 import cgi
 import os
 
@@ -51,7 +63,7 @@ import os
 gTideUnit = 'Tide [ft]' # 'Tide [m]'  default replaced in main
 
 # Global constants we use throughout.
-EST = timezone('America/New_York')
+EST = TZ_NY
 
 # values for REST call
 measureUnits = ('english', 'metric')
@@ -89,7 +101,7 @@ def makeTideGraph(detailDF, extremaDF):
     """
     global gTideUnit # unit switch flag
 
-    graphFile = pathToResources + 'tmp/' +  'tideGraph.png'
+    graphFile = pathToImages / 'tideGraph.png'
 
     import matplotlib.transforms
     import matplotlib.dates as mdates
@@ -160,7 +172,7 @@ def refresh():
 """
 if __name__ == '__main__':
     prog = 'TideGraph    '
-    logging.basicConfig(filename='WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
+    logging.basicConfig(filename=pathToLogs / 'WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
 
     #   first fetch the strings passed to us with the fields outlined
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
