@@ -39,7 +39,7 @@ def makeMoonLune(beta):
   plt.axes().set_aspect('equal')
 
   # Get full moon image
-  imageRef = pathToResources + 'FullMoon.png'
+  imageRef = pathToResources / 'FullMoon.png'
   imageOverlay = plt.imread(imageRef)
   (hgt,wdt,cols) = imageOverlay.shape
 
@@ -74,7 +74,7 @@ def makeMoonLune(beta):
 ###
 if __name__ == '__main__':                                                               #01234567890123
     prog = 'moonPhase    '
-    logging.basicConfig(filename=pathToLogs / 'WeatherKiosk.log', format=f"%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s", level=logging.INFO)
+    logging.basicConfig(filename=pathToLogs / 'WeatherKiosk.log', format=f"%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s", level=logging.DEBUG)
 
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
     # e.g. fs = { 'fracillum':   '23%', 'stage': 'Waxing', 'filename': 'moon_today.svg' }
@@ -82,8 +82,9 @@ if __name__ == '__main__':                                                      
 
     # phase and fracillum is passed from javascript
     stage = ""
-    fracillum = 0.5
+    fracillum = 0.2
     filename = pathToResources / 'moon.svg'
+    filename = str(filename)  # convert from PosixPath to string for json serialization
     result = {'rc': 400, 'filename': filename, 'fracillum': fracillum, 'stage': stage, 'error':""}
 
     if 'fracillum' in fs:
