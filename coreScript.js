@@ -305,11 +305,11 @@ async function fetchResources(what, units) {
         let url = `http://localhost:8000/cgi-bin/windGraph.py`;
         toastStatus('↣wind', 'add');
 
-        const timeout = 15000; // Default to 15 seconds
+        const timeout = 20000; // Default to 20 seconds
         const controller = new AbortController();
         const id = setTimeout(() => controller.abort(), timeout);
 
-        await fetch(url, { signal: controller.signal })
+        await fetch(url, { signal: controller.signal, cache: 'reload' })
             .then((response) => response.text())
             .then((text) => {
                 console.log(text);
