@@ -225,13 +225,14 @@ async function fetchMoonImage(when) {
     const stage = astroData[when].curphase.split(' ')[0];
     const fracillum = astroData[when].fracillum.slice(0, -1); // Strip the % off.
     let url = `http://localhost:8000/cgi-bin/moonPhase.py?fracillum=${fracillum}&stage=${stage}&filename=moon_${when}.svg`;
-    toastStatus('↣moon', 'add');
+    let kd = when.slice(0).toUpperCase() + when.charAt(2); //1st and 3rd
+    toastStatus('↣moon' + kd, 'add');
 
     await fetch(url)
         .then((response) => response.json())
         .then((data) => {
             moonImage[when] = data;
-            toastStatus('↣moon', 'rem');
+            toastStatus('↣moon' + kd, 'rem');
             document.getElementById(when).getElementsByClassName('phase')[0].src = moonImage[when].filename + randomSuffix();
             moonImage.complete = moonImage.yesterday && moonImage.today && moonImage.tomorrow ? true : false;
         })
@@ -239,6 +240,7 @@ async function fetchMoonImage(when) {
             console.error(`Failed to fetch ${url}`, error);
             networkStatus();
             moonImage[when] = { error, response: null };
+            toastStatus('↣moon' + kd, 'rem');
         });
 }
 
