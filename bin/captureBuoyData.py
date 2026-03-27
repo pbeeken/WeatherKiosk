@@ -552,7 +552,7 @@ def captureWaveData(srcTag='exrx'):
     wave_buffer.add_record(wave.getNewDFRecord())
 
 def main():
-    prog = "captureBuoyData"
+    prog = "captureBuoyData   "
     parser = argparse.ArgumentParser(
                     prog=prog,
                     description='Fetches the wind and wave data from LIRACOOS Buoys using OCR techniques.',

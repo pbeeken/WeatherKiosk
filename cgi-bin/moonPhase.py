@@ -74,7 +74,7 @@ def makeMoonLune(beta):
 ###
 if __name__ == '__main__':                                                               #01234567890123
     prog = 'moonPhase    '
-    logging.basicConfig(filename=pathToLogs / 'WeatherKiosk.log', format=f"%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s", level=logging.DEBUG)
+    logging.basicConfig(filename=pathToLogs / 'WeatherKiosk.log', format=f"%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s", level=logging.INFO)
 
     fs = cgi.FieldStorage()  # this is a dictionary of storage objects not strings!
     # e.g. fs = { 'fracillum':   '23%', 'stage': 'Waxing', 'filename': 'moon_today.svg' }

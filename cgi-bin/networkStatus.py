@@ -48,7 +48,7 @@ def isUpAlt(host='8.8.8.8', port=53, timeout=2):
 
 if __name__ == '__main__':
     prog = 'networkStatus   '
-    logging.basicConfig(filename=pathToLogs / 'WeatherKiosk.log', format='%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
+    logging.basicConfig(filename=pathToLogs / 'WeatherKiosk.log', format=f"%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s", level=logging.INFO)
 
     if isUpAlt():
         status = "UP <span id='up'>&#x27F0;</span>" # 🟢,&#x1F7E2; ⇧,&#x21E7; Extended utf-8 doesn't display
