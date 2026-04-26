@@ -26,7 +26,7 @@ import matplotlib.dates as mdates
 TZ_NY = ZoneInfo('America/New_York')
 UTC = ZoneInfo('UTC')
 EST = TZ_NY
-lastCaptureDateTime = NONE
+lastCaptureDateTime = None
 
 # The data is stored locally in a csv file that is updated by a separate process that fetches the data from the buoys.
 # This is much faster than fetching the data from the buoys every time we want to generate a graph, especially on a Raspberry Pi.

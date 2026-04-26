@@ -15,7 +15,7 @@ import matplotlib.dates as mdates
 TZ_NY = ZoneInfo('America/New_York')
 UTC = ZoneInfo('UTC')
 EST = TZ_NY
-lastCaptureDateTime = NONE
+lastCaptureDateTime = None
 
 # The pwd is the webpage
 import logging
