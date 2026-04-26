@@ -14,7 +14,7 @@ def run_step(script_name):
 
 def main():
     # Print CGI header
-    print("Content-Type: text/html\n")
+    # print("Content-Type: text/html\n")  The return from the successful returns this response header.
 
     # Step 1: Run first program
     response = run_step(pathToResources / 'windGraphOCR.py')
