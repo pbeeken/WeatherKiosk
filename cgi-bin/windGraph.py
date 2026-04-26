@@ -19,13 +19,12 @@ def main():
     response = run_step(pathToResources / 'windGraphOCR.py')
 
     # Step 2: Act on result and run next if successful
-    if "PROCEED" in response:
-        response = run_step(pathToResources / 'windGraphNWS.py')
-
+    if "SUCCESS" in response:
+        # Looks good so far but how old is the data?
         # # Step 3: Run final program
-        # if "PROCEED" in response2:
-        #     final_response = run_step('program3.py')
-        #     print(f"Workflow Complete: {final_response}")
+        if ("hours ago" in response  and float(response.split("'")[1]) > 5):
+            # OCR data is too old, so we should try the NWS data instead.
+            response = run_step(pathToResources / 'windGraphNWS.py')
         # else:
         print(f"{response}")
     else:

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import pandas as pd
 import numpy as np
@@ -15,6 +15,7 @@ import matplotlib.dates as mdates
 TZ_NY = ZoneInfo('America/New_York')
 UTC = ZoneInfo('UTC')
 EST = TZ_NY
+DATA_AGE_HOURS = 99.9  # Optimism, the data should be no more than 1 hour old. We will warn if it's older than that.
 
 # The pwd is the webpage
 import logging
@@ -57,6 +58,11 @@ def makeWindGraph(windDF, whereFrom=""):
 
     imageRef = pathToImages / 'windGraph.png' # fetch locally (way faster on a pi)
     fig, ax = plt.subplots(figsize=(8, 4))
+
+    # determine how old the data is...
+    last = windDF.index[-1].to_pydatetime()
+    now = datetime.now(TZ_NY)
+    delta = now-last
 
     tme = windDF.index
     wspd = windDF['WSPD'] # windDF['WSPD']
@@ -114,9 +120,12 @@ def makeWindGraph(windDF, whereFrom=""):
       mxsp = '-'
     temp = windDF.iloc[-1]['ATMP']
     wdir = windDF.iloc[-1]['WDIR']
+
     old = datetime.now(tz=EST)-tme
     oldmin = np.int32(old.total_seconds()%60)
     oldhrs = np.int32(old.total_seconds()/3600)
+    global DATA_AGE_HOURS
+    DATA_AGE_HOURS = oldhrs + oldmin/60.0
     logging.debug(f"{tme}, {oldhrs}:{oldmin} old, {wspd} mph, {mxsp} mph, {wdir:4.0f}°T, {temp}°C")
 
     plt.text(0.99, 0.90, f"Last readings spd:{wspd}, max:{mxsp}, dir:{windDirection(wdir)}",
@@ -158,7 +167,6 @@ weatherBuoys = {
 
 
 def main():
-    lastCaptureDateTime = None
     now = datetime.now().astimezone(TZ_NY)
     d = timedelta(days = 2)
 
@@ -173,7 +181,7 @@ def main():
             # theDF.dropna(inplace=True) # every record has missing data columns but the're not important for the graph.  We just need the date and the wind speed and direction.
             smpl = theDF.index > (now - d)
             lastCaptureDateTime = theDF[smpl].index.max()
-            logging.info(f"\t...last capture at {lastCaptureDateTime}")
+            logging.info(f"\t...last capture {DATA_AGE_HOURS:0.1f} hours ago")
             makeWindGraph( theDF[smpl].reset_index().resample('1h', on='DateTime').mean(), whereFrom=source )
             break
         except Exception:
@@ -183,7 +191,7 @@ def main():
 
     # This is a CGI script, so we need to print the content type header and a blank line before the output.
     print('Content-Type: text/plain\n')
-    print(f"SUCCESS: Wind graph generated from data captured at {lastCaptureDateTime}.\n")
+    print(f"SUCCESS: Wind graph generated from data captured '{DATA_AGE_HOURS:0.1f}' hours ago.\n")
     print('windGraphNWS done.')
 
 if __name__ == '__main__':

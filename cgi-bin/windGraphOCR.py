@@ -26,7 +26,7 @@ import matplotlib.dates as mdates
 TZ_NY = ZoneInfo('America/New_York')
 UTC = ZoneInfo('UTC')
 EST = TZ_NY
-lastCaptureDateTime = None
+DATA_AGE_HOURS = 99.9  # Optimism, the data should be no more than 1 hour old. We will warn if it's older than that.
 
 # The data is stored locally in a csv file that is updated by a separate process that fetches the data from the buoys.
 # This is much faster than fetching the data from the buoys every time we want to generate a graph, especially on a Raspberry Pi.
@@ -152,10 +152,12 @@ def makeWindGraph(windDF, whereFrom=""):
       mxsp = '-'
     temp = windDF['AirTemp [°F]'].to_numpy()[-1]
     wdir = windDF['WindDir [°]'].to_numpy()[-1]
-    # temp = windDF['AirTemp [°F]'].to_numpy()[-1][0]
     # wdir = windDF['WindSpeedAvg [m/s]'].to_numpy()[-1][0]
+
     oldmin = np.int32(delta.total_seconds()%60)
     oldhrs = np.int32(delta.total_seconds()/3600)
+    global DATA_AGE_HOURS
+    DATA_AGE_HOURS = oldhrs + oldmin/60.0
     logging.info(f"{tme}, {oldhrs}:{oldmin} old, {wspd} kts, {mxsp} kts, {wdir:4.0f}°T, {windDirection(wdir)}, {temp}°F")
     # print(f"{tme}, {oldhrs}:{oldmin} old, {wspd} kts, {mxsp} kts, {wdir:4.0f}°T, {windDirection(wdir)}, {temp}°F")
 
@@ -189,6 +191,8 @@ def windDirection(ang):
     return '-?-'
 
 def main():
+    now = datetime.now().astimezone(TZ_NY)
+
     # Retrieve the OCR data for execution rocks.
     source = pathToResources / "wind_data.csv"
     # source = pathToResources + "wind_data.csv"
@@ -202,7 +206,6 @@ def main():
     logging.debug(windDF.head())
     logging.debug(f'..{len(windDF)}..')
     logging.debug(windDF.tail())
-    lastCaptureDateTime = windDF.index[-1].to_pydatetime()
 
     logging.info(f"\t...destination: {dest}")
     makeWindGraph(windDF, "Execution Rocks" )
@@ -211,7 +214,7 @@ def main():
 
     # This is a CGI script, so we need to print the content type header and a blank line before the output.
     print('Content-Type: text/plain\n')
-    print(f"SUCCESS: Wind graph generated from data captured at {lastCaptureDateTime}.\n")
+    print(f"SUCCESS: Wind graph generated from data captured '{DATA_AGE_HOURS:0.2f}' hours ago.\n")
     print('windGraphOCR done.')
 
 if __name__ == '__main__':
