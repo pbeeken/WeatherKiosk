@@ -15,7 +15,6 @@ import matplotlib.dates as mdates
 TZ_NY = ZoneInfo('America/New_York')
 UTC = ZoneInfo('UTC')
 EST = TZ_NY
-lastCaptureDateTime = None
 
 # The pwd is the webpage
 import logging
@@ -150,6 +149,7 @@ weatherBuoys = {
 
 
 def main():
+    lastCaptureDateTime = None
     now = datetime.now().astimezone(EST)
     d = timedelta(days = 2)
 
