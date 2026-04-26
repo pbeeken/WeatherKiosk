@@ -45,8 +45,8 @@ def fetchWindData(source):
   windDF['WdirSin'] = np.sin(np.radians(windDF['WDIR']))
   windDF['WdirCos'] = np.cos(np.radians(windDF['WDIR']))
 
-  return windDF #.set_index(windDF['DateTime'] - windDF['DateTime'].min()) # returns a new copy
-#  return windDF.set_index('DateTime')
+  # return windDF #.set_index(windDF['DateTime'] - windDF['DateTime'].min()) # returns a new copy
+  return windDF.set_index('DateTime')
 
 def makeWindGraph(windDF, whereFrom=""):
   if len(windDF) < 16:
@@ -166,11 +166,11 @@ def main():
     for (source, url) in weatherBuoys.items():
         try:
             logging.info('\t...source: %s', source)
-            theDF = fetchWindData(url).dropna(inplace=True)
+            theDF = fetchWindData(url)  #.dropna(inplace=True)
             smpl = theDF['DateTime'] > (now - d)
             lastCaptureDateTime = theDF[smpl]['DateTime'].iloc[-1]
             logging.info(f"\t...last capture at {lastCaptureDateTime}")
-            makeWindGraph( theDF[smpl].resample('1H', on='DateTime').mean(), source )
+            makeWindGraph( theDF[smpl].reset_index().resample('1h', on='DateTime').mean(), whereFrom=source )
             break
         except Exception:
             logging.info('\t... failed')
