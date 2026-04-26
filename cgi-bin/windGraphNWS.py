@@ -163,7 +163,7 @@ def main():
             theDF = fetchWindData(url).dropna(inplace=True)
             smpl = theDF['DateTime'] > (now - d)
             makeWindGraph( theDF[smpl].resample('1H', on='DateTime').mean(), source )
-            lastCaptureDateTime = theDF['DateTime'].to_numpy()[-1]
+            lastCaptureDateTime = theDF['DateTime'].iloc[-1]
             break
         except Exception:
             logging.info('\t... failed')
