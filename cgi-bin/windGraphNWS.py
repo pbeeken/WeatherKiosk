@@ -31,7 +31,13 @@ def fetchWindData(source):
   windDF = pd.read_csv(source, sep="\\s+", header=[0,1], na_values='MM', nrows=450 ) # Deprecated: , delim_whitespace=True
   logging.info(f"\t...got {len(windDF)} data values")
 
-  windDF['DateTime'] = windDF[['#YY','MM','DD','hh','mm']].apply(lambda dt: datetime(dt[0], dt[1], dt[2], dt[3], dt[4], tzinfo=UTC).astimezone(EST), axis=1)
+  # Create a temporary copy with standard column names
+  temp_df = windDF[['#YY', 'MM', 'DD', 'hh', 'mm']].copy()
+  temp_df.columns = ['year', 'month', 'day', 'hour', 'minute']
+  # Convert and localize
+  windDF['DateTime'] = pd.to_datetime(temp_df).dt.tz_localize(UTC).dt.tz_convert(EST)
+
+  # windDF['DateTime'] = windDF[['#YY','MM','DD','hh','mm']].apply(lambda dt: datetime(dt[0], dt[1], dt[2], dt[3], dt[4], tzinfo=UTC).astimezone(EST), axis=1)
   windDF['Time'] = windDF['DateTime'].apply(lambda t: t.time())
   windDF['Date'] = windDF['DateTime'].apply(lambda d: d.date())
 
@@ -173,7 +179,7 @@ def main():
 
     # This is a CGI script, so we need to print the content type header and a blank line before the output.
     print('Content-Type: text/plain\n')
-    print(f"SUCCESS: Wind graph generated from data captured at {lastCaptureDateTime}.")
+    print(f"SUCCESS: Wind graph generated from data captured at {lastCaptureDateTime}.\n")
     print('windGraphNWS done.')
 
 if __name__ == '__main__':

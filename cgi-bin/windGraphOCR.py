@@ -211,7 +211,7 @@ def main():
 
     # This is a CGI script, so we need to print the content type header and a blank line before the output.
     print('Content-Type: text/plain\n')
-    print(f"SUCCESS: Wind graph generated from data captured at {lastCaptureDateTime}.")
+    print(f"SUCCESS: Wind graph generated from data captured at {lastCaptureDateTime}.\n")
     print('windGraphOCR done.')
 
 if __name__ == '__main__':
