@@ -20,7 +20,7 @@ def main():
     response = run_step(pathToResources / 'windGraphOCR.py')
 
     # Step 2: Act on result and run next if successful
-    if "PROCEED" in response1:
+    if "PROCEED" in response:
         response = run_step(pathToResources / 'windGraphNWS.py')
 
         # # Step 3: Run final program

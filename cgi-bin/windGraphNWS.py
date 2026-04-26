@@ -162,8 +162,9 @@ def main():
             logging.info('\t...source: %s', source)
             theDF = fetchWindData(url).dropna(inplace=True)
             smpl = theDF['DateTime'] > (now - d)
+            lastCaptureDateTime = theDF[smpl]['DateTime'].iloc[-1]
+            logging.info(f"\t...last capture at {lastCaptureDateTime}")
             makeWindGraph( theDF[smpl].resample('1H', on='DateTime').mean(), source )
-            lastCaptureDateTime = theDF['DateTime'].iloc[-1]
             break
         except Exception:
             logging.info('\t... failed')
@@ -177,6 +178,6 @@ def main():
 
 if __name__ == '__main__':
     prog = 'WindGraphNWS '
-    logging.basicConfig(filename='WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
+    logging.basicConfig(filename=pathToLogs /'WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
     logging.info('Build wind graph...')
     main()
