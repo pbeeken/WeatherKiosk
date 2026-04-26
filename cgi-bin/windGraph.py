@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import subprocess
-import cgi
+# import cgi
 
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
