@@ -3,23 +3,29 @@
 import pandas as pd
 import numpy as np
 
-import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
-# from pytz import timezone  # should already be part of pandas but it doesn't hurt to do it again.
-import logging
-
-### Global Structures and Configurations
-# 03/04/26 now supports ZoneInfo so we can remove the pytz dependency.
 from zoneinfo import ZoneInfo
-TZ_NY = ZoneInfo('America/New_York')
-UTC = ZoneInfo('UTC')
-EST = TZ_NY
 
+import matplotlib.pyplot as plt
 import matplotlib.transforms
 import matplotlib.dates as mdates
 
-# Getting Weather Data from execution rocks (station 44022)  Only needs to run every 15 minutes.
+### Global Structures and Configurations
+# 03/04/26 now supports ZoneInfo so we can remove the pytz dependency.
+TZ_NY = ZoneInfo('America/New_York')
+UTC = ZoneInfo('UTC')
+EST = TZ_NY
+lastCaptureDateTime = NONE
 
+# The pwd is the webpage
+import logging
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent
+pathToResources = BASE_DIR.parent / 'resources'       # where the data cache and the "static" resources are stored.
+pathToImages = BASE_DIR.parent / 'resources' / 'tmp'  # where the generated graphs and tables are stored. aka "mutable content"
+pathToLogs = BASE_DIR.parent / 'resources' / 'logs'   # where the logs are stored.
+
+# Getting Weather Data from execution rocks (station 44022)  Only needs to run every 15 minutes.
 def fetchWindData(source):
   now = datetime.now(tz=EST)
 
@@ -143,11 +149,7 @@ weatherBuoys = {
 }
 
 
-if __name__ == '__main__':
-    prog = 'WindGraph    '
-    logging.basicConfig(filename='WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
-    logging.info('Build wind graph...')
-
+def main():
     now = datetime.now().astimezone(EST)
     d = timedelta(days = 2)
 
@@ -167,5 +169,13 @@ if __name__ == '__main__':
 
     logging.info('\t...done')
 
+    # This is a CGI script, so we need to print the content type header and a blank line before the output.
     print('Content-Type: text/plain\n')
-    print('windGraph done.')
+    print(f"SUCCESS: Wind graph generated from data captured at {lastCaptureDateTime}.")
+    print('windGraphNWS done.')
+
+if __name__ == '__main__':
+    prog = 'WindGraphNWS '
+    logging.basicConfig(filename='WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
+    logging.info('Build wind graph...')
+    main()

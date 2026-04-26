@@ -11,10 +11,8 @@ over time, with annotations for current conditions and data source.
 2/16/26 It WORKS!  Tough to develop on a powerful pc and deploy on a toy.
 2/16/26    needs refactoring to clean-up the hacks.
 """
-
-import logging
 from datetime import datetime, timedelta
-from pytz import timezone  # should already be part of pandas but it doesn't hurt to do it again.
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import numpy as np
@@ -23,8 +21,12 @@ import matplotlib.pyplot as plt
 import matplotlib.transforms
 import matplotlib.dates as mdates
 
-EST = timezone('America/New_York')
-UTC = timezone('UTC')
+### Global Structures and Configurations
+# 03/04/26 now supports ZoneInfo so we can remove the pytz dependency.
+TZ_NY = ZoneInfo('America/New_York')
+UTC = ZoneInfo('UTC')
+EST = TZ_NY
+lastCaptureDateTime = NONE
 
 # The data is stored locally in a csv file that is updated by a separate process that fetches the data from the buoys.
 # This is much faster than fetching the data from the buoys every time we want to generate a graph, especially on a Raspberry Pi.
@@ -32,8 +34,12 @@ UTC = timezone('UTC')
 # is the cache of materials (graphs, images and table) that are refreshed by separate processes.
 
 # The pwd is the webpage
-pathToResources = 'resources/'  # where the data cache and the "static" resources are stored.
-pathToImages = 'resources/tmp/'  # where the generated graphs and tables are stored. aja "mutable content"
+import logging
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent
+pathToResources = BASE_DIR.parent / 'resources'  # where the data cache and the "static" resources are stored.
+pathToImages = BASE_DIR.parent / 'resources' / 'tmp'  # where the generated graphs and tables are stored. aka "mutable content"
+pathToLogs = BASE_DIR.parent / 'resources' / 'logs'  # where the logs are stored.
 
 def fetchWindData(source):
     """
@@ -45,18 +51,20 @@ def fetchWindData(source):
     :param source: the path to the file that contains the data store.  We ingest it.
     :return pandas dataframe containing the data.
     """
-
     logging.info(f"\t...getting from {source}")
     # Getting Weather Data from execution rocks (station 44022)  Only needs to run every 15 minutes.
     windDF = pd.read_csv(source, index_col=0, parse_dates=True)
-    windDF.dropna(inplace=True)                                     # wind data has glitches
+    # windDF.dropna(inplace=True)  # we don't do this globally, some data isn't relevant to what we want.                                     # wind data has glitches
     logging.info(f"\t...got {len(windDF)} data values")
 
     # We need to average the components rather than the angles when re-sampling.
     windDF['WdirSin'] = np.sin(np.radians(windDF['WindDir [°]']))
     windDF['WdirCos'] = np.cos(np.radians(windDF['WindDir [°]']))
 
-    return windDF
+    sel = windDF['Source'] == 44022
+    # we have data from multiple buoys, but we only want one for the graph. The others are for the table.
+    return windDF[sel].filter(items=['WindSpeedAvg [kts]', 'WindSpeedGst [kts]', 'AirTemp [°F]', 'WindDir [°]', 'WdirSin', 'WdirCos'])
+    # return windDF.filter(items=['WindSpeedAvg [kts]', 'WindSpeedGst [kts]', 'AirTemp [°F]', 'WindDir [°]', 'WdirSin', 'WdirCos'])
 
 def makeWindGraph(windDF, whereFrom=""):
     """
@@ -70,22 +78,21 @@ def makeWindGraph(windDF, whereFrom=""):
 
     # determine how old the data is...
     last = windDF.index[-1].to_pydatetime()
-    now = datetime.now(EST)
+    now = datetime.now(TZ_NY)
     delta = now-last
-    # print(f"{last} -> {now}  Data is {delta} old")
 
     # Work with data from the last 2 days
-    cutoff_time = datetime.now(EST) - timedelta(hours=32)
+    cutoff_time = last - timedelta(hours=32)
     windDF = windDF[windDF.index >= cutoff_time]
 
     # Resample to 1 hour intervals, averaging the components
-    windDF = windDF.select_dtypes('number').resample('30min').mean()
+    windDF = windDF.select_dtypes('number').resample('45min').mean()
 
     logging.debug(windDF.head())
-    logging.debug('...')
+    logging.debug(f'..{len(windDF)}..')
     logging.debug(windDF.tail())
 
-    imageRef = pathToImages + "windGraph.png" # fetch locally (way faster on a pi)
+    imageRef = pathToImages / "windGraph.png" # fetch locally (way faster on a pi)
     fig, ax = plt.subplots(figsize=(8, 4))
 
     tme = windDF.index
@@ -109,11 +116,11 @@ def makeWindGraph(windDF, whereFrom=""):
     ax.set_ylabel('Wind Speed [knots]', fontsize=12, fontstyle='italic', color='SlateGray')
 
     #Fix the time axis
-    ax.xaxis.set_major_locator(mdates.DayLocator(tz=EST))
-    ax.xaxis.set_minor_locator(mdates.HourLocator(interval=4, tz=EST))
+    ax.xaxis.set_major_locator(mdates.DayLocator(tz=TZ_NY))
+    ax.xaxis.set_minor_locator(mdates.HourLocator(interval=4, tz=TZ_NY))
 
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%a, %b %d', tz=EST))
-    ax.xaxis.set_minor_formatter(mdates.DateFormatter('%H:%M', tz=EST))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%a, %b %d', tz=TZ_NY))
+    ax.xaxis.set_minor_formatter(mdates.DateFormatter('%H:%M', tz=TZ_NY))
 
     dx = 0.; dy = -10/72.
     offset = matplotlib.transforms.ScaledTranslation(dx, dy, fig.dpi_scale_trans)
@@ -167,28 +174,35 @@ def makeWindGraph(windDF, whereFrom=""):
 def windDirection(ang):
     # direction indexer
     labels = {
-      'N': (-11.25, 11.25), 'NNE': (11.25, 33.75),   'NE': (33.75, 56.25),   'ENE': (56.25, 78.75),
+      'N': (348.75, 11.25), 'NNE': (11.25, 33.75),   'NE': (33.75, 56.25),   'ENE': (56.25, 78.75),
       'E': (78.75, 101.25), 'ESE': (101.25, 123.75), 'SE': (123.75, 146.25), 'SSE': (146.25, 168.75),
       'S': (168.75, 191.25),'SSW': (191.25, 213.75), 'SW': (213.75, 236.25), 'WSW': (236.25, 258.75),
       'W': (258.75, 281.25),'WNW': (281.25, 303.75), 'NW': (303.75, 326.25), 'NNW': (326.25, 348.75),
     }
     for tag, (min_ang, max_ang) in labels.items():
-        if min_ang < ang <= max_ang:
-            return tag
-    return 'Unknown'
+        if tag == 'N':  # Special case for North, which wraps around
+            if ang > min_ang or ang <= max_ang:
+                return tag
+        else:
+            if min_ang < ang <= max_ang:
+                return tag
+    return '-?-'
 
 def main():
     # Retrieve the OCR data for execution rocks.
-    source = pathToResources + "wind_data.csv"
-    dest   = pathToImages + "windGraph.png" # desitnation for the graph, but also the source of the data (since it's generated locally from the csv)
+    source = pathToResources / "wind_data.csv"
+    # source = pathToResources + "wind_data.csv"
+    # dest   = pathToImages + "windGraph.png" # desitnation for the graph, but also the source of the data (since it's generated locally from the csv)
+    dest = pathToImages / "windGraph.png"
 
     logging.info(f"\t...source: {source}")
 
     windDF = fetchWindData(source)
 
     logging.debug(windDF.head())
-    logging.debug('...')
+    logging.debug(f'..{len(windDF)}..')
     logging.debug(windDF.tail())
+    lastCaptureDateTime = windDF.index[-1].to_pydatetime()
 
     logging.info(f"\t...destination: {dest}")
     makeWindGraph(windDF, "Execution Rocks" )
@@ -197,10 +211,12 @@ def main():
 
     # This is a CGI script, so we need to print the content type header and a blank line before the output.
     print('Content-Type: text/plain\n')
-    print('windGraph done.')
+    print(f"SUCCESS: Wind graph generated from data captured at {lastCaptureDateTime}.")
+    print('windGraphOCR done.')
 
 if __name__ == '__main__':
-    prog = 'WindGraph    '
-    logging.basicConfig(filename='WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
+    prog = 'WindGraphOCR '
+    logFile = pathToLogs / 'WeatherKiosk.log'
+    logging.basicConfig(filename=logFile, format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
     logging.info('Build wind graph...')
     main()
