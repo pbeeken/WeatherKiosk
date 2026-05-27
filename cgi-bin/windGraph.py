@@ -12,12 +12,14 @@ def run_step(script_name):
     return result.stdout.strip()
 
 def main():
-    # Print CGI header
+    # Print CGI header  We hold off and let the actual program generate the header so we can
+    # return an error if something goes wrong. If the first program fails, we don't want to
+    # return a 200 OK header.
     # print("Content-Type: text/html\n")  The return from the successful returns this response header.
 
     # Step 1: Run first program
-    # response = run_step(pathToResources / 'windGraphOCR.py')
-    response = run_step(pathToResources / 'windGraphNWS.py')
+    response = run_step(pathToResources / 'windGraphOCR.py')
+    # response = run_step(pathToResources / 'windGraphNWS.py')
 
     # Step 2: Act on result and run next if successful
     if "SUCCESS" in response:
