@@ -16,7 +16,8 @@ def main():
     # print("Content-Type: text/html\n")  The return from the successful returns this response header.
 
     # Step 1: Run first program
-    response = run_step(pathToResources / 'windGraphOCR.py')
+    # response = run_step(pathToResources / 'windGraphOCR.py')
+    response = run_step(pathToResources / 'windGraphNWS.py')
 
     # Step 2: Act on result and run next if successful
     if "SUCCESS" in response:
@@ -25,7 +26,7 @@ def main():
         if ("hours ago" in response  and float(response.split("'")[1]) > 5):
             # OCR data is too old, so we should try the NWS data instead.
             response = run_step(pathToResources / 'windGraphNWS.py')
-        # else:
+
         print(f"{response}")
     else:
         print(f"{response}")
