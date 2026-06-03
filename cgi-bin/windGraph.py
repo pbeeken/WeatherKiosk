@@ -21,7 +21,7 @@ def main():
     response = run_step(pathToResources / 'windGraphOCR.py')
     # response = run_step(pathToResources / 'windGraphNWS.py')
 
-    # Step 2: Act on result and run next if successful
+    # Step 2:  Act on result and run next if successful
     if "SUCCESS" in response:
         # Looks good so far but how old is the data?
         # # Step 3: Run final program
