@@ -304,7 +304,7 @@ async function fetchResources(what, units) {
     }
 
     if (what === 'windgraph' || what === 'all') {
-        let url = `http://localhost:8000/cgi-bin/windGraph.py`;
+        let url = `http://localhost:8000/cgi-bin/windGraphNWS.py`;
         toastStatus('↣wind', 'add');
 
         const timeout = 20000; // Default to 20 seconds

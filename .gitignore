@@ -6,6 +6,7 @@ deprecated
 SyncRaspPi.sh
 
 # temporary files as part of testing and debugging
+.venv
 *.zip
 __pycache__
 *.log
