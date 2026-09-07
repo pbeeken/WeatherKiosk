@@ -7,7 +7,7 @@ KIOSK="$HOME/WeatherKiosk"
 
 # Move to kiosk folder
 cd $KIOSK
-git fetch -a # update from upstream (nothing is overwritten)
+git fetch -a --prune # update from upstream (nothing is overwritten)
 
 # fetch from git any updates
 remoteBranch="`git rev-parse --symbolic-full-name --abbrev-ref @{upstream}`"
@@ -20,7 +20,7 @@ if [ "$localHash" != "$remoteHash" ]; then
     echo "updating..."
     # we don't care about any changes on the pi; we discard them.
     # reset the pointer to ignore any changes (made accidentally?)
-    git reset --hard origin
+    git reset --hard origin/main
     git pull --force
 
     echo "copying scripts..."
