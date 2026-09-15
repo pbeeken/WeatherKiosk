@@ -119,7 +119,16 @@ if [ -z $DISPLAY ] && [ $(tty) = /dev/tty1 ]
 
 then
    # This delays startup so networking can begin.
-   read -t 10 -p "Wait 10 seconds so networking can begin..."
+   #   read -t 10 -p "Wait 10 seconds so networking can begin..."
+   if [ -d "/home/pi/WeatherKiosk/.git" ]; then
+       echo "Waiting for Wi-Fi and network connection..."
+
+       # Loop indefinitely until github.com responds to a ping
+       until ping -c 1 github.com &> /dev/null; do
+           sleep 2
+       done
+       echo "Network connected!"
+   fi
 
    # This checks in with github and sees if there are any updates.
    /bin/bash /home/pi/WeatherKiosk/bin/updateSystem.sh
