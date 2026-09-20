@@ -14,8 +14,8 @@ class CloudDB:
 
     LOKI_URL: str   = field(init=False)
     LOKI_USER: str  = field(init=False)  # Placeholder for Grafana Cloud username.
-    LOKI_TOKEN_WRTE: str = field(init=False)  # Placeholder for Grafana Cloud API token.
-    LOKI_TOKEN_READ: str = field(init=False)  # Placeholder for Grafana Cloud API token.
+    LOKI_WRTE: str = field(init=False)  # Placeholder for Grafana Cloud API token.
+    LOKI_READ: str = field(init=False)  # Placeholder for Grafana Cloud API token.
 
     def __post_init__(self):
         # We are overriding the checking of the initialization config to load from a local secrets file instead of environment variables.
@@ -24,7 +24,7 @@ class CloudDB:
         # --- Grafana Cloud Loki credentials ---
         self.LOKI_URL  = init.get("cloud_database").get("host")             # type: ignore
         self.LOKI_USER = init.get("cloud_database").get("user")             # type: ignore
-        self.LOKI_TOKEN_WRTE = init.get("cloud_database").get("secretWRTE") # type: ignore
-        self.LOKI_TOKEN_READ = init.get("cloud_database").get("secretREAD") # type: ignore
+        self.LOKI_WRTE = init.get("cloud_database").get("write") # type: ignore
+        self.LOKI_READ = init.get("cloud_database").get("read") # type: ignore
 
 CLD = CloudDB()
