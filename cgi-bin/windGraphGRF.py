@@ -31,32 +31,55 @@ pathToLogs = BASE_DIR.parent / 'resources' / 'logs'   # where the logs are store
 import Credentials as cdbs
 
 
-# Getting Weather Data from execution rocks (station 44022)  Only needs to run every 15 minutes.
-def fetchWindData(source):
-    now = datetime.now(tz=EST)
+# Unlike previous implementations we are converting not fetching data.
+# def fetchWindData(sourceDF: pd.DataFrame) -> pd.DataFrame:
+#     """
+#     The dataframe is already fetched from Grafana Cloud Loki.  We just need to massage it into a form that we can graph.
+#     """
+#     now = datetime.now(tz=EST)
+#     logging.info(f"\t...got {len(sourceDF)} data values from {sourceDF.iloc[0]['location']}...")
+#     #Remove unneded header and rename columns for clarity
+#     #YY  MM DD hh mm WDIR WSPD GST  WVHT   DPD   APD MWD   PRES  ATMP  WTMP  DEWP  VIS PTDY  TIDE
+#     #yr  mo dy hr mn degT m/s  m/s     m   sec   sec degT   hPa  degC  degC  degC  nmi  hPa    ft
+#     trans = {
+#       'timestamp': 'DateTime_UTC',
+#       'AirTemp_degC': 'ATMP',
+#       # 'AirTemp_degF',
+#       'BaromPres_mB': 'PRES',
+#       # 'BaromPres_mmHg',
+#       'DewPoint_degC': 'DEWP',
+#       # 'DewPoint_degF',
+#       # 'RelHum_perc',
+#       # 'Source',
+#       # 'WindDirM24_deg',
+#       'WindDir_deg': 'WDIR',
+#       # 'WindSpeedAvg_kts',
+#       # 'WindSpeedAvg_mph',
+#       'WindSpeedAvg_mps': 'WSPD',
+#       # 'WindSpeedGst_kts',
+#       # 'WindSpeedGst_mph',
+#       # 'WindSpeedGst_mps',
+#       # 'WindSpeedM24_kts',
+#       # 'WindTimeM24',
+#       # 'detected_level',
+#       # 'device',
+#       # 'location',
+#       # 'service_name'
+#       }
+#     sourceDF.rename(columns=trans, inplace=True)
 
-    windDF = pd.read_csv(source, sep="\\s+", header=[0,1], na_values='MM', nrows=450 ) # Deprecated: , delim_whitespace=True
-    logging.info(f"\t...got {len(windDF)} data values")
+#     # Build DateTime Index column and generate directional components for averaging
+#     windDF['DateTime'] = windDF['DateTime_UTC'].dt.tz_convert(EST)
+#     windDF = windDF.set_index('DateTime')
 
-    #Remove unneded header and rename columns for clarity
-    windDF.columns = windDF.columns.get_level_values(0)
-    windDF = windDF.rename(columns={'#YY': 'YY'})
+#     # Keep only the desired columns
+#     windDF = windDF[['WDIR', 'WSPD', 'GST', 'PRES', 'ATMP']]
 
-    # Build DateTime Index column and generate directional components for averaging
-    windDF['DateTime_UTC'] = pd.to_datetime(windDF[['YY', 'MM', 'DD', 'hh', 'mm']].astype(str).agg('-'.join, axis=1), format='%Y-%m-%d-%H-%M')
-    windDF['DateTime_UTC'] = windDF['DateTime_UTC'].dt.tz_localize('UTC')
-    windDF['DateTime'] = windDF['DateTime_UTC'].dt.tz_convert(EST)
-    windDF = windDF.set_index('DateTime')
-    windDF = windDF.drop(columns=['YY', 'MM', 'DD', 'hh', 'mm'])
+#     # We need to average the components rather than the angles when resamping.
+#     windDF['WdirSin'] = np.sin(np.radians(windDF['WDIR']))
+#     windDF['WdirCos'] = np.cos(np.radians(windDF['WDIR']))
 
-    # Keep only the desired columns
-    windDF = windDF[['WDIR', 'WSPD', 'GST', 'PRES', 'ATMP']]
-
-    # We need to average the components rather than the angles when resamping.
-    windDF['WdirSin'] = np.sin(np.radians(windDF['WDIR']))
-    windDF['WdirCos'] = np.cos(np.radians(windDF['WDIR']))
-
-    return windDF
+#     return windDF
 
 def makeWindGraph(windDF, whereFrom=""):
     if len(windDF) < 16:
@@ -71,8 +94,8 @@ def makeWindGraph(windDF, whereFrom=""):
     delta = now-last
 
     tme = windDF.index
-    wspd = windDF['WSPD'] # windDF['WSPD']
-    mxsp = windDF['GST'] # windDF['GST']
+    wspd = windDF['WindSpeedAvg_mps'] # windDF['WSPD']
+    mxsp = windDF['WindSpeedGst_mps'] # windDF['GST']
 
     # convert m/s to mph: 0.447, m/s to knot: 0.5144
     ax.plot(tme, wspd/0.5144, 'bo-', alpha=0.8)
@@ -108,7 +131,7 @@ def makeWindGraph(windDF, whereFrom=""):
     for label in ax.xaxis.get_minorticklabels():
         label.set(horizontalalignment='center', color='darkred')
 
-    ax.grid(True, which='major', linewidth=2, axis='both', alpha=0.7)
+    ax.grid(True, which='major', linewidth=2,    axis='both', alpha = 0.7)
     ax.grid(True, which='minor', linestyle='--', axis='both', alpha = 0.5)
     ax.set_ylim(bottom=0.0)
 
@@ -120,12 +143,14 @@ def makeWindGraph(windDF, whereFrom=""):
     ##
     # Put a current conditions slug at the top
     tme = windDF.index[-1]
-    wspd = np.round(2.23694 * windDF.iloc[-1]['WSPD'],1)
-    mxsp = np.round(2.23694 * windDF.iloc[-1]['GST'],1)
+    wspd = np.round(2.23694 * windDF.iloc[-1]['WindSpeedAvg_mps'],1)
+    mxsp = np.round(2.23694 * windDF.iloc[-1]['WindSpeedGst_mps'],1)
     if mxsp != mxsp:
       mxsp = '-'
-    temp = windDF.iloc[-1]['ATMP']
-    wdir = windDF.iloc[-1]['WDIR']
+    temp = windDF.iloc[-1]['AirTemp_degC']
+    wdir = np.degrees(
+      np.arctan2(windDF.iloc[-1]['WdirCos'],windDF.iloc[-1]['WdirSin']))
+      #windDF.iloc[-1]['WDIR']
 
     old = datetime.now(tz=EST)-tme
     oldmin = np.int32(old.total_seconds()%60)
@@ -158,17 +183,11 @@ def windDirection(ang):
     if ang > labels[tag][0] and ang <= labels[tag][1]:
       return tag
 
-# Exscution Rocks weather buoy
-real_EXR_TimeDataFile = 'https://www.ndbc.noaa.gov/data/realtime2/44022.txt'  # Dead to me
-# Kings Point
-real_KPH_TimeDataFile = 'https://www.ndbc.noaa.gov/data/realtime2/KPTN6.txt'  # Only game in town right now.
-# Western Long Island Sound
-real_WLI_TimeDataFile = 'https://www.ndbc.noaa.gov/data/realtime2/44040.txt'  # Dead to me
-
-weatherBuoys = {
+weatherSources = {
+  'exrx': 'Execution Rocks',  # Almost due south of HHYC ~1nm.
+  'wlis': 'Western LI Sound', # South of Greenwich CT.
+  'clis': 'Central LI Sound', # South of Guilford, CT.
   'Kings Point LI': 'https://www.ndbc.noaa.gov/data/realtime2/KPTN6.txt',  # Originally we led with EXR but it's been dead for a while and KPTN6 is the only game in town.
-  # 'Execution Rocks': 'https://www.ndbc.noaa.gov/data/realtime2/44022.txt', # LIRACOOS buoy 44022 is at Execution Rocks, the western end of Long Island Sound.  It's the closest to us and was the most reliable. Offline to NWS
-  # 'Western LI': 'https://www.ndbc.noaa.gov/data/realtime2/44040.txt',      # LIRACOOS buoy 44040 is at the western end of Long Island Sound.  It's the second closest to us and was the second most reliable. Offline to NWS
 }
 
 def testConnection():
@@ -178,12 +197,12 @@ def testConnection():
   print(f"LOKI_TOKEN_WRTE: {cdbs.CLD.LOKI_WRTE}")
   print(f"LOKI_TOKEN_READ: {cdbs.CLD.LOKI_READ}")
 
-def main():
+def fetchData(location="all"):
   LOGQL_QUERY = '{service_name="unknown_service"} | json | logfmt | drop __error__, __error_details__'
 
-  # --- Time range: last 18 hours ---
+  # --- Time range: last 48 hours ---
   end_ns = int(time.time_ns()  + int(20 * 60 * 1e9))  # put the end point 20 min in the future to account for clock skew
-  start_ns = end_ns - int(18 * 60 * 60 * 1e9)  # back up 36 hours
+  start_ns = end_ns - int(48 * 60 * 60 * 1e9)  # back up 48 hours
 
   # --- Query Loki directly ---
   url = f"{cdbs.CLD.LOKI_URL}/loki/api/v1/query_range"
@@ -210,40 +229,101 @@ def main():
               **labels,
           })
 
+  # Create the dataframe and sort by timestamp
   df = pd.DataFrame(rows).sort_values("timestamp").reset_index(drop=True)
-  print(df.iloc[[ 0,  1,  2,  3,  4 ]])
-  print(df.iloc[[-5, -4, -3, -2, -1 ]])
+  df.set_index("timestamp", inplace=True)
 
-  # We have captuured the data for the last 18 hours.  Now we can make a graph of it.
+  # 1. Use the following schema to convert columns to appropriate types
+  #     any columns commented out or not here will be dropped from the dataframe.
+  column_schema = {
+    # 'line': "object",
+    'AirTemp_degC': "float64",
+    'AirTemp_degF': "float64",
+    'BaromPres_mB': "float64",
+    'BaromPres_mmHg': "float64",
+    'DewPoint_degC': "float64",
+    'DewPoint_degF': "float64",
+    'RelHum_perc': "float64",
+    # 'Source': "object",
+    'WindDirM24_deg': "float64",
+    'WindDir_deg': "float64",
+    'WindSpeedAvg_kts': "float64",
+    'WindSpeedAvg_mph': "float64",
+    'WindSpeedAvg_mps': "float64",
+    'WindSpeedGst_kts': "float64",
+    'WindSpeedGst_mph': "float64",
+    'WindSpeedGst_mps': "float64",
+    'WindSpeedM24_kts': "float64",
+    'WindTimeM24': "object",
+    # 'detected_level': "int64",
+    # 'device': "object",
+    'location': "object",
+    # 'service_name': "object"
+    }
 
+  # 3. Filter the dataframe to keep only the columns defined in the schema, plus the timestamp
+  # 'timestamp' is always kept as it is the index of the dataframe
+  always_keep = []
+  columns_to_keep = always_keep + [col for col in column_schema if col in df.columns]
 
-def OLDmain():
+  df = df[columns_to_keep]
+
+  # 4. Safely apply your data types across the entire column at once
+  for col, dtype in column_schema.items():
+      if col in df.columns:
+          if "datetime" in str(dtype):
+              df[col] = pd.to_datetime(df[col], utc=True, errors='coerce')
+          elif "int" in str(dtype) or "float" in str(dtype):
+              # pd.to_numeric supports errors='coerce' to safely turn strings into numbers/NaN
+              df[col] = pd.to_numeric(df[col], errors='coerce')
+
+              # Optional: If you explicitly need it as an integer,
+              # use 'Int64' (capital I) because standard 'int64' cannot hold NaN values
+              if "int" in str(dtype):
+                  df[col] = df[col].astype("Int64")
+          else:
+              df[col] = df[col].astype(dtype, errors='ignore')
+
+  # 5. Ensure the index is in datetime format with UTC timezone
+  df.index = pd.to_datetime(df.index, utc=True)  # Make sure the index is in datetime format with UTC timezone
+
+  if location != "all":
+      return df[df['location'] == location]
+
+  # return the whole thing if no location filter is applied
+  return df
+
+def main():
     now = datetime.now().astimezone(TZ_NY)
     d = timedelta(days = 2)
 
     # Go through a chain of nearby buoys until we get a good one.
     # I don't want to fail just because one buoy is down.
-    # I want to make sure it works before I try EXR again.
-    # As of June 2024 both EXR and WLI are dead to me.
-    for (source, url) in weatherBuoys.items():
-        try:
-            logging.info('\t...source: %s', source)
-            theDF = fetchWindData(url)
-            # theDF.dropna(inplace=True) # every record has missing data columns but the're not important for the graph.  We just need the date and the wind speed and direction.
-            smpl = theDF.index > (now - d)
-            lastCaptureDateTime = theDF[smpl].index.max()
-            logging.info(f"\t...last capture {DATA_AGE_HOURS:0.1f} hours ago")
-            makeWindGraph( theDF[smpl].reset_index().resample('1h', on='DateTime').mean(), whereFrom=source )
-            break
-        except Exception:
-            logging.info('\t... failed.')
+    # Grafana Cloud Loki has all three buoys in the same log stream so we can just filter by location.
+    weatherDF = fetchData()
+
+    # sources = ['exrx', 'wlis', 'clis']
+    source = 'exrx'  # For now, just use the Execution Rocks data.  It is our closest source.
+    logging.info('\t...source: %s', source)
+    weatherDF = weatherDF[weatherDF['location'] == source]
+
+    print(f"Fetched {len(weatherDF)} rows of data for location '{source}'. {weatherDF.index.min()}-{weatherDF.index.max()}")
+    lastCaptureDateTime = weatherDF.index.max()
+    logging.info(f"\t...last capture {lastCaptureDateTime}")
+
+    graphicalDF = weatherDF[['WindSpeedAvg_mps', 'WindDir_deg', 'AirTemp_degC', 'WindSpeedGst_mps']]
+    # # We need to average the components rather than the angles when resamping.
+    graphicalDF['WdirSin'] = np.sin(np.radians(graphicalDF['WindDir_deg']))
+    graphicalDF['WdirCos'] = np.cos(np.radians(graphicalDF['WindDir_deg']))
+
+    makeWindGraph( graphicalDF.resample('1h').mean(), whereFrom=weatherSources[source] )
 
     logging.info('\t...done')
 
     # This is a CGI script, so we need to print the content type header and a blank line before the output.
     print('Content-Type: text/plain\n')
     print(f"SUCCESS: Wind graph generated from data captured '{DATA_AGE_HOURS:0.1f}' hours ago.\n")
-    print('windGraphNWS done.')
+    print('windGraphGRF done.')
 
 if __name__ == '__main__':
     prog = 'WindGraphGRF '
