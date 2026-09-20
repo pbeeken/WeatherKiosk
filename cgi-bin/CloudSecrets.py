@@ -1,10 +1,10 @@
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional, Any
+# from typing import Optional, Any
 
 import tools
 
-# BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent
 
 @dataclass
 class CloudDB:
