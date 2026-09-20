@@ -162,7 +162,8 @@ def makeWindGraph(windDF, whereFrom=""):
     plt.text(0.99, 0.90, f"Last readings spd:{wspd}, max:{mxsp}, dir:{windDirection(wdir)}",
             horizontalalignment='right', verticalalignment='center',
             transform=ax.transAxes, color='blue', alpha=0.6 )
-    if oldhrs > 1 or oldmin > 40:
+
+    if DATA_AGE_HOURS > 0.7: # hours
         plt.text(0.99, 0.84, f"Warning {oldhrs}:{oldmin} old",
                 horizontalalignment='right', verticalalignment='center',
                 transform=ax.transAxes, color='darkred', alpha=0.6 )
