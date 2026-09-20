@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 
 from datetime import datetime, timedelta
+import time
+import requests
 from zoneinfo import ZoneInfo
 
 import matplotlib.pyplot as plt
@@ -24,6 +26,10 @@ BASE_DIR = Path(__file__).resolve().parent
 pathToResources = BASE_DIR.parent / 'resources'       # where the data cache and the "static" resources are stored.
 pathToImages = BASE_DIR.parent / 'resources' / 'tmp'  # where the generated graphs and tables are stored. aka "mutable content"
 pathToLogs = BASE_DIR.parent / 'resources' / 'logs'   # where the logs are stored.
+
+# Credentials for Grafana Cloud Loki
+import Credentials as cdbs
+
 
 # Getting Weather Data from execution rocks (station 44022)  Only needs to run every 15 minutes.
 def fetchWindData(source):
@@ -165,8 +171,53 @@ weatherBuoys = {
   # 'Western LI': 'https://www.ndbc.noaa.gov/data/realtime2/44040.txt',      # LIRACOOS buoy 44040 is at the western end of Long Island Sound.  It's the second closest to us and was the second most reliable. Offline to NWS
 }
 
+def testConnection():
+  print("CloudSecrets module imported successfully.")
+  print(f"LOKI_URL:        {cdbs.CLD.LOKI_URL}")
+  print(f"LOKI_USER:       {cdbs.CLD.LOKI_USER}")
+  print(f"LOKI_TOKEN_WRTE: {cdbs.CLD.LOKI_WRTE}")
+  print(f"LOKI_TOKEN_READ: {cdbs.CLD.LOKI_READ}")
 
 def main():
+  LOGQL_QUERY = '{service_name="unknown_service"} | json | logfmt | drop __error__, __error_details__'
+
+  # --- Time range: last 18 hours ---
+  end_ns = int(time.time_ns()  + int(20 * 60 * 1e9))  # put the end point 20 min in the future to account for clock skew
+  start_ns = end_ns - int(18 * 60 * 60 * 1e9)  # back up 36 hours
+
+  # --- Query Loki directly ---
+  url = f"{cdbs.CLD.LOKI_URL}/loki/api/v1/query_range"
+  params = {
+      "query": LOGQL_QUERY,
+      "start": start_ns,
+      "end": end_ns,
+      "limit": 5000,       # Loki caps results per request; paginate below if you hit this
+      "direction": "forward",
+  }
+
+  resp = requests.get(url, params=params, auth=(cdbs.CLD.LOKI_USER, cdbs.CLD.LOKI_READ), timeout=30)
+  resp.raise_for_status()
+  data = resp.json()
+
+  # --- Flatten Loki streams into rows ---
+  rows = []
+  for stream in data.get("data", {}).get("result", []):
+      labels = stream.get("stream", {})
+      for ts_ns, line in stream.get("values", []):
+          rows.append({
+              "timestamp": pd.to_datetime(int(ts_ns), unit="ns", utc=True),
+              "line": line,
+              **labels,
+          })
+
+  df = pd.DataFrame(rows).sort_values("timestamp").reset_index(drop=True)
+  print(df.iloc[[ 0,  1,  2,  3,  4 ]])
+  print(df.iloc[[-5, -4, -3, -2, -1 ]])
+
+  # We have captuured the data for the last 18 hours.  Now we can make a graph of it.
+
+
+def OLDmain():
     now = datetime.now().astimezone(TZ_NY)
     d = timedelta(days = 2)
 
@@ -195,7 +246,7 @@ def main():
     print('windGraphNWS done.')
 
 if __name__ == '__main__':
-    prog = 'WindGraphNWS '
-    logging.basicConfig(filename=pathToLogs /'WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
+    prog = 'WindGraphGRF '
+    logging.basicConfig(filename= pathToLogs / 'WeatherKiosk.log', format=f'%(levelname)s:\t%(asctime)s\t{prog}\t%(message)s', level=logging.INFO)
     logging.info('Build wind graph...')
     main()
