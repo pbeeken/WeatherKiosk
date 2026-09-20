@@ -19,4 +19,4 @@ UsefulTools.md
 
 # files that are generated (but not the directory)
 resources/tmp/*
-.venv/
+.venv/*
