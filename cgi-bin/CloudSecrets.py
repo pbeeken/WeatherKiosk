@@ -6,7 +6,9 @@ import tools
 
 @dataclass
 class CloudDB:
-    """Load Grafana Cloud Loki credentials from the local secrets file."""
+    """
+    Load Grafana Cloud Loki credentials from the local secrets file.
+    """
 
     LOKI_URL: str   = field(init=False)
     LOKI_USER: str  = field(init=False)  # Placeholder for Grafana Cloud username.
