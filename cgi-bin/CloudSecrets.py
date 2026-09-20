@@ -4,6 +4,8 @@ from typing import Optional, Any
 
 import tools
 
+# BASE_DIR = Path(__file__).resolve().parent
+
 @dataclass
 class CloudDB:
     """
@@ -17,7 +19,7 @@ class CloudDB:
 
     def __post_init__(self):
         # We are overriding the checking of the initialization config to load from a local secrets file instead of environment variables.
-        init = tools.load_initialization_config(file_path=GCF.BASE_DIR / ".secrets/" / "weather-buoy-capture.json") # type: ignore
+        init = tools.load_initialization_config(file_path=BASE_DIR / ".secrets/" / "weather-buoy-capture.json") # type: ignore
         # print("Loaded initialization config:", init)
         # --- Grafana Cloud Loki credentials ---
         self.LOKI_URL  = init.get("cloud_database").get("host")             # type: ignore

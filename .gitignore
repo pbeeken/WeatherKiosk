@@ -21,3 +21,4 @@ UsefulTools.md
 resources/tmp/*
 .venv/*
 .secrets/*
+cgi-bin/.secrets/*
