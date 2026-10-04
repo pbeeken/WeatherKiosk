@@ -14,9 +14,9 @@ import matplotlib.dates as mdates
 
 ### Global Structures and Configurations
 # 03/04/26 now supports ZoneInfo so we can remove the pytz dependency.
-TZ_NY = ZoneInfo('America/New_York')
+EST = ZoneInfo('America/New_York')
 UTC = ZoneInfo('UTC')
-EST = TZ_NY
+TZ_NY = EST
 DATA_AGE_HOURS = 99.9  # Optimism, the data should be no more than 1 hour old. We will warn if it's older than that.
 
 # The pwd is the webpage
@@ -90,7 +90,7 @@ def makeWindGraph(windDF, whereFrom=""):
 
     # determine how old the data is...
     last = windDF.index[-1].to_pydatetime()
-    now = datetime.now(TZ_NY)
+    now = datetime.now(EST)
     delta = now-last
 
     tme = windDF.index
@@ -295,7 +295,7 @@ def fetchData(location="all"):
   return df
 
 def main():
-    now = datetime.now().astimezone(TZ_NY)
+    now = datetime.now().astimezone(EST)
     d = timedelta(days = 2)
 
     # Go through a chain of nearby buoys until we get a good one.
@@ -312,7 +312,7 @@ def main():
     lastCaptureDateTime = weatherDF.index.max()
     logging.info(f"\t...last capture {lastCaptureDateTime}")
 
-    graphicalDF = weatherDF[['WindSpeedAvg_mps', 'WindDir_deg', 'AirTemp_degC', 'WindSpeedGst_mps']]
+    graphicalDF = weatherDF[['WindSpeedAvg_mps', 'WindDir_deg', 'AirTemp_degC', 'WindSpeedGst_mps']].copy()
     # # We need to average the components rather than the angles when resamping.
     graphicalDF['WdirSin'] = np.sin(np.radians(graphicalDF['WindDir_deg']))
     graphicalDF['WdirCos'] = np.cos(np.radians(graphicalDF['WindDir_deg']))
