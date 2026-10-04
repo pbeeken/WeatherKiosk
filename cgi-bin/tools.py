@@ -6,7 +6,7 @@ from pathlib import Path
 
 import requests
 
-def grep_pngurl_fromlandingpage(url: str, target_string: str = ".png") -> str | None:
+def grep_pngurl_fromlandingpage(url: str, target_string: str = ".png"): # -> str | None:
     """UCONN LISICOS has a php page that generates a .png image.  The name of this image changes frequently.
     This function reads the php page and extracts the image name and then returns the generated png URL.
     This is a bit more work but it is more robust to changes in the image name which for exrx is often.

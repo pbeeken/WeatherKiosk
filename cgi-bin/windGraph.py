@@ -308,7 +308,7 @@ def main():
     logging.info('\t...source: %s', source)
     weatherDF = weatherDF[weatherDF['location'] == source]
 
-    print(f"Fetched {len(weatherDF)} rows of data for location '{source}'. {weatherDF.index.min()}-{weatherDF.index.max()}")
+    # print(f"Fetched {len(weatherDF)} rows of data for location '{source}'. {weatherDF.index.min()}-{weatherDF.index.max()}")
     lastCaptureDateTime = weatherDF.index.max()
     logging.info(f"\t...last capture {lastCaptureDateTime}")
 
